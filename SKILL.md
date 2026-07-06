@@ -17,10 +17,18 @@ Skill này giúp AI xây dựng UI đúng quy chuẩn thiết kế MISA khi phá
 
 1. **Xác định loại màn hình** đang cần xây dựng: Tổng quan (dashboard), Danh sách, Thêm/Sửa, hay Chi tiết.
 2. **Đọc reference tương ứng** trước khi viết code UI:
-   - [references/layout-patterns.md](references/layout-patterns.md) — bố cục chuẩn cho từng loại màn hình, cách chọn biến thể (Master-Detail, tab, card, drawer...). **Luôn đọc file này khi dựng màn hình mới.**
-   - [references/general-design-rules.md](references/general-design-rules.md) — 4 nguyên tắc thiết kế nền tảng (dễ học, dễ nhập liệu, kiểm soát thao tác, kiểm soát lỗi). Đọc khi thiết kế form nhập liệu hoặc luồng thao tác.
-   - [references/components.md](references/components.md) — quy tắc chọn và dùng component (combo box, dropdown, button, popup...) theo bộ MDS Web Components v2.0. Đọc khi chọn component cho form/toolbar.
-   - `references/components/*.md` — **spec chi tiết từng component** trích xuất từ Figma MDS v2.0 (input, tab, tree, date-time-picker, icon, icons-library). Khi dùng component nào, đọc file spec của component đó để làm đúng anatomy, biến thể, trạng thái.
+
+   | Đang làm gì | Đọc file |
+   |---|---|
+   | Dựng màn hình mới (bất kỳ) | [references/layout-patterns.md](references/layout-patterns.md) — bố cục 4 loại màn hình, chọn biến thể (Master-Detail, tab, card, drawer...) |
+   | Màu sắc, font chữ, icon style | [references/styles.md](references/styles.md) — hệ màu 2 cấp, thang Brand, Text Styles, quy tắc icon stroke 1.5px |
+   | Bảng dữ liệu (tick dòng, phân trang, lọc, sắp xếp) | [references/patterns/data-table.md](references/patterns/data-table.md) |
+   | Header bar, Sidebar, Popup/Form | [references/patterns/](references/patterns/) — header-bar.md, sidebar.md, popup-form.md |
+   | Form nhập liệu, luồng thao tác | [references/general-design-rules.md](references/general-design-rules.md) + [references/usability-requirements.md](references/usability-requirements.md) |
+   | Thông báo, dialog, toast, loading, empty state, error page, biểu đồ | [references/communication.md](references/communication.md) |
+   | Chọn/dùng component | [references/components.md](references/components.md) rồi đọc spec chi tiết trong `references/components/` (button, text-field, dropdown, combobox, checkbox, radio-button, date-time-picker, context-menu, tab, tree, input, icon...) |
+   | Phím tắt, chính tả, định dạng số, tiêu đề trình duyệt, icon dùng chung, chat AI, bản quyền | [references/conventions.md](references/conventions.md) |
+
 3. **Áp dụng checklist** ở cuối file này trước khi bàn giao.
 
 ## Các quy tắc cốt lõi (áp dụng cho MỌI màn hình)
@@ -54,11 +62,15 @@ Toàn bộ quy chuẩn cần thiết đã nằm trong skill này (`references/`)
 Kiểm tra từng mục, sửa ngay nếu chưa đạt:
 
 - [ ] Loại màn hình dùng đúng bố cục trong `layout-patterns.md` (đúng biến thể Master-Detail/tab/card phù hợp nghiệp vụ)
-- [ ] Nút Primary ở ngoài cùng bên phải; More ở bên phải Primary
+- [ ] Nút Primary ở ngoài cùng bên phải; More ở bên phải Primary; mỗi màn hình chỉ 1 nút Primary
 - [ ] Form Thêm/Sửa có Lưu/Hủy ghim cuối trang; màn Chi tiết có nút thao tác ghim góc trên phải
+- [ ] Bảng dữ liệu: hành vi chọn dòng/chọn tất cả, phân trang, lọc, sắp xếp đúng `patterns/data-table.md`
 - [ ] Control nhập liệu chọn đúng theo số lựa chọn (radio/dropdown/combo)
-- [ ] Có giá trị mặc định hợp lý cho các trường nhập liệu; thứ tự trường theo thói quen tác nghiệp
-- [ ] Mọi button có trạng thái loading/disabled sau khi click; tác vụ > 5s có progress
-- [ ] Thông báo lỗi tiếng Việt dễ hiểu, focus vào trường lỗi đầu tiên
-- [ ] Icon/phím tắt đồng nhất, có tooltip
+- [ ] Có giá trị mặc định hợp lý cho các trường nhập liệu; thứ tự trường theo thói quen tác nghiệp; Tab/Shift+Tab đi đúng thứ tự trái→phải, trên→dưới
+- [ ] Mọi button có trạng thái loading/disabled sau khi click; xử lý > 1s có loading, > 5s có progress
+- [ ] Thông báo lỗi tiếng Việt dễ hiểu, focus vào trường lỗi đầu tiên; toast tự đóng sau 5s
+- [ ] Font Inter, chữ mặc định 13px; màu/size dùng token, không hard-code hex
+- [ ] Icon từ `assets/icons/` (stroke 1.5px), đúng bảng icon dùng chung; phím tắt có tooltip
+- [ ] Số định dạng kiểu Việt Nam: chấm ngăn nghìn, phẩy thập phân (1.234.567,89)
+- [ ] Có empty state đúng chuẩn (initial state ≠ no data state); có cảnh báo thoát trang khi form đang nhập dở
 - [ ] Chức năng phức tạp có hướng dẫn ngay trên form

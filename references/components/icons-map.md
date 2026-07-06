@@ -6,11 +6,12 @@ Bộ icon SVG chuẩn được đóng gói sẵn tại **`assets/icons/`** (cùn
 
 1. **KHÔNG search icon trên internet, không dùng bộ icon khác** (FontAwesome, Material, Heroicons...). Chỉ dùng icon trong `assets/icons/`.
 2. Copy file SVG cần dùng vào thư mục assets của project (hoặc inline SVG vào component).
-3. **Không sửa path/hình dạng icon.** Giữ `stroke="currentColor"` — đổi màu bằng CSS `color` với token trong `assets/tokens.css`:
+3. **Không sửa path/hình dạng icon.** Các file đã được set sẵn `stroke-width="1.5"` theo quy chuẩn MDS (KHÔNG đổi về 2). Giữ `stroke="currentColor"` — đổi màu bằng CSS `color` với token trong `assets/tokens.css`:
    - Mặc định: `color: var(--mds-icon-neutral)` (#6B707A)
    - Nhấn mạnh/primary: `var(--mds-primary)` · Nguy hiểm: `var(--mds-danger)` · Thành công: `var(--mds-success)` · Cảnh báo: `var(--mds-warning)` · Thông tin: `var(--mds-info)`
-4. Kích thước: 12/16/20/24px theo token `--mds-icon-*` (icon trong button/input thường 16px, toolbar 20px, minh họa 24px). Set qua `width`/`height`, không scale méo.
-5. Icon cần thêm mà chưa có trong `assets/icons/`: lấy thêm từ bộ Tabler outline (cùng tên quy ước) hoặc hỏi đội Product Design — không chế icon mới.
+4. Kích thước chuẩn: 16/20/24/32px theo token `--mds-icon-*` (mặc định 24px; icon trong button/input thường 16px). Icon tương tác đứng riêng lẻ cần vùng chạm tối thiểu 40px. Set qua `width`/`height`, không scale méo.
+5. Icon cần thêm mà chưa có trong `assets/icons/`: lấy thêm từ bộ Tabler outline (cùng tên quy ước, nhớ đổi stroke-width về 1.5) hoặc hỏi đội Product Design — không chế icon mới.
+6. Danh sách 21 hành động có icon quy định cứng toàn MISA (Thêm, Sửa, Xóa, In, Tìm kiếm, Reload, Thiết lập, Bộ lọc, Nhập/Xuất khẩu, xem dạng card/kanban/danh sách...): xem mục "Icon dùng chung" trong [../conventions.md](../conventions.md).
 
 ## Hành động CRUD & thao tác dữ liệu
 

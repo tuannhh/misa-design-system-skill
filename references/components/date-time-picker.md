@@ -156,3 +156,52 @@ Quy ước hiển thị trong toàn bộ picker (theo mockup):
 | `#1F2229` | Chữ ngày thường |
 | `#99A1B2` | Chữ ngày ngoài tháng đang xem |
 | `Drop Shadow/Neutral/Bottom 8` (`0px 8px 16px 4px`, gốc `#000000`) | Bóng đổ popup |
+
+## Quy tắc sử dụng (từ trang quy chuẩn chung)
+
+> Nguồn: tài liệu quy chuẩn nội bộ MISA (đội Product Design)
+
+### Mục đích
+
+DateTime Picker giúp người dùng nhập hoặc chọn ngày, giờ một cách trực quan, chính xác, giảm nhầm lẫn định dạng và tăng hiệu quả nhập liệu.
+
+Chi tiết component gồm 2 phần: **ô input nhập liệu** và **popover xổ ra**.
+
+### Quy tắc chung khi sử dụng
+
+- Bấm vào các link **Hôm nay**, **Bây giờ** trên popover sẽ chuyển về ngày và giờ hiện tại tương ứng.
+- Các popover có nút **Đồng ý** thì sau khi chọn xong phải bấm Đồng ý mới submit thông tin và đóng popover; các loại **không có** nút Đồng ý thì khi chọn giá trị sẽ tự động submit và đóng popover luôn.
+
+### Các loại control
+
+#### Control chọn Date
+
+- Sử dụng để chọn hoặc nhập ngày tháng theo định dạng thông thường **Ngày/Tháng/Năm**. Ví dụ ngày tháng năm sinh: `20/01/2000`.
+- Có trạng thái riêng khi **focus** vào ô nhập liệu.
+
+#### Control chọn Date và Time
+
+- Sử dụng khi cần chọn cả ngày và giờ. Ví dụ: đặt lịch họp cần chính xác cả ngày lẫn giờ.
+
+#### Control chọn Date Range
+
+- **Dạng đơn giản**: dùng khi ít có nhu cầu chọn khoảng cố định.
+- **Dạng nâng cao**: có tiện ích chọn các khoảng cố định (preset), phù hợp cho các báo cáo.
+
+#### Chọn Date Range có cả ngày và giờ
+
+Quy trình chọn: chọn xong ngày và giờ **bắt đầu** → bấm **Đồng ý** → nhảy sang chọn ngày giờ **kết thúc** → bấm **Đồng ý** lần nữa → submit thông tin xuống.
+
+1. Chọn ngày bắt đầu
+2. Chọn ngày kết thúc
+
+#### Control chỉ chọn giờ
+
+- Phù hợp khi chỉ cần nhập/thay đổi giờ trong một ngày — không cần quan tâm tới ngày cụ thể, hoặc ngày đã được xác định từ trước.
+- Các biến thể:
+  - Chọn đầy đủ **giờ, phút, giây**
+  - Chọn chỉ **giờ và phút**
+
+#### Control chỉ chọn tháng và năm
+
+- Dùng khi chỉ cần xác định thời điểm theo **kỳ tháng** (không quan tâm đến ngày cụ thể).

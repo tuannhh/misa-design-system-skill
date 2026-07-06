@@ -20,11 +20,17 @@ misa-design-system/
 │   └── icons/                        # 81 icon SVG chuẩn MDS, dùng trực tiếp (không search mạng)
 └── references/
     ├── general-design-rules.md       # 4 nguyên tắc thiết kế chung
+    ├── usability-requirements.md     # Yêu cầu tiện dụng (Tab order, SelectAll, tooltip...)
     ├── layout-patterns.md            # Bố cục các loại màn hình AMIS
+    ├── styles.md                     # Hệ màu 2 cấp, Text Styles (Inter), quy tắc icon
+    ├── communication.md              # Thông báo, dialog, loading, empty state, error page, biểu đồ
+    ├── conventions.md                # Phím tắt, chính tả, định dạng số VN, icon dùng chung...
     ├── components.md                 # Quy tắc chung khi dùng component MDS
-    └── components/                   # Spec chi tiết từng component (từ bản export MDS v2.0)
-        ├── input.md · tab.md · tree.md · date-time-picker.md
-        ├── icon.md · icons-library.md
+    ├── patterns/                     # Data table (chọn dòng/phân trang/lọc/sắp xếp),
+    │                                 # Header bar, Sidebar, Popup/Form
+    └── components/                   # Spec từng component: button, text-field, dropdown,
+        │                             # combobox, checkbox, radio, date-time-picker,
+        │                             # context-menu, input, tab, tree, icon...
         └── icons-map.md              # Bảng tra: hành động → file icon + token màu
 ```
 
