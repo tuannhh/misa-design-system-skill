@@ -34,6 +34,8 @@ Skill này giúp AI xây dựng UI đúng quy chuẩn thiết kế MISA khi phá
 - **Mọi thao tác của người dùng phải có phản hồi**: disable button hoặc hiện busy indicator sau khi click; xử lý > 5 giây phải có thanh tiến trình (progress bar).
 - **Lỗi nhập liệu**: cảnh báo dễ hiểu bằng tiếng Việt, tự động focus vào trường lỗi đầu tiên.
 - **Icon và phím tắt của cùng một chức năng phải đồng nhất** trên toàn bộ ứng dụng; phím tắt phải có tooltip.
+- **Icon: chỉ dùng SVG đóng gói sẵn trong [assets/icons/](assets/icons/)** — tra bảng hành động → icon tại [references/components/icons-map.md](references/components/icons-map.md). KHÔNG search icon trên internet, không dùng bộ icon khác (FontAwesome, Material...).
+- **Màu sắc, font, kích thước: dùng token trong [assets/tokens.css](assets/tokens.css)** — không hard-code mã hex.
 
 ## Chọn control nhập liệu theo số lượng lựa chọn
 

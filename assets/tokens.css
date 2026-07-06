@@ -1,0 +1,43 @@
+/**
+ * MISA Design System (MDS 2.0) — Design tokens
+ * Giá trị đo trực tiếp từ bản export chính thức của MDS Web Components v2.0.
+ * Import file này (hoặc copy biến vào hệ thống theme của project) và LUÔN dùng
+ * biến thay vì hard-code mã màu.
+ */
+:root {
+  /* ── Màu thương hiệu / trạng thái ───────────────────────── */
+  --mds-primary: #245FDF;          /* nút primary, focus, icon primary */
+  --mds-selected: #4262F0;         /* trạng thái selected (date picker...) */
+  --mds-danger: #F04438;           /* lỗi, xóa, cảnh báo nghiêm trọng */
+  --mds-success: #12B76A;
+  --mds-warning: #F79009;
+  --mds-info: #2E90FA;
+  --mds-purple: #9E77ED;
+
+  /* ── Văn bản & icon ─────────────────────────────────────── */
+  --mds-text: #1F2229;             /* chữ chính */
+  --mds-text-placeholder: #9DA2AC;
+  --mds-text-muted: #99A1B2;       /* chữ phụ/ngoài phạm vi (vd: ngày ngoài tháng) */
+  --mds-icon-neutral: #6B707A;     /* màu icon mặc định */
+
+  /* ── Nền & viền ─────────────────────────────────────────── */
+  --mds-bg: #FFFFFF;
+  --mds-bg-disabled: #F2F2F4;
+  --mds-bg-hover-soft: #E7EBFD;    /* hover/range nhạt */
+  --mds-border: #CED1D6;
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --mds-font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --mds-font-size-body: 13px;
+
+  /* ── Kích thước ─────────────────────────────────────────── */
+  --mds-input-height: 32px;
+  --mds-radius-input: 8px;
+  --mds-radius-popup: 4px;
+
+  /* ── Icon ───────────────────────────────────────────────── */
+  --mds-icon-xs: 12px;
+  --mds-icon-sm: 16px;
+  --mds-icon-md: 20px;
+  --mds-icon-lg: 24px;
+}

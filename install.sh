@@ -28,7 +28,7 @@ copy_docs() {
   local dest="$PROJECT/docs/misa-design-system"
   mkdir -p "$dest"
   cp "$SKILL_DIR/AGENTS.md" "$dest/misa-design-rules.md"
-  cp -R "$SKILL_DIR/references" "$dest/"
+  cp -R "$SKILL_DIR/references" "$SKILL_DIR/assets" "$dest/"
   echo "→ Đã copy quy chuẩn vào $dest"
 }
 
@@ -49,6 +49,9 @@ Quy tắc cốt lõi không được vi phạm:
 - Lỗi nhập liệu: thông báo tiếng Việt dễ hiểu, focus trường lỗi đầu tiên.
 - 2–3 lựa chọn dùng radio/checkbox; 4–8 dùng dropdown; >8 dùng combo box (AutoComplete + LoadOnDemand).
 - Icon/phím tắt đồng nhất toàn app, có tooltip.
+- Icon: CHỈ dùng SVG trong docs/misa-design-system/assets/icons/ (tra bảng hành động→icon tại
+  references/components/icons-map.md), KHÔNG search icon trên internet, không dùng bộ icon khác.
+- Màu sắc/kích thước: dùng token trong docs/misa-design-system/assets/tokens.css, không hard-code hex.
 EOF
 }
 
@@ -56,13 +59,13 @@ case "$AGENT" in
   claude)
     DEST="$HOME/.claude/skills/misa-design-system"
     mkdir -p "$DEST"
-    cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$DEST/"
+    cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
     echo "✓ Claude Code: đã cài skill vào $DEST"
     ;;
   codex)
     DEST="$HOME/.codex/skills/misa-design-system"
     mkdir -p "$DEST"
-    cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$DEST/"
+    cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
     echo "✓ Codex: đã cài skill vào $DEST"
     ;;
   cursor)

@@ -15,7 +15,8 @@ Khi dùng component nào, đọc file spec tương ứng trong thư mục `compo
 | Tree (cây phân cấp) | [components/tree.md](components/tree.md) |
 | Date time picker | [components/date-time-picker.md](components/date-time-picker.md) |
 | Icon (quy tắc dùng icon) | [components/icon.md](components/icon.md) |
-| Thư viện icon (chọn icon chuẩn) | [components/icons-library.md](components/icons-library.md) |
+| **Bảng tra hành động → file icon SVG có sẵn** | [components/icons-map.md](components/icons-map.md) |
+| Thư viện icon (phân loại 43 nhóm) | [components/icons-library.md](components/icons-library.md) |
 
 Component chưa có file spec: áp dụng quy tắc chung bên dưới và tham chiếu Figma.
 
@@ -94,5 +95,6 @@ Mọi trường nhập liệu:
 
 ## Icon & phím tắt
 
+- **Icon lấy từ bộ SVG đóng gói sẵn trong `assets/icons/`** — tra bảng hành động → icon tại [components/icons-map.md](components/icons-map.md). Không search internet, không dùng bộ icon khác; màu icon qua token `assets/tokens.css`.
 - Cùng một hành động → cùng một icon trên toàn bộ ứng dụng và giữa các app MISA (thêm, sửa, xóa, xuất khẩu, nạp lại...).
 - Phím tắt đồng nhất giữa các chức năng giống nhau, có tooltip hiển thị phím tắt.

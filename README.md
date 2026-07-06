@@ -15,17 +15,17 @@ misa-design-system/
 ├── SKILL.md                          # Chuẩn Agent Skills — Claude Code / Codex
 ├── AGENTS.md                         # Chuẩn AGENTS.md — Cursor, Antigravity, Copilot, Zed...
 ├── install.sh                        # Script cài tự động cho từng agent
+├── assets/
+│   ├── tokens.css                    # Design tokens MDS (màu, font, radius, size)
+│   └── icons/                        # 81 icon SVG chuẩn MDS, dùng trực tiếp (không search mạng)
 └── references/
     ├── general-design-rules.md       # 4 nguyên tắc thiết kế chung
     ├── layout-patterns.md            # Bố cục các loại màn hình AMIS
     ├── components.md                 # Quy tắc chung khi dùng component MDS
-    └── components/                   # Spec chi tiết từng component (từ Figma MDS v2.0)
-        ├── input.md
-        ├── tab.md
-        ├── tree.md
-        ├── date-time-picker.md
-        ├── icon.md
-        └── icons-library.md
+    └── components/                   # Spec chi tiết từng component (từ bản export MDS v2.0)
+        ├── input.md · tab.md · tree.md · date-time-picker.md
+        ├── icon.md · icons-library.md
+        └── icons-map.md              # Bảng tra: hành động → file icon + token màu
 ```
 
 ## Cài đặt
