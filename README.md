@@ -30,6 +30,8 @@ misa-design-system/
 
 ## Cài đặt
 
+> Repo này ở chế độ **private** — tài liệu nội bộ MISA. Nhân viên cần được thêm làm collaborator (gửi username GitHub cho người quản lý repo) và đăng nhập `gh auth login` hoặc dùng git credential trước khi clone. **Không chia sẻ nội dung repo ra ngoài MISA.**
+
 Clone repo về máy một lần:
 
 ```bash
