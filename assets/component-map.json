@@ -1,0 +1,22 @@
+{
+  "$description": "Bản đồ control MDS UI (Vue 3) — AI tra khi lắp màn hình. Nguồn: ui/components/",
+  "library": { "framework": "vue3", "styling": "tailwind + var(--mds-*)", "distribution": "copy-in từ ui/components/" },
+  "components": {
+    "Button": { "file": "MButton.vue", "props": { "variant": "primary|secondary|danger|link|icon (mặc định secondary)", "size": "md|lg", "loading": "bool — spinner + tự disable", "disabled": "bool" }, "slots": ["default", "icon"], "rule": "1 màn hình chỉ 1 primary; primary ngoài cùng phải" },
+    "Tag": { "file": "MTag.vue", "props": { "color": "brand|success|warning|danger|neutral|info", "closable": "bool", "size": "sm|md" }, "emits": ["close"] },
+    "Spinner": { "file": "MSpinner.vue", "props": { "size": "number px" } },
+    "Progress": { "file": "MProgress.vue", "props": { "value": "0-100", "label": "string" }, "rule": "bắt buộc cho tác vụ >5s" },
+    "Input": { "file": "MInput.vue", "vModel": true, "props": { "type": "text|password|number...", "placeholder": "", "disabled": "", "readonly": "", "error": "string — hiện lỗi", "clearable": "bool" }, "slots": ["prefix", "suffix"], "behavior": "focus tự select-all" },
+    "Textarea": { "file": "MTextarea.vue", "vModel": true, "props": { "rows": "number", "maxlength": "number — hiện đếm ký tự", "error": "string" } },
+    "Checkbox": { "file": "MCheckbox.vue", "vModel": "boolean | array (khi có value)", "props": { "label": "", "indeterminate": "bool", "disabled": "", "error": "" } },
+    "RadioGroup": { "file": "MRadioGroup.vue", "vModel": true, "props": { "options": "[{label,value,disabled?}]", "direction": "horizontal|vertical" }, "rule": "dùng khi 2-3 lựa chọn" },
+    "Select": { "file": "MSelect.vue", "vModel": true, "props": { "options": "[{label,value,disabled?}]", "placeholder": "", "error": "" }, "rule": "dùng khi 4-8 lựa chọn" },
+    "Combobox": { "file": "MCombobox.vue", "vModel": "value | array khi multiple", "props": { "options": "[{label,value}]", "multiple": "bool — 2 tag + '+N'", "loading": "bool", "allowCreate": "bool — Enter thêm nhanh", "error": "" }, "emits": ["search (debounce 200ms — load-on-demand)", "create"], "rule": "dùng khi >8 lựa chọn/danh mục" },
+    "Dialog": { "file": "MDialog.vue", "vModel": "open", "props": { "title": "", "width": "px, mặc định 480", "type": "default|confirm|danger" }, "emits": ["confirm", "cancel"], "rule": "nút ưu tiên phải→trái; cấm chồng dialog" },
+    "Toast": { "file": "MToast.vue + toast.js", "usage": "useToast().success/error/warning/info(msg); đặt <MToast/> 1 lần ở App", "rule": "tự đóng 5s, max 3, ≤400px" },
+    "Tabs": { "file": "MTabs.vue", "vModel": "active key", "props": { "tabs": "[{key,label,disabled?}]", "variant": "underline|pill" } },
+    "EmptyState": { "file": "MEmptyState.vue", "props": { "type": "initial|no-result", "title": "", "description": "" }, "slots": ["actions"], "rule": "initial ≠ no-result (spec communication.md)" }
+  },
+  "todo_wave2": ["DataTable", "DatePicker", "DateRangePicker", "Drawer", "ContextMenu", "Tooltip", "DropdownMenu"],
+  "todo_wave3": ["HeaderBar", "Sidebar", "PageLayouts", "Chart"]
+}

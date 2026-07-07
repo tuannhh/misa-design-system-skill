@@ -56,6 +56,18 @@ MDS có **10 theme chính thức**: blue (mặc định MISA, Brand/600 `#245FDF
 
 Bộ token đầy đủ 2.639 biến (sinh từ Figma variables) nằm ở `assets/tokens/`; file nguồn JSON ở `assets/figma-tokens/` — cập nhật bằng `python3 scripts/build-tokens.py` khi có export mới.
 
+## Sinh FE trực tiếp bằng bộ MDS UI (PD design-in-code)
+
+Repo này kèm **bộ control Vue 3 + Tailwind viết sẵn** tại [ui/components/](ui/components/) (Đợt 1: 14 control lõi — Button, Input, Textarea, Checkbox, RadioGroup, Select, Combobox, Tag, Spinner, Progress, Dialog, Toast, Tabs, EmptyState). Khi người dùng (PD/PM) yêu cầu dựng màn hình cho app MISA:
+
+1. **Bắt buộc dùng control có sẵn** — tra nhanh props/emits/quy tắc trong [assets/component-map.json](assets/component-map.json), chi tiết đọc file `.vue` (có comment tiếng Việt). **CẤM viết HTML thô** (button, input, select...) cho control đã có trong bộ.
+2. Project chưa có bộ control → copy các file `.vue` cần dùng vào `src/components/mds/` + import tokens theo hướng dẫn [ui/README.md](ui/README.md).
+3. Lắp màn hình theo `references/layout-patterns.md`, đổ **mock data tiếng Việt giống thật** (tên người, phòng ban, mã chứng từ...), đủ các trạng thái (loading, empty, error).
+4. Mở dev server/preview cho người dùng xem và chỉnh bằng ngôn ngữ tự nhiên — sản phẩm chốt chính là FE chuyển cho dev gắn API.
+5. Control chưa có trong bộ (DataTable, DatePicker, Drawer... — Đợt 2/3): dựng inline theo spec trong `references/`, dùng token `var(--mds-*)`, và ghi chú TODO đề xuất bổ sung vào bộ chung.
+
+Xem/duyệt toàn bộ control: `cd ui/playground && npm install && npm run dev` (có nút đổi 10 theme).
+
 ## Chọn control nhập liệu theo số lượng lựa chọn
 
 | Số lựa chọn | Control |

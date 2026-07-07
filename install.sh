@@ -26,10 +26,11 @@ fi
 # Copy toàn bộ quy chuẩn vào project (docs/misa-design-system) để agent đọc references
 copy_docs() {
   local dest="$PROJECT/docs/misa-design-system"
-  mkdir -p "$dest"
+  mkdir -p "$dest/ui"
   cp "$SKILL_DIR/AGENTS.md" "$dest/misa-design-rules.md"
   cp -R "$SKILL_DIR/references" "$SKILL_DIR/assets" "$dest/"
-  echo "→ Đã copy quy chuẩn vào $dest"
+  cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$dest/ui/"
+  echo "→ Đã copy quy chuẩn + bộ control vào $dest"
 }
 
 # Tạo file rule trỏ tới bộ quy chuẩn, kèm quy tắc cốt lõi inline
@@ -58,14 +59,16 @@ EOF
 case "$AGENT" in
   claude)
     DEST="$HOME/.claude/skills/misa-design-system"
-    mkdir -p "$DEST"
+    mkdir -p "$DEST/ui"
     cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
+    cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
     echo "✓ Claude Code: đã cài skill vào $DEST"
     ;;
   codex)
     DEST="$HOME/.codex/skills/misa-design-system"
-    mkdir -p "$DEST"
+    mkdir -p "$DEST/ui"
     cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
+    cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
     echo "✓ Codex: đã cài skill vào $DEST"
     ;;
   cursor)
