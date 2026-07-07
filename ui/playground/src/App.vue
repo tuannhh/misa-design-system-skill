@@ -15,6 +15,13 @@ import MToast from '@mds/MToast.vue'
 import { useToast } from '@mds/toast.js'
 import MTabs from '@mds/MTabs.vue'
 import MEmptyState from '@mds/MEmptyState.vue'
+import MDataTable from '@mds/MDataTable.vue'
+import MDatePicker from '@mds/MDatePicker.vue'
+import MDateRangePicker from '@mds/MDateRangePicker.vue'
+import MDrawer from '@mds/MDrawer.vue'
+import MContextMenu from '@mds/MContextMenu.vue'
+import MTooltip from '@mds/MTooltip.vue'
+import MDropdownMenu from '@mds/MDropdownMenu.vue'
 
 const toast = useToast()
 const themes = ['blue', 'indigo', 'cyan', 'teal', 'green', 'orange', 'red', 'pink', 'purple', 'blue-gray']
@@ -52,6 +59,41 @@ const staffOptions = [
   'Nguyễn Văn An', 'Trần Thị Bình', 'Lê Hoàng Cường', 'Phạm Thu Dung', 'Hoàng Văn Em',
   'Vũ Thị Phương', 'Đặng Minh Giang', 'Bùi Thu Hà', 'Ngô Văn Inh', 'Đỗ Thị Kim',
 ].map((n, i) => ({ label: n, value: i }))
+
+// ===== Đợt 2 =====
+// DataTable
+const tableColumns = [
+  { key: 'code', label: 'Mã NV', width: 110 },
+  { key: 'name', label: 'Họ và tên', sortable: true },
+  { key: 'dept', label: 'Phòng ban' },
+  { key: 'salary', label: 'Lương (VND)', align: 'right', sortable: true, width: 140 },
+  { key: 'status', label: 'Trạng thái', width: 130 },
+]
+const tableRows = ref([
+  { id: 1, code: 'NV-0001', name: 'Nguyễn Văn An', dept: 'Phòng Kinh doanh', salary: '25.000.000', status: 'active' },
+  { id: 2, code: 'NV-0002', name: 'Trần Thị Bình', dept: 'Phòng Marketing', salary: '18.500.000', status: 'active' },
+  { id: 3, code: 'NV-0003', name: 'Lê Hoàng Cường', dept: 'Phòng Nhân sự', salary: '15.000.000', status: 'leave' },
+  { id: 4, code: 'NV-0004', name: 'Phạm Thu Dung', dept: 'Phòng Kế toán', salary: '22.750.000', status: 'active' },
+  { id: 5, code: 'NV-0005', name: 'Hoàng Văn Em', dept: 'Phòng Kinh doanh', salary: '31.200.000', status: 'probation' },
+])
+const selectedRows = ref([])
+const tablePage = ref(1)
+function onSort(e) { toast.info(`Sắp xếp: ${e.key} ${e.direction ?? 'mặc định'}`) }
+function onRowClick(row) { toast.info(`Mở chi tiết: ${row.name}`) }
+
+// Date pickers
+const birthday = ref(null)
+const reportRange = ref({ start: null, end: null })
+
+// Drawer + menus
+const drawerOpen = ref(false)
+const ctxMenuRef = ref(null)
+const menuItems = [
+  { key: 'edit', label: 'Sửa', icon: 'edit' },
+  { key: 'copy', label: 'Nhân bản', icon: 'copy' },
+  { key: 'divider-1', divider: true },
+  { key: 'delete', label: 'Xóa', icon: 'trash', danger: true },
+]
 </script>
 
 <template>
@@ -59,7 +101,7 @@ const staffOptions = [
     <header class="flex items-center justify-between">
       <div>
         <h1 class="text-[20px] leading-[28px] font-semibold">MDS UI — Bộ control mới</h1>
-        <p class="text-[var(--mds-text-placeholder)]">Vue 3 + Tailwind · chuẩn MDS 2.0 · Đợt 1: 14 control lõi</p>
+        <p class="text-[var(--mds-text-placeholder)]">Vue 3 + Tailwind · chuẩn MDS 2.0 · Đợt 1 + Đợt 2: 21 control</p>
       </div>
       <div class="flex items-center gap-1">
         <button v-for="t in themes" :key="t" @click="setTheme(t)"
@@ -69,6 +111,51 @@ const staffOptions = [
           :style="{ background: 'var(--mds-brand-600)' }" />
       </div>
     </header>
+
+    <section class="rounded-lg bg-white p-6 space-y-4">
+      <h3 class="text-[16px] leading-[22px] font-semibold flex items-center gap-2">Data Table <MTag color="brand" size="sm">Đợt 2</MTag></h3>
+      <p class="text-[var(--mds-text-placeholder)]">Tick dòng để thấy bulk action bar · hover dòng để thấy thao tác · click dòng mở chi tiết · click header Họ và tên / Lương để sort</p>
+      <MDataTable :columns="tableColumns" :rows="tableRows" v-model:selected="selectedRows"
+        selectable :page="tablePage" :has-next="true" @update:page="tablePage = $event"
+        @sort="onSort" @row-click="onRowClick">
+        <template #bulk-actions>
+          <MButton @click="toast.success(`Đã xuất ${selectedRows.length} bản ghi`)">Xuất khẩu</MButton>
+          <MButton variant="danger" @click="toast.error(`Đã xóa ${selectedRows.length} bản ghi`)">Xóa</MButton>
+        </template>
+        <template #cell-status="{ value }">
+          <MTag v-if="value === 'active'" color="success" size="sm">Đang làm việc</MTag>
+          <MTag v-else-if="value === 'probation'" color="warning" size="sm">Thử việc</MTag>
+          <MTag v-else color="neutral" size="sm">Nghỉ phép</MTag>
+        </template>
+        <template #row-actions="{ row }">
+          <MDropdownMenu :items="menuItems" @select="k => toast.info(`${k}: ${row.name}`)" />
+        </template>
+      </MDataTable>
+    </section>
+
+    <section class="rounded-lg bg-white p-6 space-y-4">
+      <h3 class="text-[16px] leading-[22px] font-semibold flex items-center gap-2">Date Picker · Date Range <MTag color="brand" size="sm">Đợt 2</MTag></h3>
+      <div class="grid grid-cols-2 gap-4 max-w-3xl">
+        <MDatePicker v-model="birthday" placeholder="Ngày sinh (dd/MM/yyyy)" />
+        <MDateRangePicker v-model="reportRange" />
+      </div>
+    </section>
+
+    <section class="rounded-lg bg-white p-6 space-y-4">
+      <h3 class="text-[16px] leading-[22px] font-semibold flex items-center gap-2">Drawer · Context menu · Tooltip · Dropdown menu <MTag color="brand" size="sm">Đợt 2</MTag></h3>
+      <div class="flex flex-wrap items-center gap-3">
+        <MButton variant="primary" @click="drawerOpen = true">Mở drawer</MButton>
+        <MTooltip content="Lưu bản ghi" shortcut="Ctrl+S">
+          <MButton>Hover tôi (tooltip + phím tắt)</MButton>
+        </MTooltip>
+        <MDropdownMenu :items="menuItems" @select="k => toast.info(`Chọn: ${k}`)" />
+        <div @contextmenu.prevent="ctxMenuRef.open($event, { source: 'demo' })"
+          class="flex h-20 flex-1 min-w-60 items-center justify-center rounded-lg border border-dashed border-[var(--mds-border)] text-[var(--mds-text-placeholder)] select-none">
+          Chuột phải vào vùng này (context menu)
+        </div>
+        <MContextMenu ref="ctxMenuRef" :items="menuItems" @select="e => toast.info(`Context: ${e.key}`)" />
+      </div>
+    </section>
 
     <section class="rounded-lg bg-white p-6 space-y-4">
       <h3 class="text-[16px] leading-[22px] font-semibold">Button</h3>
@@ -153,6 +240,20 @@ const staffOptions = [
       @confirm="dialogOpen = false; toast.success('Đã xóa hợp đồng')" @cancel="dialogOpen = false">
       Bạn có chắc muốn xóa hợp đồng HD-2026-0715 không?
     </MDialog>
+
+    <MDrawer v-model="drawerOpen" title="Thêm nhân viên">
+      <div class="space-y-4">
+        <MInput placeholder="Họ và tên" />
+        <MSelect :options="deptOptions" placeholder="Phòng ban" :model-value="null" />
+        <MDatePicker :model-value="null" placeholder="Ngày vào làm" />
+        <MTextarea placeholder="Ghi chú" :rows="3" />
+      </div>
+      <template #footer>
+        <MButton @click="drawerOpen = false">Hủy</MButton>
+        <MButton variant="primary" @click="drawerOpen = false; toast.success('Đã thêm nhân viên')">Lưu</MButton>
+      </template>
+    </MDrawer>
+
     <MToast />
   </div>
 </template>
