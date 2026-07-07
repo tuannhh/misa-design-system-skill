@@ -58,13 +58,14 @@ Bộ token đầy đủ 2.639 biến (sinh từ Figma variables) nằm ở `asse
 
 ## Sinh FE trực tiếp bằng bộ MDS UI (PD design-in-code)
 
-Repo này kèm **bộ control Vue 3 + Tailwind viết sẵn** tại [ui/components/](ui/components/) (Đợt 1: 14 control lõi — Button, Input, Textarea, Checkbox, RadioGroup, Select, Combobox, Tag, Spinner, Progress, Dialog, Toast, Tabs, EmptyState). Khi người dùng (PD/PM) yêu cầu dựng màn hình cho app MISA:
+Repo này kèm **bộ control Vue 3 + Tailwind viết sẵn** tại [ui/components/](ui/components/) (**24 control**: Button, Input, Textarea, Checkbox, RadioGroup, Select, Combobox, Tag, Spinner, Progress, Dialog, Toast, Tabs, EmptyState, DataTable, DatePicker, DateRangePicker, Drawer, ContextMenu, Tooltip, DropdownMenu, HeaderBar, Sidebar, Chart) và **4 màn hình mẫu** tại [ui/templates/](ui/templates/) (ListPage, FormPage, DetailPage, DashboardPage). Khi người dùng (PD/PM) yêu cầu dựng màn hình cho app MISA:
 
-1. **Bắt buộc dùng control có sẵn** — tra nhanh props/emits/quy tắc trong [assets/component-map.json](assets/component-map.json), chi tiết đọc file `.vue` (có comment tiếng Việt). **CẤM viết HTML thô** (button, input, select...) cho control đã có trong bộ.
-2. Project chưa có bộ control → copy các file `.vue` cần dùng vào `src/components/mds/` + import tokens theo hướng dẫn [ui/README.md](ui/README.md).
-3. Lắp màn hình theo `references/layout-patterns.md`, đổ **mock data tiếng Việt giống thật** (tên người, phòng ban, mã chứng từ...), đủ các trạng thái (loading, empty, error).
-4. Mở dev server/preview cho người dùng xem và chỉnh bằng ngôn ngữ tự nhiên — sản phẩm chốt chính là FE chuyển cho dev gắn API.
-5. Control chưa có trong bộ (DataTable, DatePicker, Drawer... — Đợt 2/3): dựng inline theo spec trong `references/`, dùng token `var(--mds-*)`, và ghi chú TODO đề xuất bổ sung vào bộ chung.
+1. **Bắt đầu từ màn hình mẫu**: xác định loại màn hình → clone file trong `ui/templates/` làm khung rồi sửa theo nghiệp vụ, KHÔNG dựng layout từ đầu (root template dùng `h-full` — mount trong container cao 100vh).
+2. **Bắt buộc dùng control có sẵn** — tra nhanh props/emits/quy tắc trong [assets/component-map.json](assets/component-map.json), chi tiết đọc file `.vue` (có comment tiếng Việt). **CẤM viết HTML thô** (button, input, select...) cho control đã có trong bộ.
+3. Project chưa có bộ control → copy các file `.vue` cần dùng vào `src/components/mds/` + import tokens theo hướng dẫn [ui/README.md](ui/README.md). Dùng MChart thì `npm i echarts`.
+4. Đổ **mock data tiếng Việt giống thật** (tên người, phòng ban, mã chứng từ...), đủ các trạng thái (loading, empty, error).
+5. Mở dev server/preview cho người dùng xem và chỉnh bằng ngôn ngữ tự nhiên — sản phẩm chốt chính là FE chuyển cho dev gắn API.
+6. Control chưa có trong bộ (Tree, Upload...): dựng inline theo spec trong `references/`, dùng token `var(--mds-*)`, và ghi chú TODO đề xuất bổ sung vào bộ chung.
 
 Xem/duyệt toàn bộ control: `cd ui/playground && npm install && npm run dev` (có nút đổi 10 theme).
 

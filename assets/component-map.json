@@ -22,7 +22,16 @@
     "Drawer": { "file": "MDrawer.vue", "vModel": "open", "props": { "title": "", "width": "default 480", "position": "right|left", "overlay": "bool default true — false thì đẩy nội dung" }, "slots": ["default", "footer (Primary ngoài cùng phải)"], "rule": "Esc/click overlay đóng; dùng cho form thêm nhanh/chi tiết phụ" },
     "ContextMenu": { "file": "MContextMenu.vue", "usage": "ref.open(event, payload) khi @contextmenu.prevent, hoặc slot activator", "props": { "items": "[{key,label,icon?,danger?,disabled?,divider?,children?}]" }, "emits": ["select {key,payload}"], "rule": "icon lấy theo tên file assets/icons; submenu mở phải, tự lật sát mép" },
     "Tooltip": { "file": "MTooltip.vue", "props": { "content": "string (rỗng = không hiện)", "placement": "top|bottom|left|right", "shortcut": "string — kbd phím tắt (MDS: phím tắt phải có tooltip)", "delay": "ms default 300" }, "slots": ["default (element gốc)", "content"] },
-    "DropdownMenu": { "file": "MDropdownMenu.vue", "props": { "items": "như ContextMenu (không children)", "placement": "bottom-end|bottom-start" }, "slots": ["activator (mặc định: nút More ⋯ chuẩn MDS)"], "emits": ["select (key)"], "rule": "dùng cho nút More bên phải nút Primary" }
+    "DropdownMenu": { "file": "MDropdownMenu.vue", "props": { "items": "như ContextMenu (không children)", "placement": "bottom-end|bottom-start" }, "slots": ["activator (mặc định: nút More ⋯ chuẩn MDS)"], "emits": ["select (key)"], "rule": "dùng cho nút More bên phải nút Primary" },
+    "HeaderBar": { "file": "MHeaderBar.vue", "props": { "appName": "string", "searchPlaceholder": "", "notificationCount": "number — badge đỏ, 99+", "user": "{name, avatarUrl?}" }, "emits": ["search", "notifications", "settings", "user-click", "logo-click"], "slots": ["logo", "actions"], "rule": "cao 48px nền brand-600 chữ trắng; Ctrl+K focus tìm kiếm" },
+    "Sidebar": { "file": "MSidebar.vue", "vModel": "active key (string) + v-model:collapsed (bool)", "props": { "items": "[{key,label,icon (tên assets/icons),children?,badge?}]" }, "rule": "nền trắng; expanded 240px / collapsed 56px hover popover; active nền brand-50 + thanh 3px trái" },
+    "Chart": { "file": "MChart.vue", "props": { "option": "ECharts option (deep-merge lên defaults MDS)", "height": "px default 320", "loading": "bool" }, "rule": "cần `npm i echarts`; palette chart tokens + số VN + Inter 12px tự áp" }
   },
-  "todo_wave3": ["HeaderBar", "Sidebar", "PageLayouts", "Chart (ECharts wrapper)"]
+  "templates": {
+    "$usage": "4 màn hình mẫu chuẩn MDS ở ui/templates/ — AI CLONE file mẫu tương ứng làm khung rồi sửa theo nghiệp vụ, KHÔNG dựng layout từ đầu. Root template dùng h-full — mount trong container cao 100vh.",
+    "ListPage.vue": "màn Danh sách: HeaderBar + Sidebar + toolbar [tiêu đề trái | search, lọc, nút phụ, Primary, More phải] + DataTable selectable + Drawer thêm nhanh",
+    "FormPage.vue": "màn Thêm/Sửa: header back + form 2 cột card trắng nền xám + footer sticky [Hủy trái | Lưu, Lưu và Thêm mới phải]",
+    "DetailPage.vue": "màn Chi tiết: back + title + Tag trạng thái + nút thao tác ghim góc trên phải + Tabs (card grid label/value, bảng con, empty state)",
+    "DashboardPage.vue": "màn Tổng quan: 4 KPI card + Chart cột/line/doughnut + bảng mini"
+  }
 }

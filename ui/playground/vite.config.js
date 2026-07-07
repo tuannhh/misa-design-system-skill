@@ -9,7 +9,10 @@ export default defineConfig({
     alias: {
       // Trỏ tới bộ component & assets của skill (nằm ngoài thư mục playground)
       '@mds': fileURLToPath(new URL('../components', import.meta.url)),
+      '@tpl': fileURLToPath(new URL('../templates', import.meta.url)),
       '@assets': fileURLToPath(new URL('../../assets', import.meta.url)),
+      // MChart.vue nằm ngoài root playground → trỏ echarts về node_modules ở đây
+      'echarts': fileURLToPath(new URL('./node_modules/echarts', import.meta.url)),
     },
   },
   server: {

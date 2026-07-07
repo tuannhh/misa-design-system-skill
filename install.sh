@@ -29,7 +29,7 @@ copy_docs() {
   mkdir -p "$dest/ui"
   cp "$SKILL_DIR/AGENTS.md" "$dest/misa-design-rules.md"
   cp -R "$SKILL_DIR/references" "$SKILL_DIR/assets" "$dest/"
-  cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$dest/ui/"
+  cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$dest/ui/"
   echo "→ Đã copy quy chuẩn + bộ control vào $dest"
 }
 
@@ -61,14 +61,14 @@ case "$AGENT" in
     DEST="$HOME/.claude/skills/misa-design-system"
     mkdir -p "$DEST/ui"
     cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
-    cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
+    cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
     echo "✓ Claude Code: đã cài skill vào $DEST"
     ;;
   codex)
     DEST="$HOME/.codex/skills/misa-design-system"
     mkdir -p "$DEST/ui"
     cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
-    cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
+    cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
     echo "✓ Codex: đã cài skill vào $DEST"
     ;;
   cursor)

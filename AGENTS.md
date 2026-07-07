@@ -37,7 +37,7 @@ MDS có **10 theme chính thức** trong `assets/tokens/themes/` (blue — mặc
 
 ## Sinh FE trực tiếp bằng bộ MDS UI
 
-Repo kèm bộ control Vue 3 + Tailwind viết sẵn ở `ui/components/` (14 control lõi). Khi dựng màn hình: **bắt buộc dùng control có sẵn, cấm viết HTML thô thay thế** — tra `assets/component-map.json`; copy file `.vue` cần dùng vào project + import tokens (xem `ui/README.md`); đổ mock data tiếng Việt giống thật; control chưa có thì dựng theo spec `references/` bằng token và ghi TODO.
+Repo kèm bộ control Vue 3 + Tailwind viết sẵn ở `ui/components/` (**24 control**, gồm cả DataTable/DatePicker/HeaderBar/Sidebar/Chart) và **4 màn hình mẫu** ở `ui/templates/` (ListPage/FormPage/DetailPage/DashboardPage). Khi dựng màn hình: **clone template tương ứng làm khung** (root dùng `h-full`, mount trong container 100vh), **bắt buộc dùng control có sẵn, cấm viết HTML thô thay thế** — tra `assets/component-map.json`; copy file `.vue` cần dùng vào project + import tokens (xem `ui/README.md`, MChart cần `npm i echarts`); đổ mock data tiếng Việt giống thật; control chưa có thì dựng theo spec `references/` bằng token và ghi TODO.
 
 ## Chọn control nhập liệu theo số lượng lựa chọn
 
