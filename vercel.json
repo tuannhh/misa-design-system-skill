@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm run build --prefix ui/playground",
+  "outputDirectory": "ui/playground/dist",
+  "framework": "vue"
+}
