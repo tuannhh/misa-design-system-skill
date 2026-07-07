@@ -71,7 +71,8 @@ const kpis = [
 
 // Nhân sự theo phòng ban
 const barOption = computed(() => ({
-  grid: { left: 8, right: 8, top: 16, bottom: 0, containLabel: true },
+  // top 40 chừa chỗ cho legend (16px) + khoảng thở, không che nhãn trục
+  grid: { left: 8, right: 8, top: 40, bottom: 0, containLabel: true },
   tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
   xAxis: {
     type: 'category',

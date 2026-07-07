@@ -126,6 +126,14 @@ function buildOption(userOption) {
   }
 
   const merged = deepMerge(base, userOption || {})
+  // Vị trí legend: default là left:0/top:0 — nếu người dùng tự đặt right/bottom
+  // thì phải bỏ default phía đối diện, không thì ECharts ưu tiên left/top
+  // và legend bị kéo về đè lên chart
+  const ul = userOption && userOption.legend
+  if (ul && !Array.isArray(ul) && merged.legend) {
+    if (ul.right != null && ul.left == null) delete merged.legend.left
+    if (ul.bottom != null && ul.top == null) delete merged.legend.top
+  }
   const axDefaults = axisDefaults(fontFamily)
   // Chỉ áp default trục khi người dùng khai báo trục (chart cartesian);
   // pie/donut không có trục thì bỏ qua
