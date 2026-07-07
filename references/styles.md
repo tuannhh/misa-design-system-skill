@@ -23,19 +23,24 @@ Hệ màu MDS tổ chức 2 cấp:
 - Base còn có: Black `#000000`, White `#FFFFFF`.
 - **Các ứng dụng có thể tùy chỉnh màu nhóm Base theo app của mình** (thang màu sinh theo công cụ uicolors.app từ mã màu chính).
 
-### Thang Brand mặc định (đọc từ bảng biến chính thức)
+### 10 theme Brand chính thức (từ bộ Figma variables export)
 
-| Biến | Hex |
+Brand không phải 1 màu cố định mà là **theme chọn được** — 10 theme, mỗi theme có thang 50→900 + bộ Text/Icon/Stroke/Bg tương ứng, nằm sẵn ở `assets/tokens/themes/*.css`:
+
+| Theme | Brand/600 (default) |
 |---|---|
-| Brand/Default | `#2563EB` |
-| Brand/Hover | `#1D4ED8` |
-| Brand/Pressed | `#1E40AF` |
-| Brand/Disabled | `#93C5FD` |
-| Brand/Light Selected | `#EFF6FF` |
-| Brand/Light Hover | `#DBEAFE` |
-| Brand/Light Pressed | `#BFDBFE` |
+| **Blue (mặc định MISA)** | `#245FDF` |
+| Indigo | `#4155F5` |
+| Cyan | `#00A2CF` |
+| Teal | `#0E9384` |
+| Green | `#0E9A62` |
+| Orange | `#EA580C` |
+| Red | `#C34266` |
+| Pink | `#C64691` |
+| Purple | `#744EC7` |
+| Blue gray | `#4E5BA6` |
 
-Mỗi bộ màu Base đều có đủ các bậc: Default, Hover, Pressed, Disabled, Light Selected, Light Hover, Light Pressed.
+Ngoài Brand, mỗi bộ màu Base (Info/Warning/Danger/Success/Neutral) có thang 50→950 cố định — đầy đủ trong `assets/tokens/base-colors.css`. Trạng thái tương tác lấy theo bậc: Default 600, Hover 700, Pressed 800, Disabled 300-400, nền nhạt selected/hover 50-200.
 
 ### Nhóm cấp 2: Text / Icon / Stroke / Bg (chỉ tham chiếu, KHÔNG khai báo hex mới)
 
@@ -57,7 +62,7 @@ Mapping nhóm Text (mẫu chuẩn):
 
 **Cách áp dụng khi code:** khai báo thang Base thành CSS variables (xem `assets/tokens.css`), các màu ngữ nghĩa (text, icon, border, bg) luôn trỏ về biến Base — không hard-code hex rải rác trong component.
 
-> Lưu ý: một số spec component đo từ bản export (input.md, icon.md) ghi `#245FDF` cho primary — đây là biến thể Brand của app cụ thể. Brand mặc định của MDS là `#2563EB`; khi làm app mới, dùng thang Brand mặc định trừ khi app có màu thương hiệu riêng.
+> Lưu ý: `#245FDF` xuất hiện trong các spec component (input.md, icon.md) chính là **Brand/600 của theme Blue mặc định** — nhất quán với bộ variables. (Bảng minh họa trên trang tài liệu có ví dụ `#2563EB` nhưng bộ variables chính thức dùng thang Blue `#245FDF`.) Khi làm app mới: dùng theme Blue trừ khi người dùng chọn theme khác — xem quy trình chọn theme trong SKILL.md.
 
 ## Kiểu chữ
 

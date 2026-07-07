@@ -45,6 +45,17 @@ Skill này giúp AI xây dựng UI đúng quy chuẩn thiết kế MISA khi phá
 - **Icon: chỉ dùng SVG đóng gói sẵn trong [assets/icons/](assets/icons/)** — tra bảng hành động → icon tại [references/components/icons-map.md](references/components/icons-map.md). KHÔNG search icon trên internet, không dùng bộ icon khác (FontAwesome, Material...).
 - **Màu sắc, font, kích thước: dùng token trong [assets/tokens.css](assets/tokens.css)** — không hard-code mã hex.
 
+## Chọn tone màu (theme) cho ứng dụng
+
+MDS có **10 theme chính thức**: blue (mặc định MISA, Brand/600 `#245FDF`), indigo, cyan, teal, green, orange, red, pink, purple, blue-gray — mỗi theme là 1 file trong [assets/tokens/themes/](assets/tokens/themes/) chứa đủ thang Brand 50→900 + màu Text/Icon/Stroke/Bg tương ứng.
+
+**Khi người dùng muốn chọn/đổi tone màu app:**
+1. Mở [assets/theme-preview.html](assets/theme-preview.html) trong trình duyệt (hoặc render các thẻ swatch tương tự) để người dùng xem 10 theme với thang màu + nút/tag minh họa và chọn.
+2. Áp dụng theme đã chọn: import `assets/tokens/themes/<tên-theme>.css` vào project (kèm `base-colors.css`, `number.css`, `font.css`, `space-standard.css` nếu chưa có). Đổi theme runtime bằng thuộc tính `data-mds-theme="<tên>"` trên `<html>`.
+3. **Không tự pha màu ngoài 10 theme.** App cần màu thương hiệu riêng ngoài bộ này → liên hệ đội Product Design.
+
+Bộ token đầy đủ 2.639 biến (sinh từ Figma variables) nằm ở `assets/tokens/`; file nguồn JSON ở `assets/figma-tokens/` — cập nhật bằng `python3 scripts/build-tokens.py` khi có export mới.
+
 ## Chọn control nhập liệu theo số lượng lựa chọn
 
 | Số lựa chọn | Control |

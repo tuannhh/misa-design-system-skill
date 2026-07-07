@@ -16,8 +16,17 @@ misa-design-system/
 ├── AGENTS.md                         # Chuẩn AGENTS.md — Cursor, Antigravity, Copilot, Zed...
 ├── install.sh                        # Script cài tự động cho từng agent
 ├── assets/
-│   ├── tokens.css                    # Design tokens MDS (màu, font, radius, size)
-│   └── icons/                        # 81 icon SVG chuẩn MDS, dùng trực tiếp (không search mạng)
+│   ├── tokens.css                    # Token nhanh (thang Brand Blue, trạng thái, size)
+│   ├── tokens/                       # 2.639 token CSS sinh từ Figma variables:
+│   │   ├── themes/                   #   10 theme màu app (blue, indigo, teal...)
+│   │   ├── base-colors.css           #   Info/Warning/Danger/Success/Neutral 50→950
+│   │   ├── space-*.css               #   3 chế độ mật độ spacing từng component
+│   │   ├── chart-*.css               #   Bảng màu biểu đồ (palette/divergent/single-hue)
+│   │   ├── number.css · font.css     #   Spacing/radius scale, font
+│   ├── figma-tokens/                 # JSON gốc export từ Figma (nguồn để build lại)
+│   ├── theme-preview.html            # Trang chọn tone màu — mở cho user chọn 1/10 theme
+│   └── icons/                        # 81 icon SVG chuẩn MDS stroke 1.5px (không search mạng)
+├── scripts/build-tokens.py           # Sinh lại assets/tokens/ khi có export Figma mới
 └── references/
     ├── general-design-rules.md       # 4 nguyên tắc thiết kế chung
     ├── usability-requirements.md     # Yêu cầu tiện dụng (Tab order, SelectAll, tooltip...)

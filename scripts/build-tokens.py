@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Sinh CSS tokens từ bộ export Figma variables (W3C design tokens JSON).
+
+Cách dùng: đặt các file .tokens.json vào assets/figma-tokens/<collection>/,
+rồi chạy:  python3 scripts/build-tokens.py
+Kết quả ghi vào assets/tokens/ — chạy lại mỗi khi đội Product Design cập nhật variables.
+"""
+import json, re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+SRC = ROOT / "assets" / "figma-tokens"
+OUT = ROOT / "assets" / "tokens"
+OUT.mkdir(parents=True, exist_ok=True)
+
+
+def walk(obj, prefix=""):
+    items = []
+    if isinstance(obj, dict):
+        if "$value" in obj:
+            items.append((prefix, obj["$value"], obj.get("$type")))
+        else:
+            for k, v in obj.items():
+                items.extend(walk(v, f"{prefix}/{k}" if prefix else k))
+    return items
+
+
+def slug(path):
+    s = path.lower().replace("/", "-").replace(" ", "-")
+    s = re.sub(r"[^a-z0-9-]", "", s)
+    return re.sub(r"-+", "-", s).strip("-")
+
+
+def value_str(v, t):
+    if isinstance(v, dict) and "hex" in v:
+        hexv = v["hex"].upper()
+        if v.get("alpha", 1) != 1:
+            a = v["alpha"]
+            r, g, b = (round(c * 255) for c in v["components"])
+            return f"rgba({r}, {g}, {b}, {a:g})"
+        return hexv
+    if t == "number":
+        return f"{v}px"
+    return str(v)
+
+
+def emit(json_path, css_path, var_prefix, selector=":root", header=""):
+    tokens = walk(json.loads(json_path.read_text()))
+    lines = [f"/* {header} — sinh tự động bởi scripts/build-tokens.py, không sửa tay */", selector + " {"]
+    for path, v, t in tokens:
+        lines.append(f"  --{var_prefix}-{slug(path)}: {value_str(v, t)};")
+    lines.append("}\n")
+    css_path.write_text("\n".join(lines))
+    return len(tokens)
+
+
+def main():
+    total = 0
+    # Base Colors → base-colors.css
+    f = SRC / "base-colors" / "Mode 1.tokens.json"
+    if f.exists():
+        total += emit(f, OUT / "base-colors.css", "mds-base", ":root", "MDS Base Colors (Info/Warning/Danger/Success/Neutral/Alpha)")
+
+    # Themes → themes/<name>.css ; mỗi theme dùng attribute selector để chuyển theme runtime
+    tdir = SRC / "themes"
+    if tdir.exists():
+        (OUT / "themes").mkdir(exist_ok=True)
+        for f in sorted(tdir.glob("*.tokens.json")):
+            name = slug(f.stem.replace(".tokens", ""))
+            sel = f':root, [data-mds-theme="{name}"]' if name == "blue" else f'[data-mds-theme="{name}"]'
+            total += emit(f, OUT / "themes" / f"{name}.css", "mds", sel, f"MDS Theme: {f.stem} (Brand 50-900 + Text/Icon/Stroke/Bg)")
+
+    # Number → number.css (spacing, radius...)
+    f = SRC / "number" / "Mode 1.tokens.json"
+    if f.exists():
+        total += emit(f, OUT / "number.css", "mds", ":root", "MDS Number tokens (spacing/padding, radius, size)")
+
+    # Space (mật độ giao diện) → space-<mode>.css
+    sdir = SRC / "space"
+    if sdir.exists():
+        for f in sorted(sdir.glob("*.tokens.json")):
+            name = slug(f.stem.replace(".tokens", ""))
+            sel = f':root, [data-mds-space="{name}"]' if name == "standard" else f'[data-mds-space="{name}"]'
+            total += emit(f, OUT / f"space-{name}.css", "mds-space", sel, f"MDS Space mode: {f.stem} (spacing chi tiết từng component)")
+
+    # Chart Colors → chart-<mode>.css
+    cdir = SRC / "chart-colors"
+    if cdir.exists():
+        for f in sorted(cdir.glob("*.tokens.json")):
+            name = slug(f.stem.replace(".tokens", ""))
+            total += emit(f, OUT / f"chart-{name}.css", "mds-chart", ":root", f"MDS Chart Colors: {f.stem}")
+
+    # Font Family → font.css
+    f = SRC / "font-family" / "Inter.tokens.json"
+    if f.exists():
+        total += emit(f, OUT / "font.css", "mds", ":root", "MDS Font Family/Weight")
+
+    print(f"OK: {total} tokens → {OUT}")
+
+
+if __name__ == "__main__":
+    main()

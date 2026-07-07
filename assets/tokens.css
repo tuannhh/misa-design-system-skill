@@ -5,17 +5,24 @@
  * biến thay vì hard-code mã màu.
  */
 :root {
-  /* ── Thang Brand chính thức (mặc định MDS — app có thể tùy chỉnh Base) ── */
-  --mds-brand: #2563EB;
-  --mds-brand-hover: #1D4ED8;
-  --mds-brand-pressed: #1E40AF;
-  --mds-brand-disabled: #93C5FD;
-  --mds-brand-light-selected: #EFF6FF;
-  --mds-brand-light-hover: #DBEAFE;
-  --mds-brand-light-pressed: #BFDBFE;
+  /* ── Thang Brand — theme Blue mặc định của MISA ─────────────
+     10 theme chính thức trong tokens/themes/*.css (blue, indigo, cyan, teal,
+     green, orange, red, pink, purple, blue-gray). Muốn đổi theme: import file
+     theme tương ứng hoặc đặt data-mds-theme="<tên>" — KHÔNG tự chế màu. */
+  --mds-brand-50: #F0F6FE;
+  --mds-brand-100: #DDEAFC;
+  --mds-brand-200: #C2DBFB;
+  --mds-brand-300: #99C5F7;
+  --mds-brand-400: #68A6F2;
+  --mds-brand-500: #4584EC;
+  --mds-brand-600: #245FDF;        /* Brand default */
+  --mds-brand-700: #2753CE;
+  --mds-brand-800: #2644A7;
+  --mds-brand-900: #243D84;
+  --mds-brand: var(--mds-brand-600);
 
   /* ── Màu thương hiệu / trạng thái ───────────────────────── */
-  --mds-primary: var(--mds-brand); /* nút primary, focus, link (một số app tùy chỉnh, vd #245FDF) */
+  --mds-primary: var(--mds-brand); /* nút primary, focus, link */
   --mds-selected: #4262F0;         /* trạng thái selected (date picker...) */
   --mds-danger: #F04438;           /* lỗi, xóa, cảnh báo nghiêm trọng */
   --mds-success: #12B76A;
