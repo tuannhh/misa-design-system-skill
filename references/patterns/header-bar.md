@@ -19,9 +19,17 @@ Header bar là **thanh điều hướng nằm ở phía trên cùng** của giao
 
 Theo tài liệu, header bar gồm các nhóm thành phần (bố trí từ trái sang phải):
 
-- **Bên trái**: Logo + tên sản phẩm/ứng dụng (kèm điều hướng về màn hình chính).
+- **Bên trái ngoài cùng**: nút **chuyển ứng dụng** dạng lưới **9 chấm**. Đây là điểm nhận diện bắt buộc của MISA Platform, dùng để mở app switcher/platform menu.
+- **Bên trái sau app switcher**: Logo + tên sản phẩm/ứng dụng (kèm điều hướng về màn hình chính).
 - **Ở giữa/bên phải**: Ô **tìm kiếm**.
 - **Bên phải**: Cụm icon tiện ích — **thông báo**, **thiết lập**, **trợ lý số MISA AVA**, và **avatar người dùng** ở ngoài cùng bên phải.
+
+### Quy tắc app switcher 9 chấm
+
+- Luôn đặt ở mép trái header, trước logo/tên app.
+- Icon là lưới 3×3 chấm, nét/điểm cùng màu với icon header; kích thước nhìn tương đương icon 20px.
+- Hover/focus giống các icon button khác trên header và bắt buộc có tooltip "Chuyển ứng dụng".
+- Không thay app switcher bằng hamburger/menu-2, dots ngang, dots dọc hoặc logo app.
 
 *(Chi tiết hình dạng, kích thước từng icon được quy định bằng hình minh họa trong tài liệu gốc; không có giá trị px/hex dạng text nên không liệt kê để tránh sai lệch.)*
 

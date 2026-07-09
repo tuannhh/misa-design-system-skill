@@ -44,6 +44,9 @@ Skill này giúp AI xây dựng UI đúng quy chuẩn thiết kế MISA khi phá
 - **Icon và phím tắt của cùng một chức năng phải đồng nhất** trên toàn bộ ứng dụng; phím tắt phải có tooltip.
 - **Icon: chỉ dùng SVG đóng gói sẵn trong [assets/icons/](assets/icons/)** — tra bảng hành động → icon tại [references/components/icons-map.md](references/components/icons-map.md). KHÔNG search icon trên internet, không dùng bộ icon khác (FontAwesome, Material...).
 - **Màu sắc, font, kích thước: dùng token trong [assets/tokens.css](assets/tokens.css)** — không hard-code mã hex.
+- **Header Platform MISA luôn có nút chuyển ứng dụng 9 chấm ở mép trái**, trước logo/tên app; không thay bằng hamburger hoặc icon khác.
+- **Sidebar trắng kiểu mới dùng item bo góc trong gutter**, kể cả trạng thái thu gọn; không tô active tràn sát mép và không dùng vạch active 3px mép trái.
+- **Dashboard card/box dùng stroke 1px, không dùng shadow**; shadow chỉ dùng cho overlay như popup/dropdown/toast/dialog/drawer.
 
 ## Chọn tone màu (theme) cho ứng dụng
 
@@ -95,6 +98,9 @@ Kiểm tra từng mục, sửa ngay nếu chưa đạt:
 - [ ] Thông báo lỗi tiếng Việt dễ hiểu, focus vào trường lỗi đầu tiên; toast tự đóng sau 5s
 - [ ] Font Inter, chữ mặc định 13px; màu/size dùng token, không hard-code hex
 - [ ] Icon từ `assets/icons/` (stroke 1.5px), đúng bảng icon dùng chung; phím tắt có tooltip
+- [ ] Header có nút chuyển ứng dụng 9 chấm ở mép trái trước logo/tên app
+- [ ] Sidebar collapsed/expanded giống rail trắng MISA: item bo góc trong gutter, active không tràn mép
+- [ ] Card/box dashboard dùng border/stroke 1px, không dùng shadow
 - [ ] Số định dạng kiểu Việt Nam: chấm ngăn nghìn, phẩy thập phân (1.234.567,89)
 - [ ] Có empty state đúng chuẩn (initial state ≠ no data state); có cảnh báo thoát trang khi form đang nhập dở
 - [ ] Chức năng phức tạp có hướng dẫn ngay trên form

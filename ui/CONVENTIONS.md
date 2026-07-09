@@ -13,6 +13,8 @@ Bộ control mới chuẩn MDS 2.0, phân phối kiểu **copy-in**: mỗi compo
 
 - Chiều cao control (button, input, select): **32px** (`h-8`). Font **13px/18px** (`text-[13px] leading-[18px]`), font-family kế thừa (project set Inter toàn cục).
 - Corner radius control: **8px** (`rounded-lg`). Popup/menu/calendar: **4px** (`rounded`).
+- Card/box nội dung dashboard: **border 1px**, nền trắng, bo góc 8px; **không shadow**. Chỉ overlay nổi (popup, dropdown, toast, dialog/drawer) mới dùng shadow.
+- Sidebar trắng: item active/hover là rounded tab nằm trong gutter hai bên, không tô nền full-width và không dùng vạch active mép trái.
 - Button: min-width 80px, padding ngang 14px, chữ font-medium.
 - Padding ngang input: 12px.
 

@@ -19,7 +19,7 @@ const toast = useToast()
 /* ── Điều hướng ─────────────────────────────────────────────── */
 
 const sidebarItems = [
-  { key: 'dashboard', label: 'Tổng quan', icon: 'dashboard' },
+  { key: 'dashboard', label: 'Tổng quan', icon: 'home' },
   {
     key: 'nhan-vien',
     label: 'Nhân viên',
@@ -190,6 +190,7 @@ const newestEmployees = [
       @notifications="toast.info('Mở danh sách thông báo')"
       @settings="toast.info('Mở thiết lập ứng dụng')"
       @user-click="toast.info('Mở menu tài khoản')"
+      @app-switcher="toast.info('Mở danh sách ứng dụng')"
     />
 
     <div class="flex min-h-0 flex-1">

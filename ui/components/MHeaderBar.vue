@@ -1,7 +1,7 @@
 <script setup>
 // MHeaderBar — Thanh điều hướng trên cùng (Header bar) chuẩn MDS 2.0
 // Nền brand-600 (theme của app), chữ/icon trắng.
-// Trái: logo + tên app · Giữa: ô tìm kiếm · Phải: slot actions + chuông + thiết lập + avatar.
+// Trái: app switcher 9 chấm + logo + tên app · Giữa: ô tìm kiếm · Phải: actions + chuông + thiết lập + avatar.
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
@@ -15,7 +15,7 @@ const props = defineProps({
   user: { type: Object, default: null },
 })
 
-const emit = defineEmits(['search', 'notifications', 'settings', 'user-click', 'logo-click'])
+const emit = defineEmits(['search', 'notifications', 'settings', 'user-click', 'logo-click', 'app-switcher'])
 
 const searchInput = ref(null)
 const searchText = ref('')
@@ -61,6 +61,33 @@ function onSearchFocus(e) {
   <header
     class="flex h-12 w-full items-center gap-3 bg-[var(--mds-brand-600)] px-4 text-[13px] leading-[18px] text-white"
   >
+    <!-- ── Trái ngoài cùng: app switcher 9 chấm của MISA Platform ── -->
+    <button
+      type="button"
+      class="grid h-8 w-8 shrink-0 place-items-center rounded-lg hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+      title="Chuyển ứng dụng"
+      aria-label="Chuyển ứng dụng"
+      @click="emit('app-switcher')"
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <circle cx="5" cy="5" r="1.4" />
+        <circle cx="10" cy="5" r="1.4" />
+        <circle cx="15" cy="5" r="1.4" />
+        <circle cx="5" cy="10" r="1.4" />
+        <circle cx="10" cy="10" r="1.4" />
+        <circle cx="15" cy="10" r="1.4" />
+        <circle cx="5" cy="15" r="1.4" />
+        <circle cx="10" cy="15" r="1.4" />
+        <circle cx="15" cy="15" r="1.4" />
+      </svg>
+    </button>
+
     <!-- ── Trái: logo + tên app (click → về màn hình chính) ── -->
     <button
       type="button"

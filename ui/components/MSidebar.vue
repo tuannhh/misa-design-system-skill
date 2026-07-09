@@ -5,7 +5,7 @@ import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
  * MSidebar — thanh điều hướng trái chuẩn MDS 2.0 (style sidebar TRẮNG).
  * 2 chế độ: Mở rộng (~240px, icon + label, nhóm con xổ dọc) và Thu gọn
  * (~56px, chỉ icon; hover hiện popover bên phải với label/menu con).
- * Active: nền brand-50, chữ/icon brand-600 semibold + thanh chỉ báo 3px trái.
+ * Active: rounded tab trong gutter, nền brand-50, chữ/icon brand-600 semibold.
  */
 const props = defineProps({
   // [{ key, label, icon?, children?: [{ key, label }], badge? }]
@@ -248,12 +248,12 @@ function toggleCollapsed() {
     class="flex h-full shrink-0 flex-col overflow-hidden border-r border-[var(--mds-border)] bg-[var(--mds-bg)] transition-[width] duration-200"
     :class="collapsed ? 'w-14' : 'w-60'"
   >
-    <nav class="flex-1 overflow-y-auto overflow-x-hidden py-2" aria-label="Menu chính">
+    <nav class="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2" aria-label="Menu chính">
       <template v-for="item in items" :key="item.key">
         <!-- ── Item cấp 1 ── -->
         <button
           type="button"
-          class="relative flex h-9 w-full items-center text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
+          class="relative mb-1 flex h-8 w-full items-center rounded-lg text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
           :class="[
             collapsed ? 'justify-center' : 'gap-2.5 px-4 text-left',
             parentActive(item)
@@ -267,13 +267,6 @@ function toggleCollapsed() {
           @mouseenter="collapsed && showPopover(item, $event)"
           @mouseleave="collapsed && scheduleHidePopover()"
         >
-          <!-- Thanh chỉ báo active 3px bên trái -->
-          <span
-            v-if="parentActive(item)"
-            class="absolute inset-y-1.5 left-0 w-[3px] rounded-r bg-[var(--mds-brand-600)]"
-            aria-hidden="true"
-          />
-
           <!-- Icon 20px stroke 1.5 (wrapper relative để gắn chấm badge khi thu gọn) -->
           <span class="relative flex h-5 w-5 shrink-0 items-center justify-center">
             <svg
@@ -336,7 +329,7 @@ function toggleCollapsed() {
             v-for="child in item.children"
             :key="child.key"
             type="button"
-            class="relative flex h-9 w-full items-center pl-[46px] pr-4 text-left text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
+            class="relative mb-1 flex h-8 w-full items-center rounded-lg pl-[38px] pr-4 text-left text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
             :class="
               isActive(child.key)
                 ? 'bg-[var(--mds-brand-50)] font-semibold text-[var(--mds-brand-600)]'
@@ -345,11 +338,6 @@ function toggleCollapsed() {
             :aria-current="isActive(child.key) ? 'page' : undefined"
             @click="selectKey(child.key)"
           >
-            <span
-              v-if="isActive(child.key)"
-              class="absolute inset-y-1.5 left-0 w-[3px] rounded-r bg-[var(--mds-brand-600)]"
-              aria-hidden="true"
-            />
             <span class="truncate">{{ child.label }}</span>
           </button>
         </template>

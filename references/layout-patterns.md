@@ -9,6 +9,8 @@
 - Cho phép tạo **nhiều giao diện** chứa các loại biểu đồ khác nhau.
 - Hỗ trợ **kéo thả vị trí và điều chỉnh độ rộng** của từng widget/biểu đồ.
 - Nút **Lưu/Hủy thống nhất ở cuối trang** khi ở chế độ tùy chỉnh.
+- Các box/card nội dung trên dashboard dùng **nền trắng + stroke/border 1px** theo token `--mds-border`; **không dùng shadow** cho card thường. Shadow chỉ dành cho lớp nổi như popup, dropdown, tooltip, toast, dialog/drawer.
+- Card dashboard bo góc nhẹ theo token/radius chuẩn, khoảng cách giữa các card đều nhau; không tạo cảm giác card nổi trên nền bằng drop shadow.
 
 ## 2. Màn hình Danh sách (List)
 
