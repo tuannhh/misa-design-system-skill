@@ -7,7 +7,8 @@ Bộ control mới chuẩn MDS 2.0, phân phối kiểu **copy-in**: mỗi compo
 1. **Vue 3 `<script setup>`**, JavaScript thuần (không TypeScript) để chạy được trong mọi project Vue 3 + Vite.
 2. **Styling bằng Tailwind utility classes**, mọi màu/kích thước lấy qua CSS variables của MDS bằng arbitrary value: `bg-[var(--mds-brand-600)]`, `text-[var(--mds-text)]`, `border-[var(--mds-border)]`... — KHÔNG hard-code hex. Project chỉ cần import `assets/tokens.css` + `assets/tokens/themes/<theme>.css` (+ `base-colors.css`) là component tự ăn theme.
 3. Tên component tiền tố `M`: `MButton.vue`, `MInput.vue`... Props/emits đặt tên tiếng Anh chuẩn Vue.
-4. Component **tự chứa**: icon dùng inline SVG (path lấy từ `assets/icons/`, stroke 1.5, `stroke="currentColor"`); không import file ngoài trừ Vue.
+4. Component dùng chung `MIcon.vue` + `iconRegistry.generated.js`; không inline SVG hoặc duy trì `ICON_PATHS` riêng. Khi copy component có icon, copy kèm hai file này.
+   Ngoại lệ inline SVG được kiểm soát bởi validator: glyph trạng thái Checkbox, illustration EmptyState, biểu tượng 9 chấm Platform, Spinner và chính renderer MIcon.
 
 ## Kích thước & hình khối chuẩn (từ spec MDS)
 

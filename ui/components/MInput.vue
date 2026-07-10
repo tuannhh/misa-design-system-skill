@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
+import MIcon from './MIcon.vue'
 
 const props = defineProps({
   modelValue: { type: [String, Number], default: '' },
@@ -108,9 +109,7 @@ function clear() {
         @mousedown.prevent
         @click="clear"
       >
-        <svg viewBox="0 0 16 16" fill="none" class="h-3 w-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-          <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" />
-        </svg>
+        <MIcon name="x" :size="12" />
       </button>
 
       <!-- Nút mắt toggle hiển thị mật khẩu (chỉ với type=password) -->
@@ -124,16 +123,9 @@ function clear() {
         @click="showPassword = !showPassword"
       >
         <!-- eye: đang ẩn mật khẩu, bấm để hiện -->
-        <svg v-if="!showPassword" viewBox="0 0 16 16" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8s-2.5 4.5-6.5 4.5S1.5 8 1.5 8Z" />
-          <circle cx="8" cy="8" r="2" />
-        </svg>
+        <MIcon v-if="!showPassword" name="eye" :size="16" />
         <!-- eye-off: đang hiện mật khẩu, bấm để ẩn -->
-        <svg v-else viewBox="0 0 16 16" fill="none" class="h-4 w-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M1.5 8s2.5-4.5 6.5-4.5c1.1 0 2.1.34 3 .84M14.5 8s-2.5 4.5-6.5 4.5c-1.1 0-2.1-.34-3-.84" />
-          <path d="M6.6 6.6a2 2 0 0 0 2.8 2.8" />
-          <path d="M2 2l12 12" />
-        </svg>
+        <MIcon v-else name="eye-off" :size="16" />
       </button>
 
       <!-- Slot suffix: icon 16px bên phải -->

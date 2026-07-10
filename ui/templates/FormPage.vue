@@ -13,6 +13,7 @@ import MDatePicker from '../components/MDatePicker.vue'
 import MRadioGroup from '../components/MRadioGroup.vue'
 import MTextarea from '../components/MTextarea.vue'
 import MToast from '../components/MToast.vue'
+import MIcon from '../components/MIcon.vue'
 import { useToast } from '../components/toast.js'
 
 const toast = useToast()
@@ -112,9 +113,7 @@ function saveAndNew() {
         aria-label="Quay lại"
         @click="goBack"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M15 6l-6 6l6 6" />
-        </svg>
+        <MIcon name="chevron-left" :size="20" />
       </button>
       <h1 class="text-[20px] font-semibold leading-[28px] text-[var(--mds-text)]">Thêm nhân viên</h1>
     </header>

@@ -1,16 +1,16 @@
 # Bảng tra icon chuẩn MDS — hành động → file SVG
 
-Bộ icon SVG chuẩn được đóng gói sẵn tại **`assets/icons/`** (cùng repo/thư mục cài đặt của bộ quy chuẩn này). MDS 2.0 dùng bộ icon nền Tabler nên các file này chính là glyph chuẩn.
+Bộ SVG tại **`assets/icons/`** là gói lõi đã xác minh từ MDS Web Components v2.0. Đây không phải toàn bộ thư viện icon trong Figma.
 
 ## Quy tắc bắt buộc khi dùng icon
 
-1. **KHÔNG search icon trên internet, không dùng bộ icon khác** (FontAwesome, Material, Heroicons...). Chỉ dùng icon trong `assets/icons/`.
-2. Copy file SVG cần dùng vào thư mục assets của project (hoặc inline SVG vào component).
+1. Tra theo thứ tự: `assets/icons/` → bảng này → trang Icons trong Figma MDS. Thiếu trong bundle không đồng nghĩa MDS không có.
+2. Trong Vue, dùng `MIcon.vue`; không inline SVG và không tạo map path riêng trong component.
 3. **Không sửa path/hình dạng icon.** Các file đã được set sẵn `stroke-width="1.5"` theo quy chuẩn MDS (KHÔNG đổi về 2). Giữ `stroke="currentColor"` — đổi màu bằng CSS `color` với token trong `assets/tokens.css`:
    - Mặc định: `color: var(--mds-icon-neutral)` (#6B707A)
    - Nhấn mạnh/primary: `var(--mds-primary)` · Nguy hiểm: `var(--mds-danger)` · Thành công: `var(--mds-success)` · Cảnh báo: `var(--mds-warning)` · Thông tin: `var(--mds-info)`
-4. Kích thước chuẩn: 16/20/24/32px theo token `--mds-icon-*` (mặc định 24px; icon trong button/input thường 16px). Icon tương tác đứng riêng lẻ cần vùng chạm tối thiểu 40px. Set qua `width`/`height`, không scale méo.
-5. Icon cần thêm mà chưa có trong `assets/icons/`: lấy thêm từ bộ Tabler outline (cùng tên quy ước, nhớ đổi stroke-width về 1.5) hoặc hỏi đội Product Design — không chế icon mới.
+4. Kích thước chuẩn: 16/20/24/32px theo token `--mds-icon-*` (mặc định 24px; icon trong button/input thường 16px). Icon tương tác đứng riêng lẻ cần vùng chạm tối thiểu 40px trên desktop và 48px trên màn hình touch/coarse pointer. Set qua `width`/`height`, không scale méo.
+5. Icon có trong Figma nhưng chưa có trong bundle: xuất đúng vector/tên từ Figma, thêm vào `assets/icons/`, cập nhật bảng này và chạy `python3 scripts/build-icon-registry.py`. Chỉ dùng Tabler/tự vẽ khi đã xác minh Figma không có.
 6. Danh sách 21 hành động có icon quy định cứng toàn MISA (Thêm, Sửa, Xóa, In, Tìm kiếm, Reload, Thiết lập, Bộ lọc, Nhập/Xuất khẩu, xem dạng card/kanban/danh sách...): xem mục "Icon dùng chung" trong [../conventions.md](../conventions.md).
 
 ## Hành động CRUD & thao tác dữ liệu
@@ -87,9 +87,9 @@ Bộ icon SVG chuẩn được đóng gói sẵn tại **`assets/icons/`** (cùn
 ## Ví dụ dùng trong code
 
 ```html
-<!-- Inline SVG, màu theo token, 16px trong button -->
+<!-- MIcon dùng registry sinh từ assets/icons, màu theo currentColor -->
 <button class="btn-secondary">
-  <svg class="mds-icon" width="16" height="16"><!-- nội dung từ assets/icons/plus.svg --></svg>
+  <MIcon name="plus" :size="16" />
   Thêm mới
 </button>
 ```
@@ -104,6 +104,7 @@ Bộ icon SVG chuẩn được đóng gói sẵn tại **`assets/icons/`** (cùn
 
 ## Khi thư viện chưa có icon
 
-1. Tra `assets/icons/` và bảng này trước.
-2. Nếu thật sự thiếu, thêm SVG outline vào chính `assets/icons/`, `viewBox="0 0 24 24"`, `stroke="currentColor"`, `stroke-width="1.5"`, `fill="none"`, linecap/linejoin `round`.
-3. Cập nhật bảng này và icon path map của component đang dùng. Không import trực tiếp FontAwesome, Material, Lucide hoặc URL SVG ngoài MDS vào app.
+1. Tra `assets/icons/`, bảng này và Figma Icons trước.
+2. Nếu có trong Figma, bổ sung đúng SVG chính thức vào bundle.
+3. Nếu thật sự chưa có trong Figma, dùng Tabler outline gần nhất hoặc thiết kế mới theo MDS; bổ sung vào Design System trước khi app dùng.
+4. Chạy generator + validator; không cập nhật map path riêng vì mọi component dùng chung `MIcon`.

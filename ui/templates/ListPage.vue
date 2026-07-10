@@ -18,6 +18,7 @@ import MDataTable from '../components/MDataTable.vue'
 import MDrawer from '../components/MDrawer.vue'
 import MDropdownMenu from '../components/MDropdownMenu.vue'
 import MTag from '../components/MTag.vue'
+import MIcon from '../components/MIcon.vue'
 import MToast from '../components/MToast.vue'
 import { useToast } from '../components/toast.js'
 
@@ -251,21 +252,14 @@ function saveEmployee() {
             <!-- Nút phụ: bên trái nút chính -->
             <MButton variant="secondary" @click="onImport">
               <template #icon>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
-                  <path d="M7 9l5 -5l5 5" />
-                  <path d="M12 4l0 12" />
-                </svg>
+                <MIcon name="upload" :size="16" />
               </template>
               Nhập khẩu
             </MButton>
             <!-- Nút Primary: ngoài cùng bên phải -->
             <MButton variant="primary" @click="openDrawer">
               <template #icon>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 5l0 14" />
-                  <path d="M5 12l14 0" />
-                </svg>
+                <MIcon name="plus" :size="16" />
               </template>
               Thêm nhân viên
             </MButton>

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import MIcon from './MIcon.vue'
 
 /**
  * MDateRangePicker — chọn khoảng ngày chuẩn MDS 2.0 (dạng nâng cao có preset).
@@ -380,22 +381,7 @@ onBeforeUnmount(() => {
       @blur="emit('blur', $event)"
     >
       <!-- Icon calendar (stroke 1.5, từ assets/icons/calendar.svg) -->
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="h-4 w-4 shrink-0 text-[var(--mds-icon-neutral)]"
-      >
-        <path d="M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12" />
-        <path d="M16 3v4" />
-        <path d="M8 3v4" />
-        <path d="M4 11h16" />
-        <path d="M11 15h1" />
-        <path d="M12 15v3" />
-      </svg>
+      <MIcon name="calendar" :size="16" class="text-[var(--mds-icon-neutral)]" />
 
       <span
         class="flex-1 truncate"
@@ -418,10 +404,7 @@ onBeforeUnmount(() => {
         @mousedown.prevent
         @click.stop="clear"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3">
-          <path d="M18 6l-12 12" />
-          <path d="M6 6l12 12" />
-        </svg>
+        <MIcon name="x" :size="12" />
       </span>
     </button>
 
@@ -476,9 +459,7 @@ onBeforeUnmount(() => {
                   class="flex h-6 w-6 items-center justify-center rounded text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)]"
                   @click="changeMonth(-1)"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
-                    <path d="M15 6l-6 6l6 6" />
-                  </svg>
+                  <MIcon name="chevron-left" :size="16" />
                 </button>
                 <span v-else class="h-6 w-6" />
 
@@ -493,9 +474,7 @@ onBeforeUnmount(() => {
                   class="flex h-6 w-6 items-center justify-center rounded text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)]"
                   @click="changeMonth(1)"
                 >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
-                    <path d="M9 6l6 6l-6 6" />
-                  </svg>
+                  <MIcon name="chevron-right" :size="16" />
                 </button>
                 <span v-else class="h-6 w-6" />
               </div>

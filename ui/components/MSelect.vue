@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import MIcon from './MIcon.vue'
 
 /**
  * MSelect — DropDownList chuẩn MDS 2.0.
@@ -212,18 +213,12 @@ onBeforeUnmount(() => {
       >
         {{ selectedOption ? selectedOption.label : placeholder }}
       </span>
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="h-4 w-4 shrink-0 text-[var(--mds-icon-neutral)] transition-transform"
+      <MIcon
+        name="chevron-down"
+        :size="16"
+        class="text-[var(--mds-icon-neutral)] transition-transform"
         :class="open ? 'rotate-180' : ''"
-      >
-        <path d="M6 9l6 6l6 -6" />
-      </svg>
+      />
     </button>
 
     <!-- Popover teleport ra body, radius 4px theo spec popup -->
@@ -269,18 +264,12 @@ onBeforeUnmount(() => {
           @click="selectOption(opt)"
         >
           <span class="flex-1">{{ opt.label }}</span>
-          <svg
+          <MIcon
             v-if="opt.value === modelValue"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="h-4 w-4 shrink-0 text-[var(--mds-brand-600)]"
-          >
-            <path d="M5 12l5 5l10 -10" />
-          </svg>
+            name="check"
+            :size="16"
+            class="text-[var(--mds-brand-600)]"
+          />
         </div>
       </div>
     </Teleport>

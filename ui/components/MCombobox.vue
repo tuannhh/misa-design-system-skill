@@ -1,5 +1,7 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import MIcon from './MIcon.vue'
+import MSpinner from './MSpinner.vue'
 
 /**
  * MCombobox — ComboBox chuẩn MDS 2.0 (gõ tìm + chọn).
@@ -409,18 +411,7 @@ onBeforeUnmount(() => {
             @mousedown.prevent
             @click.stop="removeTag(value)"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-3 w-3"
-            >
-              <path d="M18 6l-12 12" />
-              <path d="M6 6l12 12" />
-            </svg>
+            <MIcon name="x" :size="12" />
           </button>
         </span>
         <span
@@ -449,35 +440,16 @@ onBeforeUnmount(() => {
       />
 
       <!-- Spinner khi đang LoadOnDemand, ngược lại là chevron xoay khi mở -->
-      <svg
-        v-if="loading"
-        viewBox="0 0 24 24"
-        fill="none"
-        class="h-4 w-4 shrink-0 animate-spin text-[var(--mds-brand-600)]"
-      >
-        <circle cx="12" cy="12" r="10" stroke="var(--mds-border)" stroke-width="1.5" />
-        <path
-          d="M22 12a10 10 0 0 0 -10 -10"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-        />
-      </svg>
-      <svg
+      <MSpinner v-if="loading" :size="16" class="text-[var(--mds-brand-600)]" />
+      <MIcon
         v-else
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        class="h-4 w-4 shrink-0 cursor-pointer text-[var(--mds-icon-neutral)] transition-transform"
+        name="chevron-down"
+        :size="16"
+        class="cursor-pointer text-[var(--mds-icon-neutral)] transition-transform"
         :class="open ? 'rotate-180' : ''"
         @mousedown.prevent
         @click.stop="open ? closePopover() : onWrapperClick()"
-      >
-        <path d="M6 9l6 6l6 -6" />
-      </svg>
+      />
     </div>
 
     <!-- Popover teleport ra body, radius 4px theo spec popup.
@@ -497,15 +469,7 @@ onBeforeUnmount(() => {
           v-if="loading"
           class="flex items-center gap-2 px-3 py-2 text-[13px] leading-[18px] text-[var(--mds-text-placeholder)]"
         >
-          <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 animate-spin text-[var(--mds-brand-600)]">
-            <circle cx="12" cy="12" r="10" stroke="var(--mds-border)" stroke-width="1.5" />
-            <path
-              d="M22 12a10 10 0 0 0 -10 -10"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
-          </svg>
+          <MSpinner :size="16" class="text-[var(--mds-brand-600)]" />
           Đang tải dữ liệu...
         </div>
 
@@ -544,18 +508,12 @@ onBeforeUnmount(() => {
             @click="selectOption(opt)"
           >
             <span class="flex-1">{{ opt.label }}</span>
-            <svg
+            <MIcon
               v-if="isSelected(opt.value)"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-4 w-4 shrink-0 text-[var(--mds-brand-600)]"
-            >
-              <path d="M5 12l5 5l10 -10" />
-            </svg>
+              name="check"
+              :size="16"
+              class="text-[var(--mds-brand-600)]"
+            />
           </div>
 
           <!-- Thêm nhanh danh mục: gõ không khớp option nào → link button
@@ -566,18 +524,7 @@ onBeforeUnmount(() => {
             class="flex h-8 cursor-pointer items-center gap-2 whitespace-nowrap bg-[var(--mds-bg-hover-soft)] px-3 text-[13px] leading-[18px] text-[var(--mds-brand-600)]"
             @click="doCreate"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="h-4 w-4 shrink-0"
-            >
-              <path d="M12 5v14" />
-              <path d="M5 12h14" />
-            </svg>
+            <MIcon name="plus" :size="16" />
             <span>Nhấn Enter để thêm mới «{{ inputText.trim() }}»</span>
           </div>
         </template>
