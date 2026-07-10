@@ -64,7 +64,7 @@ Chi tiết props/emits: đọc trực tiếp file component (có comment tiếng
 - Control chưa có (HeaderBar, Sidebar, Chart... — Đợt 3) → dựng theo spec trong `references/`, dùng token, và đánh dấu TODO để bổ sung vào bộ.
 - Mọi màu/kích thước qua `var(--mds-*)` — không hard-code.
 - Icon luôn lấy từ `assets/icons/`; icon chưa có phải được thêm vào MDS đúng style 24px / stroke 1.5 trước khi ứng dụng sử dụng.
-- Với mobile/PWA, đọc `references/patterns/mobile-pwa.md` trước khi dựng breakpoint.
+- Với mobile/PWA, đọc `references/patterns/mobile-pwa.md` trước khi dựng breakpoint; dùng size class theo cửa sổ, touch target 48px trên coarse pointer và kiểm tra safe area/bàn phím trên iOS/Android.
 
 ## Xem & duyệt bộ control (playground)
 

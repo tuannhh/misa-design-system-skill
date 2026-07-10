@@ -93,7 +93,7 @@ Mapping nhóm Text (mẫu chuẩn):
 - **Dạng stroke, nét 1.5px** (KHÔNG dùng nét 2px) — cho cả đường nét trong và ngoài; đầu nét tròn (rounded) hoặc phẳng (butt-cap). Nét 1.5px giúp giao diện thoáng, hợp với web app/dashboard nhiều dữ liệu.
 - Nguồn icon: bộ opensource **Tabler** (đã đóng gói sẵn trong `assets/icons/` với stroke 1.5px — xem [components/icons-map.md](components/icons-map.md)).
 - **Kích thước:** phổ biến 16 / 20 / 24 / 32px; 3 mức tiêu chuẩn: nhỏ 16px — trung bình 24px (mặc định) — lớn 32px. Kích thước icon nên khớp line-height của text đi kèm.
-- **Vùng chạm:** icon tương tác đứng riêng lẻ cần vùng chạm tối thiểu **40px**.
+- **Vùng chạm:** icon tương tác đứng riêng lẻ cần vùng chạm tối thiểu **40px** trên Web desktop; với màn hình touch/coarse pointer dùng tối thiểu **48px** theo [patterns/mobile-pwa.md](patterns/mobile-pwa.md).
 - **Radius:** viền ngoài bo 3px (icon chi tiết phức tạp: 2px).
 - **Filled icon** chỉ dùng 2 trường hợp: (1) cặp filled/outline thể hiện trạng thái active/inactive; (2) icon đứng một mình trên nền phức tạp cần tương phản (vd: pin vị trí trên bản đồ).
 - Màu icon theo ngữ cảnh và theme — dùng token, không tô màu tùy tiện.

@@ -107,7 +107,7 @@ Kiểm tra từng mục, sửa ngay nếu chưa đạt:
 - [ ] Sidebar collapsed/expanded giống rail trắng MISA: item bo góc trong gutter, active không tràn mép
 - [ ] Card/box dashboard dùng border/stroke 1px, không dùng shadow
 - [ ] Slideshow dùng `MImageViewer`, có Esc, mũi tên, counter, thumbnail và alt text
-- [ ] Mobile/PWA đã kiểm tra theo `mobile-pwa.md`: không có desktop sidebar cố định, touch target >= 40px, footer/form action không bị che
+- [ ] Mobile/PWA đã kiểm tra theo `mobile-pwa.md`: đổi layout theo size class, không có desktop sidebar cố định ở compact, touch target >= 48px trên coarse pointer, safe area/bàn phím không che footer hoặc field
 - [ ] Số định dạng kiểu Việt Nam: chấm ngăn nghìn, phẩy thập phân (1.234.567,89)
 - [ ] Có empty state đúng chuẩn (initial state ≠ no data state); có cảnh báo thoát trang khi form đang nhập dở
 - [ ] Chức năng phức tạp có hướng dẫn ngay trên form
