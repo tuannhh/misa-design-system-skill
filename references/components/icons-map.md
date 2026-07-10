@@ -75,6 +75,8 @@ Bộ icon SVG chuẩn được đóng gói sẵn tại **`assets/icons/`** (cùn
 | Yêu thích / Đánh dấu | `star.svg` / `bookmark.svg` |
 | Nhãn (tag) | `tag.svg` |
 | Tin nhắn / Bình luận | `message.svg` |
+| Trợ lý số MISA AVA | asset mascot chính thức qua `MHeaderBar` prop `assistant.avatarUrl` hoặc slot `assistant` |
+| More trong vòng tròn header | `dots.svg` trong button tròn có border `--mds-border` |
 | Ảnh / Chụp ảnh | `photo.svg` / `camera.svg` |
 | Vị trí | `map-pin.svg` |
 | Cơ quan, tòa nhà / Công việc | `building.svg` / `briefcase.svg` |
@@ -99,3 +101,9 @@ Bộ icon SVG chuẩn được đóng gói sẵn tại **`assets/icons/`** (cùn
 ```
 
 > Phân loại đầy đủ 43 nhóm icon của MDS: xem [icons-library.md](icons-library.md).
+
+## Khi thư viện chưa có icon
+
+1. Tra `assets/icons/` và bảng này trước.
+2. Nếu thật sự thiếu, thêm SVG outline vào chính `assets/icons/`, `viewBox="0 0 24 24"`, `stroke="currentColor"`, `stroke-width="1.5"`, `fill="none"`, linecap/linejoin `round`.
+3. Cập nhật bảng này và icon path map của component đang dùng. Không import trực tiếp FontAwesome, Material, Lucide hoặc URL SVG ngoài MDS vào app.

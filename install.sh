@@ -56,12 +56,34 @@ Quy tắc cốt lõi không được vi phạm:
 EOF
 }
 
+# cp trên macOS có thể in lỗi từng file nhưng vẫn trả mã thành công khi copy nhiều nguồn.
+# Xác minh lại để không báo cài đặt thành công khi skill toàn máy đang cũ hoặc thiếu file.
+verify_global_install() {
+  local dest="$1"
+  local source target
+  for source in SKILL.md references assets; do
+    target="$dest/$source"
+    if ! diff -qr "$SKILL_DIR/$source" "$target" >/dev/null; then
+      echo "✗ Cài đặt chưa hoàn tất: $target không khớp với bản nguồn"
+      return 1
+    fi
+  done
+  for source in components templates README.md CONVENTIONS.md; do
+    target="$dest/ui/$source"
+    if ! diff -qr "$SKILL_DIR/ui/$source" "$target" >/dev/null; then
+      echo "✗ Cài đặt chưa hoàn tất: $target không khớp với bản nguồn"
+      return 1
+    fi
+  done
+}
+
 case "$AGENT" in
   claude)
     DEST="$HOME/.claude/skills/misa-design-system"
     mkdir -p "$DEST/ui"
     cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
     cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
+    verify_global_install "$DEST"
     echo "✓ Claude Code: đã cài skill vào $DEST"
     ;;
   codex)
@@ -69,6 +91,7 @@ case "$AGENT" in
     mkdir -p "$DEST/ui"
     cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
     cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
+    verify_global_install "$DEST"
     echo "✓ Codex: đã cài skill vào $DEST"
     ;;
   cursor)

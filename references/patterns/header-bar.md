@@ -6,10 +6,12 @@
 
 Header bar là **thanh điều hướng nằm ở phía trên cùng** của giao diện website hoặc ứng dụng. Nó thường chứa các thành phần như: **logo, tên sản phẩm, tìm kiếm, thông báo, avatar người dùng, v.v.**
 
-## 1. Cách sử dụng
+## 1. Biến thể
 
-- Header bar của các ứng dụng trong **MISA Platform** hiển thị **dạng có màu sắc theo màu chính (primary color) của từng ứng dụng**.
-- Các màu này **khách hàng có thể thay thế được** tùy theo sở thích cá nhân (tùy biến theme).
+- Dùng `light` cho Platform/header nền trắng; chữ và icon neutral, có `border-bottom` 1px.
+- Dùng `brand` cho app cần header theo màu primary (có thể đổi theme); chữ và icon trắng.
+- Chọn theo reference của sản phẩm đang làm. Không tự suy ra biến thể chỉ từ tên app.
+- Ô tìm kiếm ở trạng thái chưa focus phải có cảm giác secondary: `--mds-bg-disabled` trên `light`, `white/15` trên `brand`. Khi focus mới chuyển thành nền trắng/độ tương phản cao.
 
 ## 2. Tooltip
 
@@ -22,7 +24,7 @@ Theo tài liệu, header bar gồm các nhóm thành phần (bố trí từ trá
 - **Bên trái ngoài cùng**: nút **chuyển ứng dụng** dạng lưới **9 chấm**. Đây là điểm nhận diện bắt buộc của MISA Platform, dùng để mở app switcher/platform menu.
 - **Bên trái sau app switcher**: Logo + tên sản phẩm/ứng dụng (kèm điều hướng về màn hình chính).
 - **Ở giữa/bên phải**: Ô **tìm kiếm**.
-- **Bên phải**: Cụm icon tiện ích — **thông báo**, **thiết lập**, **trợ lý số MISA AVA**, và **avatar người dùng** ở ngoài cùng bên phải.
+- **Bên phải**: Cụm icon tiện ích theo thứ tự: **thiết lập**, **trợ lý số MISA AVA**, **chat**, **thông báo**, **hỗ trợ**, **More** trong vòng tròn, rồi **avatar người dùng** ở ngoài cùng bên phải. Có thể ẩn một tiện ích khi không thuộc scope app, nhưng không đảo thứ tự các mục còn lại.
 
 ### Quy tắc app switcher 9 chấm
 
@@ -37,6 +39,7 @@ Theo tài liệu, header bar gồm các nhóm thành phần (bố trí từ trá
 
 - **Avatar trợ lý số MISA AVA chính là avatar mascot của từng ứng dụng.**
 - Ví dụ: ứng dụng AMIS Kế toán là **AVA Kế toán**, CRM là **AVA Bán hàng**...
+- Chỉ dùng asset mascot được Product/Brand cung cấp. Component nhận `assistant.avatarUrl` hoặc slot `assistant`; không tự vẽ hoặc thay bằng avatar người dùng.
 
 ## 5. Các icon khác (Bán chéo, Kiến thức hữu ích...) để đâu?
 

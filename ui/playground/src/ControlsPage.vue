@@ -22,6 +22,7 @@ import MDrawer from '@mds/MDrawer.vue'
 import MContextMenu from '@mds/MContextMenu.vue'
 import MTooltip from '@mds/MTooltip.vue'
 import MDropdownMenu from '@mds/MDropdownMenu.vue'
+import MImageViewer from '@mds/MImageViewer.vue'
 
 const toast = useToast()
 const themes = ['blue', 'indigo', 'cyan', 'teal', 'green', 'orange', 'red', 'pink', 'purple', 'blue-gray']
@@ -47,6 +48,11 @@ const staff = ref([])
 const donvi = ref(null)
 const dialogOpen = ref(false)
 const activeTab = ref('info')
+const imageViewerOpen = ref(false)
+const sampleImages = [
+  { src: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"%3E%3Crect width="100%25" height="100%25" fill="%23245FDF"/%3E%3Ctext x="600" y="400" text-anchor="middle" dominant-baseline="middle" fill="white" font-family="Arial" font-size="56"%3EChung tu 01%3C/text%3E%3C/svg%3E', alt: 'Chứng từ số 01', name: 'chung-tu-01.png' },
+  { src: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"%3E%3Crect width="100%25" height="100%25" fill="%23099B70"/%3E%3Ctext x="600" y="400" text-anchor="middle" dominant-baseline="middle" fill="white" font-family="Arial" font-size="56"%3EChung tu 02%3C/text%3E%3C/svg%3E', alt: 'Chứng từ số 02', name: 'chung-tu-02.png' },
+]
 
 const deptOptions = [
   { label: 'Phòng Kinh doanh', value: 'kd' },
@@ -236,6 +242,11 @@ const menuItems = [
       </MTabs>
     </section>
 
+    <section class="rounded-lg bg-white p-6 space-y-4">
+      <h3 class="text-[16px] leading-[22px] font-semibold">Image viewer / Slideshow</h3>
+      <MButton variant="primary" @click="imageViewerOpen = true">Xem ảnh đính kèm</MButton>
+    </section>
+
     <MDialog v-model="dialogOpen" title="Xóa hợp đồng" type="danger"
       @confirm="dialogOpen = false; toast.success('Đã xóa hợp đồng')" @cancel="dialogOpen = false">
       Bạn có chắc muốn xóa hợp đồng HD-2026-0715 không?
@@ -253,6 +264,8 @@ const menuItems = [
         <MButton variant="primary" @click="drawerOpen = false; toast.success('Đã thêm nhân viên')">Lưu</MButton>
       </template>
     </MDrawer>
+
+    <MImageViewer v-model="imageViewerOpen" :images="sampleImages" downloadable @download="toast.info('Bắt đầu tải ảnh')" />
 
     <MToast />
   </div>
