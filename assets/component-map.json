@@ -2,6 +2,7 @@
   "$description": "Bản đồ control MDS UI (Vue 3) — AI tra khi lắp màn hình. Nguồn: ui/components/",
   "library": { "framework": "vue3", "styling": "tailwind + var(--mds-*)", "distribution": "copy-in từ ui/components/" },
   "components": {
+    "Icon": { "file": "MIcon.vue + iconRegistry.generated.js", "props": { "name": "tên SVG không cần .svg", "size": "12|16|20|24|28|32|36|40|44|48", "filled": "bool — chỉ dùng khi có asset *-filled chính thức", "title": "string — thêm accessible name" }, "rule": "Figma là nguồn chuẩn; dùng registry sinh từ assets/icons, cấm inline SVG/map path riêng" },
     "Button": { "file": "MButton.vue", "props": { "variant": "primary|secondary|danger|link|icon (mặc định secondary)", "size": "md|lg", "loading": "bool — spinner + tự disable", "disabled": "bool" }, "slots": ["default", "icon"], "rule": "1 màn hình chỉ 1 primary; primary ngoài cùng phải" },
     "Tag": { "file": "MTag.vue", "props": { "color": "brand|success|warning|danger|neutral|info", "closable": "bool", "size": "sm|md" }, "emits": ["close"] },
     "Spinner": { "file": "MSpinner.vue", "props": { "size": "number px" } },

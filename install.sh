@@ -26,9 +26,10 @@ fi
 # Copy toàn bộ quy chuẩn vào project (docs/misa-design-system) để agent đọc references
 copy_docs() {
   local dest="$PROJECT/docs/misa-design-system"
-  mkdir -p "$dest/ui"
+  mkdir -p "$dest/ui" "$dest/scripts"
   cp "$SKILL_DIR/AGENTS.md" "$dest/misa-design-rules.md"
   cp -R "$SKILL_DIR/references" "$SKILL_DIR/assets" "$dest/"
+  cp "$SKILL_DIR/scripts/build-icon-registry.py" "$SKILL_DIR/scripts/build-tokens.py" "$dest/scripts/"
   cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$dest/ui/"
   echo "→ Đã copy quy chuẩn + bộ control vào $dest"
 }
@@ -50,8 +51,8 @@ Quy tắc cốt lõi không được vi phạm:
 - Lỗi nhập liệu: thông báo tiếng Việt dễ hiểu, focus trường lỗi đầu tiên.
 - 2–3 lựa chọn dùng radio/checkbox; 4–8 dùng dropdown; >8 dùng combo box (AutoComplete + LoadOnDemand).
 - Icon/phím tắt đồng nhất toàn app, có tooltip.
-- Icon: CHỈ dùng SVG trong docs/misa-design-system/assets/icons/ (tra bảng hành động→icon tại
-  references/components/icons-map.md), KHÔNG search icon trên internet, không dùng bộ icon khác.
+- Icon: Figma MDS là nguồn chuẩn; assets/icons là gói lõi. Dùng MIcon, không inline SVG/map path riêng.
+  Thiếu trong bundle phải tra Figma trước; có trong Figma thì bổ sung đúng SVG và chạy generator.
 - Màu sắc/kích thước: dùng token trong docs/misa-design-system/assets/tokens.css, không hard-code hex.
 EOF
 }
@@ -75,21 +76,29 @@ verify_global_install() {
       return 1
     fi
   done
+  for source in build-icon-registry.py build-tokens.py; do
+    if ! diff -q "$SKILL_DIR/scripts/$source" "$dest/scripts/$source" >/dev/null; then
+      echo "✗ Cài đặt chưa hoàn tất: $dest/scripts/$source không khớp với bản nguồn"
+      return 1
+    fi
+  done
 }
 
 case "$AGENT" in
   claude)
     DEST="$HOME/.claude/skills/misa-design-system"
-    mkdir -p "$DEST/ui"
+    mkdir -p "$DEST/ui" "$DEST/scripts"
     cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
+    cp "$SKILL_DIR/scripts/build-icon-registry.py" "$SKILL_DIR/scripts/build-tokens.py" "$DEST/scripts/"
     cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
     verify_global_install "$DEST"
     echo "✓ Claude Code: đã cài skill vào $DEST"
     ;;
   codex)
     DEST="$HOME/.codex/skills/misa-design-system"
-    mkdir -p "$DEST/ui"
+    mkdir -p "$DEST/ui" "$DEST/scripts"
     cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
+    cp "$SKILL_DIR/scripts/build-icon-registry.py" "$SKILL_DIR/scripts/build-tokens.py" "$DEST/scripts/"
     cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
     verify_global_install "$DEST"
     echo "✓ Codex: đã cài skill vào $DEST"

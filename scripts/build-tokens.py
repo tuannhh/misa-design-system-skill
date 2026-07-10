@@ -5,13 +5,16 @@ Cách dùng: đặt các file .tokens.json vào assets/figma-tokens/<collection>
 rồi chạy:  python3 scripts/build-tokens.py
 Kết quả ghi vào assets/tokens/ — chạy lại mỗi khi đội Product Design cập nhật variables.
 """
-import json, re
+import argparse
+import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "assets" / "figma-tokens"
 OUT = ROOT / "assets" / "tokens"
 OUT.mkdir(parents=True, exist_ok=True)
+CHECK = False
 
 
 def walk(obj, prefix=""):
@@ -31,7 +34,12 @@ def slug(path):
     return re.sub(r"-+", "-", s).strip("-")
 
 
-def value_str(v, t):
+def value_str(v, t, var_prefix):
+    if isinstance(v, str):
+        alias = re.fullmatch(r"\{([^{}]+)\}", v.strip())
+        if alias:
+            alias_path = alias.group(1).replace(".", "/")
+            return f"var(--{var_prefix}-{slug(alias_path)})"
     if isinstance(v, dict) and "hex" in v:
         hexv = v["hex"].upper()
         if v.get("alpha", 1) != 1:
@@ -48,13 +56,29 @@ def emit(json_path, css_path, var_prefix, selector=":root", header=""):
     tokens = walk(json.loads(json_path.read_text()))
     lines = [f"/* {header} — sinh tự động bởi scripts/build-tokens.py, không sửa tay */", selector + " {"]
     for path, v, t in tokens:
-        lines.append(f"  --{var_prefix}-{slug(path)}: {value_str(v, t)};")
+        lines.append(f"  --{var_prefix}-{slug(path)}: {value_str(v, t, var_prefix)};")
     lines.append("}\n")
-    css_path.write_text("\n".join(lines))
+    output = "\n".join(lines)
+    unresolved = re.findall(r"\{[^{}\n;]+(?:\.[^{}\n;]+)+\}", output)
+    if unresolved:
+        raise ValueError(f"Unresolved token aliases in {css_path}: {unresolved}")
+    if CHECK:
+        if not css_path.exists() or css_path.read_text() != output:
+            raise ValueError(f"Stale token output: {css_path}; run scripts/build-tokens.py")
+    else:
+        css_path.write_text(output)
     return len(tokens)
 
 
 def main():
+    global CHECK
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="fail when generated CSS is stale or contains unresolved aliases",
+    )
+    CHECK = parser.parse_args().check
     total = 0
     # Base Colors → base-colors.css
     f = SRC / "base-colors" / "Mode 1.tokens.json"
@@ -95,7 +119,8 @@ def main():
     if f.exists():
         total += emit(f, OUT / "font.css", "mds", ":root", "MDS Font Family/Weight")
 
-    print(f"OK: {total} tokens → {OUT}")
+    mode = "checked" if CHECK else "generated"
+    print(f"OK: {mode} {total} tokens → {OUT}")
 
 
 if __name__ == "__main__":

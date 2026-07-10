@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import MSpinner from './MSpinner.vue'
 
 // MButton — nút chuẩn MDS 2.0 (Primary / Secondary / Danger / Link / Icon)
 const props = defineProps({
@@ -65,27 +66,8 @@ const variantClasses = computed(() => {
     :class="[sizeClasses, variantClasses]"
   >
     <!-- Loading: spinner 16px thay chỗ icon, chữ giữ nguyên -->
-    <svg
-      v-if="loading"
-      class="animate-spin shrink-0"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle
-        cx="12"
-        cy="12"
-        r="9"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-dasharray="42"
-        stroke-dashoffset="14"
-      />
-    </svg>
-    <!-- Slot icon 16px trước chữ (inline SVG stroke 1.5 từ assets/icons/) -->
+    <MSpinner v-if="loading" :size="16" />
+    <!-- Slot icon 16px trước chữ -->
     <span
       v-else-if="$slots.icon"
       class="inline-flex shrink-0 [&>svg]:h-4 [&>svg]:w-4"

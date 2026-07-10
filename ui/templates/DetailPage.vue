@@ -12,6 +12,7 @@ import MTag from '../components/MTag.vue'
 import MDataTable from '../components/MDataTable.vue'
 import MDropdownMenu from '../components/MDropdownMenu.vue'
 import MEmptyState from '../components/MEmptyState.vue'
+import MIcon from '../components/MIcon.vue'
 import MToast from '../components/MToast.vue'
 import { useToast } from '../components/toast.js'
 
@@ -124,9 +125,7 @@ function onMore(item) {
             aria-label="Quay lại"
             @click="goBack"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M15 6l-6 6l6 6" />
-            </svg>
+            <MIcon name="chevron-left" :size="20" />
           </button>
           <h1 class="truncate text-[20px] font-semibold leading-[28px] text-[var(--mds-text)]">
             {{ employee.name }}

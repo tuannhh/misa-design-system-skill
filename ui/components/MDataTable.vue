@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import MCheckbox from './MCheckbox.vue'
 import MSpinner from './MSpinner.vue'
 import MEmptyState from './MEmptyState.vue'
+import MIcon from './MIcon.vue'
 
 const props = defineProps({
   // Cột: { key, label, width? (số px hoặc 'auto'), align? 'left'|'right'|'center', sortable? }
@@ -187,31 +188,16 @@ function changePageSize(e) {
               >
                 {{ col.label }}
                 <!-- Icon sort: mũi tên lên (asc) / xuống (desc); chưa sort thì chỉ hiện mờ khi hover header -->
-                <svg
+                <MIcon
                   v-if="col.sortable"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="shrink-0"
+                  :name="sortState.key === col.key && sortState.direction === 'desc' ? 'arrow-down' : 'arrow-up'"
+                  :size="16"
                   :class="
                     sortState.key === col.key
                       ? 'text-[var(--mds-brand-600)]'
                       : 'opacity-0 group-hover:opacity-100 text-[var(--mds-icon-neutral)]'
                   "
-                  aria-hidden="true"
-                >
-                  <template v-if="sortState.key === col.key && sortState.direction === 'desc'">
-                    <path d="M12 5v14" /><path d="M6 13l6 6l6 -6" />
-                  </template>
-                  <template v-else>
-                    <path d="M12 19V5" /><path d="M6 11l6 -6l6 6" />
-                  </template>
-                </svg>
+                />
               </span>
             </th>
           </tr>
@@ -315,19 +301,7 @@ function changePageSize(e) {
           aria-label="Trang trước"
           @click="goPrev"
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M15 6l-6 6l6 6" />
-          </svg>
+          <MIcon name="chevron-left" :size="16" />
         </button>
 
         <!-- Next: disabled khi không còn trang sau (!hasNext) -->
@@ -343,19 +317,7 @@ function changePageSize(e) {
           aria-label="Trang sau"
           @click="goNext"
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M9 6l6 6l-6 6" />
-          </svg>
+          <MIcon name="chevron-right" :size="16" />
         </button>
       </div>
     </div>

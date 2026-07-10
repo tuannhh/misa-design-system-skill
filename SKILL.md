@@ -44,7 +44,7 @@ Skill này giúp AI xây dựng UI đúng quy chuẩn thiết kế MISA khi phá
 - **Mọi thao tác của người dùng phải có phản hồi**: disable button hoặc hiện busy indicator sau khi click; xử lý > 5 giây phải có thanh tiến trình (progress bar).
 - **Lỗi nhập liệu**: cảnh báo dễ hiểu bằng tiếng Việt, tự động focus vào trường lỗi đầu tiên.
 - **Icon và phím tắt của cùng một chức năng phải đồng nhất** trên toàn bộ ứng dụng; phím tắt phải có tooltip.
-- **Icon: luôn tra và dùng SVG đóng gói sẵn trong [assets/icons/](assets/icons/)** — tra bảng hành động → icon tại [references/components/icons-map.md](references/components/icons-map.md). Không dùng FontAwesome, Material, Lucide hay emoji lẫn với MDS. Chỉ khi thư viện MDS chưa có icon phù hợp mới được bổ sung một SVG outline cùng phong cách MDS vào `assets/icons/`, theo quy tắc ở `references/components/icon.md`, rồi cập nhật bảng map trước khi dùng.
+- **Icon: Figma MDS là nguồn chuẩn; [assets/icons/](assets/icons/) là gói lõi đã xác minh, không phải toàn bộ thư viện.** Tra bundle → bảng map → trang Icons Figma. Dùng `MIcon.vue`, không inline SVG/map path riêng. Nếu Figma có nhưng bundle thiếu, bổ sung đúng SVG chính thức và chạy generator; chỉ dùng Tabler/tự vẽ sau khi xác minh Figma thật sự chưa có. Không trộn FontAwesome, Material, Lucide hay emoji vào app.
 - **Màu sắc, font, kích thước: dùng token trong [assets/tokens.css](assets/tokens.css)** — không hard-code mã hex.
 - **Header Platform MISA luôn có nút chuyển ứng dụng 9 chấm ở mép trái**, trước logo/tên app; không thay bằng hamburger hoặc icon khác.
 - **Header Platform chọn đúng biến thể theo sản phẩm/reference**: `light` (nền trắng) hoặc `brand` (nền primary). Ô tìm kiếm ở trạng thái chưa focus là nền trung tính/white-alpha mờ; không dùng input trắng đặc trên header brand. Cụm tiện ích theo thứ tự: Thiết lập → AVA → Chat → Thông báo → Hỗ trợ → More tròn → avatar người dùng.
@@ -65,7 +65,7 @@ Bộ token đầy đủ 2.639 biến (sinh từ Figma variables) nằm ở `asse
 
 ## Sinh FE trực tiếp bằng bộ MDS UI (PD design-in-code)
 
-Repo này kèm **bộ control Vue 3 + Tailwind viết sẵn** tại [ui/components/](ui/components/) (**25 control**: Button, Input, Textarea, Checkbox, RadioGroup, Select, Combobox, Tag, Spinner, Progress, Dialog, Toast, Tabs, EmptyState, DataTable, DatePicker, DateRangePicker, Drawer, ContextMenu, Tooltip, DropdownMenu, HeaderBar, Sidebar, Chart, ImageViewer) và **4 màn hình mẫu** tại [ui/templates/](ui/templates/) (ListPage, FormPage, DetailPage, DashboardPage). Khi người dùng (PD/PM) yêu cầu dựng màn hình cho app MISA:
+Repo này kèm **bộ control Vue 3 + Tailwind viết sẵn** tại [ui/components/](ui/components/) (**26 control**: Icon, Button, Input, Textarea, Checkbox, RadioGroup, Select, Combobox, Tag, Spinner, Progress, Dialog, Toast, Tabs, EmptyState, DataTable, DatePicker, DateRangePicker, Drawer, ContextMenu, Tooltip, DropdownMenu, HeaderBar, Sidebar, Chart, ImageViewer) và **4 màn hình mẫu** tại [ui/templates/](ui/templates/) (ListPage, FormPage, DetailPage, DashboardPage). Khi người dùng (PD/PM) yêu cầu dựng màn hình cho app MISA:
 
 1. **Bắt đầu từ màn hình mẫu**: xác định loại màn hình → clone file trong `ui/templates/` làm khung rồi sửa theo nghiệp vụ, KHÔNG dựng layout từ đầu (root template dùng `h-full` — mount trong container cao 100vh).
 2. **Bắt buộc dùng control có sẵn** — tra nhanh props/emits/quy tắc trong [assets/component-map.json](assets/component-map.json), chi tiết đọc file `.vue` (có comment tiếng Việt). **CẤM viết HTML thô** (button, input, select...) cho control đã có trong bộ.
@@ -101,7 +101,7 @@ Kiểm tra từng mục, sửa ngay nếu chưa đạt:
 - [ ] Mọi button có trạng thái loading/disabled sau khi click; xử lý > 1s có loading, > 5s có progress
 - [ ] Thông báo lỗi tiếng Việt dễ hiểu, focus vào trường lỗi đầu tiên; toast tự đóng sau 5s
 - [ ] Font Inter, chữ mặc định 13px; màu/size dùng token, không hard-code hex
-- [ ] Icon từ `assets/icons/` (stroke 1.5px), đúng bảng icon dùng chung; icon mới đã được bổ sung vào MDS trước khi dùng; phím tắt có tooltip
+- [ ] Icon dùng `MIcon` từ bundle đã xác minh (stroke 1.5px), đúng bảng icon dùng chung; icon thiếu đã được đối chiếu Figma và bổ sung vào MDS trước khi dùng; phím tắt có tooltip
 - [ ] Header có nút chuyển ứng dụng 9 chấm ở mép trái trước logo/tên app
 - [ ] Header dùng đúng biến thể `light`/`brand`; đủ cụm Setting, AVA, Chat, Notification, Help, More, avatar theo scope sản phẩm
 - [ ] Sidebar collapsed/expanded giống rail trắng MISA: item bo góc trong gutter, active không tràn mép
