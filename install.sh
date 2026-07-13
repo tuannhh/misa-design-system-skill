@@ -28,6 +28,7 @@ copy_docs() {
   local dest="$PROJECT/docs/misa-design-system"
   mkdir -p "$dest/ui" "$dest/scripts"
   cp "$SKILL_DIR/AGENTS.md" "$dest/misa-design-rules.md"
+  cp "$SKILL_DIR/MEMORY.md" "$dest/"
   cp -R "$SKILL_DIR/references" "$SKILL_DIR/assets" "$dest/"
   cp "$SKILL_DIR/scripts/build-icon-registry.py" "$SKILL_DIR/scripts/build-tokens.py" "$dest/scripts/"
   cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$dest/ui/"
@@ -62,7 +63,7 @@ EOF
 verify_global_install() {
   local dest="$1"
   local source target
-  for source in SKILL.md references assets; do
+  for source in SKILL.md MEMORY.md references assets; do
     target="$dest/$source"
     if ! diff -qr "$SKILL_DIR/$source" "$target" >/dev/null; then
       echo "✗ Cài đặt chưa hoàn tất: $target không khớp với bản nguồn"
@@ -88,7 +89,7 @@ case "$AGENT" in
   claude)
     DEST="$HOME/.claude/skills/misa-design-system"
     mkdir -p "$DEST/ui" "$DEST/scripts"
-    cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
+    cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/MEMORY.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
     cp "$SKILL_DIR/scripts/build-icon-registry.py" "$SKILL_DIR/scripts/build-tokens.py" "$DEST/scripts/"
     cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
     verify_global_install "$DEST"
@@ -97,7 +98,7 @@ case "$AGENT" in
   codex)
     DEST="$HOME/.codex/skills/misa-design-system"
     mkdir -p "$DEST/ui" "$DEST/scripts"
-    cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
+    cp -R "$SKILL_DIR/SKILL.md" "$SKILL_DIR/MEMORY.md" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$DEST/"
     cp "$SKILL_DIR/scripts/build-icon-registry.py" "$SKILL_DIR/scripts/build-tokens.py" "$DEST/scripts/"
     cp -R "$SKILL_DIR/ui/components" "$SKILL_DIR/ui/templates" "$SKILL_DIR/ui/README.md" "$SKILL_DIR/ui/CONVENTIONS.md" "$DEST/ui/"
     verify_global_install "$DEST"

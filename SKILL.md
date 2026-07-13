@@ -13,6 +13,8 @@ description: >-
 
 Skill này giúp AI xây dựng UI đúng quy chuẩn thiết kế MISA khi phát triển ứng dụng trong MISA AMIS Platform. Mục tiêu: người dùng MISA mở bất kỳ app nào cũng thấy quen thuộc — cùng bố cục, cùng vị trí nút, cùng hành vi.
 
+> **Trước khi làm bất kỳ việc gì trong repo này** (sửa component, thêm control, đổi kiến trúc...), đọc [MEMORY.md](MEMORY.md) — bối cảnh dự án, quyết định đã chốt, bẫy đã gặp (vd: `.gitignore` chặn dist/), quy tắc merge nhiều nhánh. Có quyết định lớn mới thì cập nhật lại MEMORY.md.
+
 ## Quy trình làm việc (làm theo thứ tự)
 
 1. **Xác định loại màn hình** đang cần xây dựng: Tổng quan (dashboard), Danh sách, Thêm/Sửa, hay Chi tiết.

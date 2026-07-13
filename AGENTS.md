@@ -5,6 +5,8 @@
 
 Mọi giao diện (UI) tạo ra cho ứng dụng MISA / MISA AMIS Platform **bắt buộc** tuân theo quy chuẩn dưới đây. Mục tiêu: người dùng MISA mở bất kỳ app nào cũng thấy quen thuộc — cùng bố cục, cùng vị trí nút, cùng hành vi.
 
+> **Trước khi làm bất kỳ việc gì trong repo này**, đọc [MEMORY.md](MEMORY.md) — bối cảnh dự án, quyết định đã chốt, bẫy đã gặp, quy tắc khi nhiều agent (Claude/Codex...) cùng sửa repo. Có quyết định lớn mới thì cập nhật lại MEMORY.md.
+
 ## Quy trình khi làm UI
 
 1. Xác định loại màn hình: **Tổng quan (dashboard) / Danh sách / Thêm-Sửa / Chi tiết**.
