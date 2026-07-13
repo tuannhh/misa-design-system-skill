@@ -5,14 +5,23 @@ import ListPage from '@tpl/ListPage.vue'
 import FormPage from '@tpl/FormPage.vue'
 import DetailPage from '@tpl/DetailPage.vue'
 import DashboardPage from '@tpl/DashboardPage.vue'
+import ListPageMobile from '@tpl/mobile/ListPageMobile.vue'
+import FormPageMobile from '@tpl/mobile/FormPageMobile.vue'
+import DetailPageMobile from '@tpl/mobile/DetailPageMobile.vue'
+import DashboardPageMobile from '@tpl/mobile/DashboardPageMobile.vue'
 
 // Điều hướng bằng hash để share link trực tiếp từng trang mẫu
+// Mobile (frame: 'phone') hiển thị trong khung điện thoại 390x844 để duyệt trên màn desktop
 const views = [
   { key: 'controls', label: 'Bộ control', component: ControlsPage },
   { key: 'list', label: 'Mẫu: Danh sách', component: ListPage },
   { key: 'form', label: 'Mẫu: Thêm/Sửa', component: FormPage },
   { key: 'detail', label: 'Mẫu: Chi tiết', component: DetailPage },
   { key: 'dashboard', label: 'Mẫu: Tổng quan', component: DashboardPage },
+  { key: 'm-dashboard', label: 'Mobile: Tổng quan', component: DashboardPageMobile, frame: 'phone' },
+  { key: 'm-list', label: 'Mobile: Danh sách', component: ListPageMobile, frame: 'phone' },
+  { key: 'm-form', label: 'Mobile: Thêm/Sửa', component: FormPageMobile, frame: 'phone' },
+  { key: 'm-detail', label: 'Mobile: Chi tiết', component: DetailPageMobile, frame: 'phone' },
 ]
 const active = ref('controls')
 const activeView = computed(() => views.find(v => v.key === active.value) ?? views[0])
@@ -46,7 +55,12 @@ onMounted(() => {
       <span class="ml-auto text-[12px] text-[var(--mds-text-placeholder)]">24 control + 4 màn hình mẫu · chuẩn MDS 2.0</span>
     </nav>
     <div class="min-h-0 flex-1" :class="active === 'controls' ? 'overflow-auto' : 'overflow-hidden'">
-      <component :is="activeView.component" />
+      <div v-if="activeView.frame === 'phone'" class="flex h-full items-center justify-center overflow-auto bg-[var(--mds-bg-disabled)] py-6">
+        <div class="h-[844px] w-[390px] shrink-0 overflow-hidden rounded-[36px] border-[6px] border-[#10141B] bg-[var(--mds-bg)] shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+          <component :is="activeView.component" />
+        </div>
+      </div>
+      <component :is="activeView.component" v-else />
     </div>
   </div>
 </template>
