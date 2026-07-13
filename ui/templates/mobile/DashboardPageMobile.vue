@@ -45,7 +45,9 @@ const kpis = [
 ]
 
 const barOption = computed(() => ({
-  grid: { left: 4, right: 4, top: 12, bottom: 0, containLabel: true },
+  // Chỉ 1 series, tiêu đề card đã đủ ngữ nghĩa → tắt legend để không đè lên nhãn trục
+  legend: { show: false },
+  grid: { left: 4, right: 4, top: 8, bottom: 0, containLabel: true },
   tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
   xAxis: {
     type: 'category',
@@ -60,25 +62,43 @@ const barOption = computed(() => ({
   ],
 }))
 
+const contractData = [
+  { value: 812, name: 'Không xác định thời hạn' },
+  { value: 296, name: 'Xác định thời hạn' },
+  { value: 98, name: 'Thử việc' },
+  { value: 78, name: 'Thời vụ / CTV' },
+]
+const contractTotal = contractData.reduce((s, d) => s + d.value, 0)
+// Legend mặc định hiện %, hover mới thấy số đếm tuyệt đối (qua tooltip)
+function legendPercentLabel(name) {
+  const item = contractData.find((d) => d.name === name)
+  const pct = item ? ((item.value / contractTotal) * 100).toFixed(1).replace('.', ',') : ''
+  return `${name}  ${pct}%`
+}
+
 const pieOption = computed(() => ({
   tooltip: { trigger: 'item', valueFormatter: (v) => `${v} nhân viên` },
-  legend: { orient: 'horizontal', bottom: 0, left: 'center', itemWidth: 10, itemHeight: 8, textStyle: axisLabel },
+  legend: {
+    orient: 'horizontal',
+    bottom: 0,
+    left: 'center',
+    itemWidth: 10,
+    itemHeight: 10,
+    itemGap: 10,
+    textStyle: { ...axisLabel, fontSize: 10 },
+    formatter: legendPercentLabel,
+  },
   color: [brand600, info, warning, purple],
   series: [
     {
       name: 'Loại hợp đồng',
       type: 'pie',
       radius: ['50%', '75%'],
-      center: ['50%', '42%'],
+      center: ['50%', '40%'],
       avoidLabelOverlap: true,
       itemStyle: { borderWidth: 2, borderColor: cssVar('--mds-bg') },
       label: { show: false },
-      data: [
-        { value: 812, name: 'Không xác định thời hạn' },
-        { value: 296, name: 'Xác định thời hạn' },
-        { value: 98, name: 'Thử việc' },
-        { value: 78, name: 'Thời vụ / CTV' },
-      ],
+      data: contractData,
     },
   ],
 }))

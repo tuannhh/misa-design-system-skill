@@ -5,7 +5,7 @@
  * hàng biểu đồ cột + đường (MChart/ECharts), hàng doughnut + bảng mini.
  * Màu biểu đồ lấy từ CSS variables MDS (không hard-code hex).
  */
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import MHeaderBar from '../components/MHeaderBar.vue'
 import MSidebar from '../components/MSidebar.vue'
 import MChart from '../components/MChart.vue'
@@ -36,6 +36,11 @@ const sidebarItems = [
 
 const activeMenu = ref('dashboard')
 const sidebarCollapsed = ref(false)
+
+// Các mục còn lại có dữ liệu demo ở màn hình Danh sách (ListPage) → điều hướng sang đó
+watch(activeMenu, (val) => {
+  if (val !== 'dashboard') location.hash = 'list'
+})
 
 /* ── Màu biểu đồ từ token MDS (ECharts cần chuỗi màu thật nên
       đọc giá trị CSS variable lúc runtime — vẫn KHÔNG hard-code hex) ── */
@@ -71,8 +76,9 @@ const kpis = [
 
 // Nhân sự theo phòng ban
 const barOption = computed(() => ({
-  // top 40 chừa chỗ cho legend (16px) + khoảng thở, không che nhãn trục
-  grid: { left: 8, right: 8, top: 40, bottom: 0, containLabel: true },
+  // Chỉ 1 series, tiêu đề card đã đủ ngữ nghĩa → tắt legend để không đè lên nhãn trục
+  legend: { show: false },
+  grid: { left: 8, right: 8, top: 16, bottom: 0, containLabel: true },
   tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
   xAxis: {
     type: 'category',
@@ -135,25 +141,43 @@ const lineOption = computed(() => ({
 /* ── Hàng 3: doughnut + bảng mini ───────────────────────────── */
 
 // Cơ cấu theo loại hợp đồng
+const contractData = [
+  { value: 812, name: 'Không xác định thời hạn' },
+  { value: 296, name: 'Xác định thời hạn' },
+  { value: 98, name: 'Thử việc' },
+  { value: 78, name: 'Thời vụ / Cộng tác viên' },
+]
+const contractTotal = contractData.reduce((s, d) => s + d.value, 0)
+// Legend mặc định hiện %, hover mới thấy số đếm tuyệt đối (qua tooltip)
+function legendPercentLabel(name) {
+  const item = contractData.find((d) => d.name === name)
+  const pct = item ? ((item.value / contractTotal) * 100).toFixed(1).replace('.', ',') : ''
+  return `${name}  ${pct}%`
+}
+
 const pieOption = computed(() => ({
   tooltip: { trigger: 'item', valueFormatter: (v) => `${v} nhân viên` },
-  legend: { orient: 'vertical', right: 0, top: 'middle', itemWidth: 12, itemHeight: 8, textStyle: axisLabel },
+  legend: {
+    orient: 'vertical',
+    left: '62%',
+    top: 'middle',
+    itemWidth: 12,
+    itemHeight: 12,
+    itemGap: 12,
+    textStyle: axisLabel,
+    formatter: legendPercentLabel,
+  },
   color: [brand600, info, warning, purple],
   series: [
     {
       name: 'Loại hợp đồng',
       type: 'pie',
       radius: ['55%', '80%'],
-      center: ['35%', '50%'],
+      center: ['30%', '50%'],
       avoidLabelOverlap: true,
       itemStyle: { borderWidth: 2, borderColor: cssVar('--mds-bg') },
       label: { show: false },
-      data: [
-        { value: 812, name: 'Không xác định thời hạn' },
-        { value: 296, name: 'Xác định thời hạn' },
-        { value: 98, name: 'Thử việc' },
-        { value: 78, name: 'Thời vụ / Cộng tác viên' },
-      ],
+      data: contractData,
     },
   ],
 }))

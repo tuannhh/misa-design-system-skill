@@ -9,6 +9,7 @@ import ListPageMobile from '@tpl/mobile/ListPageMobile.vue'
 import FormPageMobile from '@tpl/mobile/FormPageMobile.vue'
 import DetailPageMobile from '@tpl/mobile/DetailPageMobile.vue'
 import DashboardPageMobile from '@tpl/mobile/DashboardPageMobile.vue'
+import PhoneFrame from './PhoneFrame.vue'
 
 // Điều hướng bằng hash để share link trực tiếp từng trang mẫu
 // Mobile (frame: 'phone') hiển thị trong khung điện thoại 390x844 để duyệt trên màn desktop
@@ -56,9 +57,9 @@ onMounted(() => {
     </nav>
     <div class="min-h-0 flex-1" :class="active === 'controls' ? 'overflow-auto' : 'overflow-hidden'">
       <div v-if="activeView.frame === 'phone'" class="flex h-full items-center justify-center overflow-auto bg-[var(--mds-bg-disabled)] py-6">
-        <div class="h-[844px] w-[390px] shrink-0 overflow-hidden rounded-[36px] border-[6px] border-[#10141B] bg-[var(--mds-bg)] shadow-[0_20px_60px_rgba(0,0,0,0.25)]">
+        <PhoneFrame>
           <component :is="activeView.component" />
-        </div>
+        </PhoneFrame>
       </div>
       <component :is="activeView.component" v-else />
     </div>
