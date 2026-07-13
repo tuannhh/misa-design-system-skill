@@ -78,13 +78,16 @@ function legendPercentLabel(name) {
 
 const pieOption = computed(() => ({
   tooltip: { trigger: 'item', valueFormatter: (v) => `${v} nhân viên` },
+  // Legend 2 cột dưới chart, đủ khoảng cách để không đè lên donut (4 nhãn dài
+  // không đủ chỗ nằm 1 hàng trên màn hình compact → xuống 2 cột x 2 dòng)
   legend: {
-    orient: 'horizontal',
-    bottom: 0,
+    orient: 'vertical',
+    bottom: 4,
     left: 'center',
+    width: 300,
     itemWidth: 10,
     itemHeight: 10,
-    itemGap: 10,
+    itemGap: 6,
     textStyle: { ...axisLabel, fontSize: 10 },
     formatter: legendPercentLabel,
   },
@@ -93,8 +96,8 @@ const pieOption = computed(() => ({
     {
       name: 'Loại hợp đồng',
       type: 'pie',
-      radius: ['50%', '75%'],
-      center: ['50%', '40%'],
+      radius: ['34%', '54%'],
+      center: ['50%', '30%'],
       avoidLabelOverlap: true,
       itemStyle: { borderWidth: 2, borderColor: cssVar('--mds-bg') },
       label: { show: false },
@@ -139,7 +142,7 @@ const pieOption = computed(() => ({
 
       <section class="mt-3 rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-3">
         <h3 class="mb-2 text-[14px] font-semibold leading-[20px] text-[var(--mds-text)]">Cơ cấu theo loại hợp đồng</h3>
-        <MChart :option="pieOption" :height="220" />
+        <MChart :option="pieOption" :height="260" />
       </section>
     </main>
 

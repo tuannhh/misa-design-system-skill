@@ -144,3 +144,16 @@ function onMore() {
     <MToast />
   </div>
 </template>
+
+<style scoped>
+/* Tab cuộn ngang trên compact: ẩn thanh cuộn (vẫn cuộn được bằng tay/swipe),
+   thanh cuộn mặc định của desktop browser đè lên chữ tab rất xấu. */
+:deep([role='tablist']) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+:deep([role='tablist']::-webkit-scrollbar) {
+  display: none;
+  height: 0;
+}
+</style>
