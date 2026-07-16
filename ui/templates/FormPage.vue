@@ -121,7 +121,7 @@ function saveAndNew() {
     <!-- Body cuộn được, card form căn giữa -->
     <main class="min-h-0 flex-1 overflow-y-auto">
       <div class="mx-auto w-full max-w-3xl px-4 py-6">
-        <div class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-6">
+        <div class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-6">
           <h3 class="mb-4 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
             Thông tin nhân viên
           </h3>

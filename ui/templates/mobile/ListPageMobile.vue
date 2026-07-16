@@ -121,8 +121,8 @@ function openFilter() {
         <div
           v-for="row in filteredRows"
           :key="row.id"
-          class="flex items-start gap-3 rounded-lg border bg-[var(--mds-bg)] p-3 active:bg-[var(--mds-bg-hover-soft)]"
-          :class="selected.includes(row.id) ? 'border-[var(--mds-brand-600)]' : 'border-[var(--mds-border)]'"
+          class="flex items-start gap-3 rounded-lg border bg-[var(--mds-bg)] p-3 shadow-[var(--mds-shadow-card)] active:bg-[var(--mds-bg-hover-soft)]"
+          :class="selected.includes(row.id) ? 'border-[var(--mds-brand-600)]' : 'border-transparent'"
           @click="openDetail(row)"
         >
           <div class="pt-0.5" @click.stop="toggleSelect(row.id)">

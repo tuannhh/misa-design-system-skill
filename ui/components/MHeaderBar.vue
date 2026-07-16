@@ -105,7 +105,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKeydown))
           <MHeaderIconAva v-else :size="24" />
         </slot>
       </button>
-      <button v-if="showChat" type="button" :class="chatButtonClass" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="AMIS Chat" @click="emit('chat')"><MIcon name="message" :size="20" /></button>
+      <!-- AMIS Chat: bong bóng chat filled 3 chấm (không phải icon stroke message-circle thường),
+           giữ màu nhận diện #1570EF trên header light (KHÔNG chuyển neutral) -->
+      <button v-if="showChat" type="button" :class="chatButtonClass" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="AMIS Chat" @click="emit('chat')">
+        <svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true">
+          <path d="M10 2C5.58 2 2 5.13 2 9c0 2.08 1.05 3.94 2.7 5.23-.1.98-.47 2.02-1.2 2.97a.4.4 0 0 0 .38.63c1.66-.3 2.98-.9 3.98-1.6C8.5 15.9 9.24 16 10 16c4.42 0 8-3.13 8-7s-3.58-7-8-7Z" />
+          <circle cx="6.5" cy="9" r="1.1" fill="#fff" />
+          <circle cx="10" cy="9" r="1.1" fill="#fff" />
+          <circle cx="13.5" cy="9" r="1.1" fill="#fff" />
+        </svg>
+      </button>
       <button v-if="showNotifications" type="button" :class="buttonClass" class="relative grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Thông báo" @click="emit('notifications')"><MIcon name="bell" :size="20" /><span v-if="notificationCount > 0" class="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--mds-danger)] px-1 text-[10px] font-medium leading-none text-white">{{ badgeText }}</span></button>
       <button v-if="showHelp" type="button" :class="buttonClass" class="hidden h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Hỗ trợ" @click="emit('help')"><MIcon name="help" :size="20" /></button>
       <button v-if="showMore" type="button" :class="isBrand ? 'border-white/40 text-white hover:bg-white/15 focus-visible:outline-white' : 'border-[var(--mds-border)] text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]'" class="hidden h-7 w-7 place-items-center rounded-full border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Thêm" @click="emit('more')"><MIcon name="dots" :size="16" /></button>

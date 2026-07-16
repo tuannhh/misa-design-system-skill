@@ -189,7 +189,7 @@ onBeforeUnmount(() => {
       :aria-expanded="open"
       aria-haspopup="listbox"
       :disabled="disabled"
-      class="flex h-8 w-full items-center justify-between gap-2 rounded-lg border px-3 text-left text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
+      class="flex h-9 w-full items-center justify-between gap-2 rounded-lg border px-3 text-left text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
       :class="[
         error ? 'border-[var(--mds-danger)]' : 'border-[var(--mds-border)]',
         disabled
@@ -228,7 +228,7 @@ onBeforeUnmount(() => {
         ref="popoverRef"
         role="listbox"
         :style="popoverStyle"
-        class="z-[1000] max-h-[264px] w-max max-w-[min(480px,calc(100vw-16px))] overflow-y-auto rounded border border-[var(--mds-border)] bg-[var(--mds-bg)] py-1 shadow-lg"
+        class="z-[1000] max-h-[264px] w-max max-w-[min(480px,calc(100vw-16px))] overflow-y-auto rounded-xl border border-[var(--mds-border)] bg-[var(--mds-bg)] py-1 shadow-lg"
       >
         <!-- Empty state trong popover -->
         <div

@@ -90,7 +90,7 @@ function onMore() {
       class="flex min-h-0 flex-1 flex-col [&>[role=tablist]]:shrink-0 [&>[role=tablist]]:overflow-x-auto [&>[role=tablist]]:whitespace-nowrap [&>[role=tablist]]:bg-[var(--mds-bg)] [&>[role=tablist]]:px-3 [&>[role=tabpanel]]:min-h-0 [&>[role=tabpanel]]:flex-1 [&>[role=tabpanel]]:overflow-y-auto"
     >
       <div v-if="activeTab === 'thong-tin-chung'" class="flex flex-col gap-3 p-3 pb-20">
-        <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
+        <section class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-4">
           <h3 class="mb-3 text-[14px] font-semibold leading-[20px] text-[var(--mds-text)]">Thông tin cá nhân</h3>
           <dl class="flex flex-col gap-3">
             <div v-for="field in personalFields" :key="field.label">
@@ -100,7 +100,7 @@ function onMore() {
           </dl>
         </section>
 
-        <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
+        <section class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-4">
           <h3 class="mb-3 text-[14px] font-semibold leading-[20px] text-[var(--mds-text)]">Thông tin công việc</h3>
           <dl class="flex flex-col gap-3">
             <div v-for="field in workFields" :key="field.label">
@@ -121,13 +121,13 @@ function onMore() {
       </div>
 
       <div v-else-if="activeTab === 'cham-cong'" class="p-3 pb-20">
-        <div class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)]">
+        <div class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)]">
           <MEmptyState type="initial" title="Chưa có dữ liệu chấm công" description="Dữ liệu chấm công sẽ hiển thị tại đây khi phát sinh" />
         </div>
       </div>
 
       <div v-else class="p-3 pb-20">
-        <div class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)]">
+        <div class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)]">
           <MEmptyState type="initial" title="Chưa có lịch sử thay đổi" description="Mọi thay đổi trên hồ sơ nhân viên sẽ được ghi lại tại đây" />
         </div>
       </div>
