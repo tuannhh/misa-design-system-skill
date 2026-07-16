@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
       role="combobox"
       :aria-expanded="open"
       aria-haspopup="listbox"
-      class="flex h-8 w-full items-center gap-1 overflow-hidden rounded-lg border px-3 transition-colors"
+      class="flex h-9 w-full items-center gap-1 overflow-hidden rounded-lg border px-3 transition-colors"
       :class="[
         error ? 'border-[var(--mds-danger)]' : 'border-[var(--mds-border)]',
         disabled
@@ -461,7 +461,7 @@ onBeforeUnmount(() => {
         role="listbox"
         :aria-multiselectable="multiple || undefined"
         :style="popoverStyle"
-        class="z-[1000] max-h-[264px] w-max max-w-[min(480px,calc(100vw-16px))] overflow-y-auto rounded border border-[var(--mds-border)] bg-[var(--mds-bg)] py-1 shadow-lg"
+        class="z-[1000] max-h-[264px] w-max max-w-[min(480px,calc(100vw-16px))] overflow-y-auto rounded-xl border border-[var(--mds-border)] bg-[var(--mds-bg)] py-1 shadow-lg"
         @mousedown.prevent
       >
         <!-- Spinner load-on-demand -->

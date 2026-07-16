@@ -90,8 +90,36 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKeydown))
     <div class="flex shrink-0 items-center gap-1">
       <slot name="actions" />
       <button v-if="showSettings" type="button" :class="buttonClass" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Thiết lập" @click="emit('settings')"><MIcon name="settings" :size="20" /></button>
-      <button v-if="showAssistant" type="button" class="grid h-8 w-8 place-items-center overflow-hidden rounded-full bg-[var(--mds-brand-100)] text-[11px] font-semibold text-[var(--mds-brand-700)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]" :title="assistant?.name || 'MISA AVA'" @click="emit('assistant')"><slot name="assistant"><img v-if="assistant?.avatarUrl" :src="assistant.avatarUrl" :alt="assistant.name || 'MISA AVA'" class="h-full w-full object-cover" /><span v-else>{{ assistantInitials }}</span></slot></button>
-      <button v-if="showChat" type="button" :class="buttonClass" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Chat" @click="emit('chat')"><MIcon name="message" :size="20" /></button>
+      <!-- MISA AVA: asset full-color CỐ ĐỊNH (gradient cyan→xanh + mascot), không đổi theo theme/mode.
+           Chưa có SVG chính thức từ Figma (node 20062:2582) trong bundle → tạm dựng gradient tương đương,
+           TODO: thay bằng asset chính thức khi Product/Brand cung cấp. -->
+      <button v-if="showAssistant" type="button" class="grid h-8 w-8 place-items-center overflow-hidden rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]" :title="assistant?.name || 'MISA AVA'" @click="emit('assistant')">
+        <slot name="assistant">
+          <img v-if="assistant?.avatarUrl" :src="assistant.avatarUrl" :alt="assistant.name || 'MISA AVA'" class="h-full w-full object-cover" />
+          <svg v-else viewBox="0 0 32 32" class="h-full w-full" aria-hidden="true">
+            <defs>
+              <linearGradient id="ava-grad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#37E1FF" />
+                <stop offset="1" stop-color="#2B67FF" />
+              </linearGradient>
+            </defs>
+            <circle cx="16" cy="16" r="15" fill="url(#ava-grad)" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" />
+            <ellipse cx="16" cy="17" rx="9" ry="7.5" fill="#F2FBFF" />
+            <circle cx="12.5" cy="15.5" r="2.2" fill="url(#ava-grad)" />
+            <circle cx="19.5" cy="15.5" r="2.2" fill="url(#ava-grad)" />
+            <path d="M11 20c1.6 1.4 8.4 1.4 10 0" stroke="#0A1496" stroke-width="1.6" stroke-linecap="round" fill="none" />
+          </svg>
+        </slot>
+      </button>
+      <!-- AMIS Chat: bong bóng chat filled 3 chấm, giữ màu nhận diện #1570EF trên header light (KHÔNG chuyển neutral) -->
+      <button v-if="showChat" type="button" :class="isBrand ? 'text-white hover:bg-white/15' : 'text-[#1570EF] hover:bg-[var(--mds-bg-hover-soft)]'" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="AMIS Chat" @click="emit('chat')">
+        <svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true">
+          <path d="M10 2C5.58 2 2 5.13 2 9c0 2.08 1.05 3.94 2.7 5.23-.1.98-.47 2.02-1.2 2.97a.4.4 0 0 0 .38.63c1.66-.3 2.98-.9 3.98-1.6C8.5 15.9 9.24 16 10 16c4.42 0 8-3.13 8-7s-3.58-7-8-7Z" />
+          <circle cx="6.5" cy="9" r="1.1" fill="#fff" />
+          <circle cx="10" cy="9" r="1.1" fill="#fff" />
+          <circle cx="13.5" cy="9" r="1.1" fill="#fff" />
+        </svg>
+      </button>
       <button v-if="showNotifications" type="button" :class="buttonClass" class="relative grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Thông báo" @click="emit('notifications')"><MIcon name="bell" :size="20" /><span v-if="notificationCount > 0" class="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--mds-danger)] px-1 text-[10px] font-medium leading-none text-white">{{ badgeText }}</span></button>
       <button v-if="showHelp" type="button" :class="buttonClass" class="hidden h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Hỗ trợ" @click="emit('help')"><MIcon name="help" :size="20" /></button>
       <button v-if="showMore" type="button" :class="isBrand ? 'border-white/40 text-white hover:bg-white/15 focus-visible:outline-white' : 'border-[var(--mds-border)] text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]'" class="hidden h-7 w-7 place-items-center rounded-full border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Thêm" @click="emit('more')"><MIcon name="dots" :size="16" /></button>

@@ -150,7 +150,7 @@ function onMore(item) {
     >
       <!-- Tab Thông tin chung: 2 card trắng, grid label 12px xám + value 13px -->
       <div v-if="activeTab === 'thong-tin-chung'" class="flex flex-col gap-4 p-4">
-        <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-5">
+        <section class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-5">
           <h3 class="mb-4 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
             Thông tin cá nhân
           </h3>
@@ -162,7 +162,7 @@ function onMore(item) {
           </dl>
         </section>
 
-        <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-5">
+        <section class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-5">
           <h3 class="mb-4 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
             Thông tin công việc
           </h3>
@@ -189,7 +189,7 @@ function onMore(item) {
 
       <!-- Tab Chấm công / Lịch sử: chưa có dữ liệu -->
       <div v-else-if="activeTab === 'cham-cong'" class="p-4">
-        <div class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)]">
+        <div class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)]">
           <MEmptyState
             type="initial"
             title="Chưa có dữ liệu chấm công"
@@ -199,7 +199,7 @@ function onMore(item) {
       </div>
 
       <div v-else class="p-4">
-        <div class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)]">
+        <div class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)]">
           <MEmptyState
             type="initial"
             title="Chưa có lịch sử thay đổi"

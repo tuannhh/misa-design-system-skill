@@ -121,7 +121,7 @@ function changePageSize(e) {
 
 <template>
   <div
-    class="relative flex flex-col overflow-hidden rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)]"
+    class="relative flex flex-col overflow-hidden rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)]"
   >
     <!-- Bulk action bar: đè lên header khi có ≥1 dòng được chọn (spec MDS 6.1) -->
     <div

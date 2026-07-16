@@ -65,7 +65,7 @@ function save() {
 
     <!-- Body cuộn được, 1 cột trên compact -->
     <main class="min-h-0 flex-1 overflow-y-auto p-3">
-      <div class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
+      <div class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-4">
         <h3 class="mb-3 text-[14px] font-semibold leading-[20px] text-[var(--mds-text)]">Thông tin nhân viên</h3>
 
         <div class="flex flex-col gap-4">

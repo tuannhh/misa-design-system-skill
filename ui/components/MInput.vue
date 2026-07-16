@@ -64,7 +64,7 @@ function clear() {
 <template>
   <div class="w-full">
     <div
-      class="flex h-8 w-full items-center gap-2 rounded-lg border bg-[var(--mds-bg)] px-3 transition-colors"
+      class="flex h-9 w-full items-center gap-2 rounded-lg border bg-[var(--mds-bg)] px-3 transition-colors"
       :class="[
         error
           ? 'border-[var(--mds-danger)]'

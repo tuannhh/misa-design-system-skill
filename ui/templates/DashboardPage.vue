@@ -229,7 +229,7 @@ const newestEmployees = [
           <div
             v-for="kpi in kpis"
             :key="kpi.label"
-            class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4"
+            class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-4"
           >
             <p class="text-[12px] leading-[16px] text-[var(--mds-text-muted)]">{{ kpi.label }}</p>
             <div class="mt-1 flex items-center gap-2">
@@ -244,14 +244,14 @@ const newestEmployees = [
 
         <!-- Hàng 2: biểu đồ cột + đường -->
         <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
+          <section class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-4">
             <h3 class="mb-3 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
               Nhân sự theo phòng ban
             </h3>
             <MChart :option="barOption" :height="300" />
           </section>
 
-          <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
+          <section class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-4">
             <h3 class="mb-3 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
               Biến động nhân sự 12 tháng
             </h3>
@@ -261,14 +261,14 @@ const newestEmployees = [
 
         <!-- Hàng 3: doughnut + bảng mini -->
         <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
+          <section class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-4">
             <h3 class="mb-3 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
               Cơ cấu theo loại hợp đồng
             </h3>
             <MChart :option="pieOption" :height="300" />
           </section>
 
-          <section class="flex flex-col rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
+          <section class="flex flex-col rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-4">
             <h3 class="mb-3 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
               Nhân viên mới nhất
             </h3>

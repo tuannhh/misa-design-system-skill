@@ -367,7 +367,7 @@ onBeforeUnmount(() => {
       :aria-expanded="open"
       aria-haspopup="dialog"
       :disabled="disabled"
-      class="flex h-8 w-full items-center gap-2 rounded-lg border px-3 text-left text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
+      class="flex h-9 w-full items-center gap-2 rounded-lg border px-3 text-left text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
       :class="[
         error ? 'border-[var(--mds-danger)]' : 'border-[var(--mds-border)]',
         disabled
@@ -416,7 +416,7 @@ onBeforeUnmount(() => {
         role="dialog"
         aria-label="Chọn khoảng ngày"
         :style="popoverStyle"
-        class="z-[1000] flex max-w-[calc(100vw-16px)] rounded border border-[var(--mds-border)] bg-[var(--mds-bg)] shadow-lg"
+        class="z-[1000] flex max-w-[calc(100vw-16px)] rounded-xl border border-[var(--mds-border)] bg-[var(--mds-bg)] shadow-lg"
         @keydown="onKeydown"
       >
         <!-- Cột preset VN, ngăn với lịch bằng divider dọc -->

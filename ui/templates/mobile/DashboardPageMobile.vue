@@ -2,7 +2,7 @@
 /**
  * DashboardPageMobile — biến thể Compact (< 600px) của DashboardPage.
  * 1 cột; KPI 2 cột (giá trị ngắn không tràn); chart chiều cao ổn định,
- * hiện nhãn số quan trọng thay vì chỉ dựa vào hover; card vẫn stroke 1px không shadow.
+ * hiện nhãn số quan trọng thay vì chỉ dựa vào hover; card dùng shadow-card (không border).
  */
 import { ref, computed } from 'vue'
 import MChart from '../../components/MChart.vue'
@@ -126,7 +126,7 @@ const pieOption = computed(() => ({
 
       <!-- KPI 2 cột trên compact -->
       <div class="grid grid-cols-2 gap-3">
-        <div v-for="kpi in kpis" :key="kpi.label" class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-3">
+        <div v-for="kpi in kpis" :key="kpi.label" class="rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-3">
           <p class="text-[11px] leading-[14px] text-[var(--mds-text-muted)]">{{ kpi.label }}</p>
           <div class="mt-1 flex flex-wrap items-center gap-1.5">
             <span class="text-[18px] font-semibold leading-[24px] text-[var(--mds-text)]">{{ kpi.value }}</span>
@@ -135,12 +135,12 @@ const pieOption = computed(() => ({
         </div>
       </div>
 
-      <section class="mt-3 rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-3">
+      <section class="mt-3 rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-3">
         <h3 class="mb-2 text-[14px] font-semibold leading-[20px] text-[var(--mds-text)]">Nhân sự theo phòng ban</h3>
         <MChart :option="barOption" :height="200" />
       </section>
 
-      <section class="mt-3 rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-3">
+      <section class="mt-3 rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)] p-3">
         <h3 class="mb-2 text-[14px] font-semibold leading-[20px] text-[var(--mds-text)]">Cơ cấu theo loại hợp đồng</h3>
         <MChart :option="pieOption" :height="260" />
       </section>

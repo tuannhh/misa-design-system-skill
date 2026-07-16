@@ -433,7 +433,7 @@ function saveEmployee() {
                 v-for="report in reports"
                 :key="report.key"
                 type="button"
-                class="flex items-start gap-3 rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4 text-left hover:border-[var(--mds-brand-600)]"
+                class="flex items-start gap-3 rounded-lg bg-[var(--mds-bg)] p-4 text-left shadow-[var(--mds-shadow-card)] ring-1 ring-transparent transition-shadow hover:ring-[var(--mds-brand-600)]"
                 @click="openReport(report)"
               >
                 <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[var(--mds-brand-50)] text-[var(--mds-brand-600)]">
@@ -452,13 +452,13 @@ function saveEmployee() {
         <!-- Thiết lập -->
         <template v-else-if="activeMenu === 'thiet-lap'">
           <h2 class="mb-3 shrink-0 text-[20px] font-semibold leading-[28px] text-[var(--mds-text)]">Thiết lập</h2>
-          <div class="min-h-0 flex-1 overflow-y-auto rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)]">
+          <div class="min-h-0 flex-1 overflow-y-auto rounded-lg bg-[var(--mds-bg)] shadow-[var(--mds-shadow-card)]">
             <button
               v-for="(section, i) in settingSections"
               :key="section.key"
               type="button"
               class="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-[var(--mds-bg-hover-soft)]"
-              :class="i > 0 ? 'border-t border-[var(--mds-border)]' : ''"
+              :class="i > 0 ? 'border-t border-[var(--mds-border-light)]' : ''"
               @click="openSetting(section)"
             >
               <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[var(--mds-bg-disabled)] text-[var(--mds-icon-neutral)]">
