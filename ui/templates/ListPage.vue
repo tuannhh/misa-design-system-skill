@@ -20,7 +20,9 @@ import MDropdownMenu from '../components/MDropdownMenu.vue'
 import MTag from '../components/MTag.vue'
 import MIcon from '../components/MIcon.vue'
 import MToast from '../components/MToast.vue'
+import MSettingsDialog from '../components/MSettingsDialog.vue'
 import { useToast } from '../components/toast.js'
+import { currentHeaderMode, sidebarCollapsed } from '../components/theme-state.js'
 
 const toast = useToast()
 
@@ -43,7 +45,7 @@ const sidebarItems = [
 ]
 
 const activeMenu = ref('ds-nhan-vien')
-const sidebarCollapsed = ref(false)
+const showSettings = ref(false)
 
 // "Tổng quan" là màn hình mẫu khác (DashboardPage) → điều hướng sang đó qua hash
 // của playground; các mục còn lại đều có dữ liệu demo ngay trong trang này.
@@ -299,15 +301,16 @@ function saveEmployee() {
     class="flex h-full flex-col overflow-hidden bg-[var(--mds-bg-disabled)] text-[13px] leading-[18px] text-[var(--mds-text)]"
     :style="{ fontFamily: 'var(--mds-font-family)' }"
   >
-    <!-- Header nền brand-600 chữ trắng -->
+    <!-- Header: mode do người dùng chọn trong dialog Thiết lập, dùng chung mọi trang -->
     <MHeaderBar
+      :variant="currentHeaderMode"
       app-name="AMIS Nhân sự"
       search-placeholder="Tìm kiếm trong AMIS Nhân sự"
       :notification-count="3"
       :user="{ name: 'Nguyễn Văn An' }"
       @search="toast.info('Mở tìm kiếm toàn hệ thống')"
       @notifications="toast.info('Mở danh sách thông báo')"
-      @settings="toast.info('Mở thiết lập ứng dụng')"
+      @settings="showSettings = true"
       @user-click="toast.info('Mở menu tài khoản')"
       @app-switcher="toast.info('Mở danh sách ứng dụng')"
     />
@@ -514,6 +517,7 @@ function saveEmployee() {
       </template>
     </MDrawer>
 
+    <MSettingsDialog v-model="showSettings" />
     <MToast />
   </div>
 </template>

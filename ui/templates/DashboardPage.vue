@@ -1,14 +1,13 @@
 <script setup>
 /**
- * DashboardPage — template màn hình Tổng quan (Dashboard) chuẩn MDS 2.0.
- * Dựng lại theo bộ demo chuẩn của giám đốc thiết kế (đối chiếu 2026-07):
+ * DashboardPage — template màn hình Tổng quan (Dashboard) chuẩn MDS 2.0, ứng dụng
+ * "AMIS Nhân sự" (đồng bộ với ListPage/FormPage/DetailPage cùng bộ demo).
+ * Dựng theo cấu trúc bộ demo chuẩn của giám đốc thiết kế (đối chiếu 2026-07):
  * header 48px + sub-nav 48px, sidebar 200/64px hover-overlay, card dùng
  * .mds-card (shadow-card thay border), dialog Thiết lập màu sắc/hiển thị,
  * bảng mini trong card, biểu đồ ECharts theo spec communication.md.
- * Nội dung nghiệp vụ (kế toán) viết mới, không sao chép số liệu/văn bản
- * của bên thứ ba — chỉ tái hiện cấu trúc để đối chiếu hệ thống thiết kế.
  */
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import MHeaderBar from '../components/MHeaderBar.vue'
 import MSidebar from '../components/MSidebar.vue'
 import MSettingsDialog from '../components/MSettingsDialog.vue'
@@ -17,26 +16,33 @@ import MIcon from '../components/MIcon.vue'
 import MTabs from '../components/MTabs.vue'
 import MToast from '../components/MToast.vue'
 import { useToast } from '../components/toast.js'
-import { currentTheme, currentHeaderMode, sidebarCollapsed } from '../components/theme-state.js'
+import { currentHeaderMode, sidebarCollapsed } from '../components/theme-state.js'
 
 const toast = useToast()
 
-/* ── Điều hướng ─────────────────────────────────────────────── */
+/* ── Điều hướng — cùng cấu trúc sidebar với ListPage để 2 trang nhất quán ── */
 
 const sidebarItems = [
-  { key: 'tong-quan', label: 'Tổng quan', icon: 'home' },
-  { key: 'tien-mat', label: 'Tiền mặt', icon: 'cash' },
-  { key: 'tien-gui', label: 'Tiền gửi', icon: 'wallet' },
-  { key: 'mua-hang', label: 'Mua hàng', icon: 'briefcase' },
-  { key: 'ban-hang', label: 'Bán hàng', icon: 'receipt' },
-  { key: 'kho', label: 'Kho', icon: 'building' },
-  { key: 'tien-luong', label: 'Tiền lương', icon: 'users' },
-  { key: 'thue', label: 'Thuế', icon: 'file-text' },
+  { key: 'dashboard', label: 'Tổng quan', icon: 'home' },
+  {
+    key: 'nhan-vien',
+    label: 'Nhân viên',
+    icon: 'users',
+    children: [
+      { key: 'ds-nhan-vien', label: 'Danh sách' },
+      { key: 'hop-dong', label: 'Hợp đồng' },
+    ],
+  },
+  { key: 'cham-cong', label: 'Chấm công', icon: 'calendar' },
   { key: 'bao-cao', label: 'Báo cáo', icon: 'chart-bar' },
-  { key: 'ke-toan-dv', label: 'Kế toán dịch vụ', icon: 'database' },
-  { key: 'danh-muc', label: 'Danh mục', icon: 'list' },
+  { key: 'thiet-lap', label: 'Thiết lập', icon: 'settings' },
 ]
-const activeMenu = ref('tong-quan')
+const activeMenu = ref('dashboard')
+
+// Các mục còn lại có dữ liệu demo ở màn hình Danh sách (ListPage) → điều hướng sang đó
+watch(activeMenu, (val) => {
+  if (val !== 'dashboard') location.hash = 'list'
+})
 
 const subTabs = [
   { key: 'tong-quan', label: 'Tổng quan' },
@@ -52,17 +58,15 @@ function cssVar(name) {
   if (typeof window === 'undefined') return ''
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 }
-// void currentTheme.value: ép Vue theo dõi phụ thuộc dù cssVar đọc DOM, không reactive tự nhiên
-function themedVar(name) {
-  return computed(() => { void currentTheme.value; return cssVar(name) })
-}
-const brand600 = themedVar('--mds-brand-600')
-const success = themedVar('--mds-success')
-const warning = themedVar('--mds-warning')
-const info = themedVar('--mds-info')
-const danger = themedVar('--mds-danger')
-const textMuted = themedVar('--mds-text-muted')
-const border = themedVar('--mds-border')
+// currentHeaderMode chỉ đổi mode header; đọc lại token khi component mount là đủ
+// vì props MHeaderBar/MSettingsDialog tự re-render theo theme đang áp dụng.
+const brand600 = computed(() => cssVar('--mds-brand-600'))
+const success = computed(() => cssVar('--mds-success'))
+const warning = computed(() => cssVar('--mds-warning'))
+const info = computed(() => cssVar('--mds-info'))
+const danger = computed(() => cssVar('--mds-danger'))
+const textMuted = computed(() => cssVar('--mds-text-muted'))
+const border = computed(() => cssVar('--mds-border'))
 
 const axisLabel = computed(() => ({ color: textMuted.value, fontSize: 11, fontFamily: 'Inter' }))
 const splitLine = computed(() => ({ lineStyle: { color: cssVar('--mds-bg-disabled') } }))
@@ -73,120 +77,122 @@ const legendBelow = computed(() => ({
 }))
 
 /* ── Chi nhánh (bộ lọc trên cùng) ───────────────────────────── */
-const branchName = ref('Công ty TNHH Dịch vụ Thương mại Toàn Cầu')
+const branchName = ref('Chi nhánh Hà Nội')
 
-/* ── Row 1: Tình hình tài chính + 2 card nợ ─────────────────── */
+/* ── Row 1: Tình hình nhân sự + 2 card đơn chờ duyệt ─────────── */
 const periodTch = ref('Tháng này')
-const tchLeft = [
-  { label: 'Tiền mặt', value: '312' },
-  { label: 'Tiền gửi', value: '208.451' },
-  { label: 'Phải thu', value: '31.204' },
-  { label: 'Phải trả', value: '402.118' },
+const nsLeft = [
+  { label: 'Đang làm việc', value: '1.192' },
+  { label: 'Thử việc', value: '68' },
+  { label: 'Nghỉ phép', value: '14' },
+  { label: 'Đã nghỉ việc', value: '10' },
 ]
-const tchRight = [
-  { label: 'Doanh thu', value: '33.480' },
-  { label: 'Chi phí', value: '18.240' },
-  { label: 'Lợi nhuận', value: '15.240' },
-  { label: 'Hàng tồn kho', value: '311.006' },
+const nsRight = [
+  { label: 'Tuyển mới tháng', value: '36' },
+  { label: 'Nghỉ việc tháng', value: '12' },
+  { label: 'Tỷ lệ nghỉ', value: '0,9%' },
+  { label: 'Số phòng ban', value: '6' },
 ]
-const tongTien = '208.971'
+const tongNhanSu = '1.284'
 
-const periodRphaithu = ref('Tháng này')
-const rPhaiThu = { total: '38.204', overdue: '412', current: '37.792' }
-const rPhaiThuPct = 1.1 // % quá hạn/tổng, chỉ để vẽ thanh tiến trình minh họa
+const periodNghiPhep = ref('Tháng này')
+const donNghiPhep = { total: '18', overdue: '3', current: '15' }
+const donNghiPhepPct = 16.7 // % quá hạn xử lý/tổng, chỉ để vẽ thanh tiến trình minh họa
 
-const rPhaiTra = { total: '0', overdue: '0', current: '0' }
+const donTangCa = { total: '0', overdue: '0', current: '0' }
 
-/* ── Row 2: Doanh thu-chi phí-lợi nhuận + Hàng tồn kho ──────── */
+/* ── Row 2: Tuyển mới/Nghỉ việc/Chênh lệch + Nhân sự theo phòng ban ── */
 const periodBar = ref('Năm nay')
 const MONTHS = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12']
 
-const revenueData = [30120, 28640, 34210, 36880, 33480, 12040, 27960, 39420, 35180, 43260, 61240, 56980]
-const costData_ = [17000, 15800, 19200, 20600, 18240, 6800, 15400, 21600, 19600, 23800, 32800, 30200]
-const profitData = revenueData.map((v, i) => v - costData_[i])
+const newHireData = [18, 22, 31, 26, 24, 28, 33, 29, 35, 30, 27, 36]
+const leaveData = [8, 6, 10, 7, 9, 12, 8, 11, 9, 13, 10, 12]
+const netData = newHireData.map((v, i) => v - leaveData[i])
 
 const barLineOption = computed(() => ({
   legend: legendBelow.value,
   grid: { left: 8, right: 8, top: 16, bottom: 32, containLabel: true },
   tooltip: { trigger: 'axis' },
   xAxis: { type: 'category', data: MONTHS, axisLabel: axisLabel.value, axisTick: { show: false }, axisLine: { lineStyle: { color: border.value } } },
-  yAxis: { type: 'value', axisLabel: { ...axisLabel.value, formatter: (v) => (v / 1000).toFixed(0) + 'tr' }, splitLine: splitLine.value },
+  yAxis: { type: 'value', axisLabel: axisLabel.value, splitLine: splitLine.value },
   series: [
-    { name: 'DOANH THU', type: 'bar', data: revenueData, barMaxWidth: 14, itemStyle: { color: brand600.value, borderRadius: [4, 4, 0, 0] } },
-    { name: 'CHI PHÍ', type: 'bar', data: costData_, barMaxWidth: 14, itemStyle: { color: '#98A2B3', borderRadius: [4, 4, 0, 0] } },
-    { name: 'LỢI NHUẬN', type: 'line', data: profitData, smooth: true, symbolSize: 6, lineStyle: { color: warning.value, width: 2 }, itemStyle: { color: warning.value } },
+    { name: 'TUYỂN MỚI', type: 'bar', data: newHireData, barMaxWidth: 14, itemStyle: { color: brand600.value, borderRadius: [4, 4, 0, 0] } },
+    { name: 'NGHỈ VIỆC', type: 'bar', data: leaveData, barMaxWidth: 14, itemStyle: { color: '#98A2B3', borderRadius: [4, 4, 0, 0] } },
+    { name: 'CHÊNH LỆCH RÒNG', type: 'line', data: netData, smooth: true, symbolSize: 6, lineStyle: { color: warning.value, width: 2 }, itemStyle: { color: warning.value } },
   ],
 }))
 
-const inventoryTotal = '311.006'
-const inventoryRows = [
-  { name: 'Giấy in văn phòng A4', qty: '182.400', value: '2.104', color: '#F59E0B' },
-  { name: 'Mực in laser HP', qty: '96.220', value: '1.822', color: '#3B82F6' },
-  { name: 'Bàn ghế văn phòng', qty: '54.100', value: '3.960', color: '#8B5CF6' },
-  { name: 'Thiết bị mạng', qty: '31.760', value: '2.408', color: '#6B7280' },
-  { name: 'Vật tư tiêu hao', qty: '128.900', value: '1.140', color: '#EF4444' },
+const departmentTotal = '1.284'
+const departmentRows = [
+  { name: 'Kinh doanh', qty: '412', value: '32,1%', color: '#F59E0B' },
+  { name: 'Phát triển sản phẩm', qty: '296', value: '23,1%', color: '#3B82F6' },
+  { name: 'Chăm sóc khách hàng', qty: '188', value: '14,6%', color: '#8B5CF6' },
+  { name: 'Marketing', qty: '152', value: '11,8%', color: '#6B7280' },
+  { name: 'Kế toán', qty: '132', value: '10,3%', color: '#EF4444' },
 ]
 
-/* ── Row 3: Doanh thu + Mặt hàng bán chạy ────────────────────── */
+/* ── Row 3: Tổng nhân sự qua các tháng + Phòng ban tuyển nhiều nhất ── */
 const periodRev = ref('Năm nay')
-const revenueTotal = '399.568'
-const revenueOnly = computed(() => ({
+const headcountTotal = '1.284'
+const headcountTrend = [1180, 1188, 1201, 1214, 1222, 1219, 1231, 1244, 1252, 1265, 1271, 1284]
+const headcountOnly = computed(() => ({
   grid: { left: 8, right: 8, top: 16, bottom: 8, containLabel: true },
   tooltip: { trigger: 'axis' },
   legend: { show: false },
   xAxis: { type: 'category', boundaryGap: false, data: MONTHS, axisLabel: axisLabel.value, axisTick: { show: false }, axisLine: { lineStyle: { color: border.value } } },
-  yAxis: { type: 'value', axisLabel: { ...axisLabel.value, formatter: (v) => (v / 1000).toFixed(0) + 'tr' }, splitLine: splitLine.value },
+  yAxis: { type: 'value', axisLabel: axisLabel.value, splitLine: splitLine.value },
   series: [{
-    type: 'line', data: revenueData, smooth: true, symbolSize: 6,
+    type: 'line', data: headcountTrend, smooth: true, symbolSize: 6,
     lineStyle: { color: brand600.value, width: 2 }, itemStyle: { color: brand600.value },
     areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: brand600.value + '33' }, { offset: 1, color: brand600.value + '00' }] } },
   }],
 }))
 
 const periodSell = ref('Năm nay')
-const sellingTotal = '399.568'
-const sellingRows = [
-  { name: 'Bàn ghế văn phòng', qty: '18.400', revenue: '3.960', color: '#3B82F6' },
-  { name: 'Thiết bị mạng', qty: '12.900', revenue: '2.408', color: '#8B5CF6' },
-  { name: 'Giấy in văn phòng A4', qty: '61.200', revenue: '2.104', color: '#F59E0B' },
-  { name: 'Vật tư tiêu hao', qty: '44.100', revenue: '1.140', color: '#6B7280' },
-  { name: 'Mực in laser HP', qty: '9.600', revenue: '1.822', color: '#F97316' },
+const hiringTotal = '36'
+const hiringRows = [
+  { name: 'Kinh doanh', qty: '14', revenue: '38,9%', color: '#3B82F6' },
+  { name: 'Phát triển sản phẩm', qty: '8', revenue: '22,2%', color: '#8B5CF6' },
+  { name: 'Chăm sóc khách hàng', qty: '6', revenue: '16,7%', color: '#F59E0B' },
+  { name: 'Marketing', qty: '5', revenue: '13,9%', color: '#6B7280' },
+  { name: 'Kế toán', qty: '3', revenue: '8,3%', color: '#F97316' },
 ]
 
-/* ── Row 4: Dòng tiền + Chi phí ───────────────────────────────── */
+/* ── Row 4: Chấm công + Cơ cấu quỹ lương ──────────────────────── */
 const periodCash = ref('Năm nay')
-const tonData = [140000, 152000, 168000, 183000, 208971, 205000, 224000, 241000, 258000, 279000, 305000, 328000]
-const chiData = [22000, 26000, 32000, 40000, 46000, 44000, 51000, 58000, 66000, 74000, 84000, 90000]
-const thuData = tonData.map((v, i) => Math.round(v * 1.12) - (i > 0 ? tonData[i - 1] : 100000))
+const onTimeData = [1020, 1040, 1062, 1078, 1090, 1085, 1102, 1118, 1130, 1145, 1158, 1170]
+const lateData = [64, 58, 70, 62, 66, 72, 68, 74, 70, 78, 74, 80]
+const leaveOffData = onTimeData.map((v, i) => Math.max(0, tongNhanSuInt() - v - lateData[i]))
+function tongNhanSuInt() { return 1284 }
 
-const cashOption = computed(() => ({
+const attendanceOption = computed(() => ({
   legend: legendBelow.value,
   grid: { left: 8, right: 8, top: 16, bottom: 32, containLabel: true },
   tooltip: { trigger: 'axis' },
   xAxis: { type: 'category', data: MONTHS, axisLabel: axisLabel.value, axisTick: { show: false }, axisLine: { lineStyle: { color: border.value } } },
-  yAxis: { type: 'value', axisLabel: { ...axisLabel.value, formatter: (v) => (v / 1000).toFixed(0) + 'tr' }, splitLine: splitLine.value },
+  yAxis: { type: 'value', axisLabel: axisLabel.value, splitLine: splitLine.value },
   series: [
-    { name: 'THU', type: 'line', data: thuData, smooth: true, symbolSize: 6, lineStyle: { color: success.value, width: 2 }, itemStyle: { color: success.value } },
-    { name: 'CHI', type: 'line', data: chiData, smooth: true, symbolSize: 6, lineStyle: { color: warning.value, width: 2 }, itemStyle: { color: warning.value } },
-    { name: 'TỒN', type: 'line', data: tonData, smooth: true, symbolSize: 6, lineStyle: { color: info.value, width: 2 }, itemStyle: { color: info.value } },
+    { name: 'ĐÚNG GIỜ', type: 'line', data: onTimeData, smooth: true, symbolSize: 6, lineStyle: { color: success.value, width: 2 }, itemStyle: { color: success.value } },
+    { name: 'ĐI MUỘN', type: 'line', data: lateData, smooth: true, symbolSize: 6, lineStyle: { color: warning.value, width: 2 }, itemStyle: { color: warning.value } },
+    { name: 'NGHỈ PHÉP', type: 'line', data: leaveOffData, smooth: true, symbolSize: 6, lineStyle: { color: info.value, width: 2 }, itemStyle: { color: info.value } },
   ],
 }))
 
 const periodCost = ref('Năm nay')
-const costItems = [
-  { name: 'Chi phí quảng cáo', color: '#F43F5E', value: 42 },
-  { name: 'Chi phí sửa chữa, bảo dưỡng', color: '#3B82F6', value: 24 },
-  { name: 'Chi phí tiếp khách', color: '#A78BFA', value: 18 },
-  { name: 'Chi phí khác', color: '#1E293B', value: 16 },
+const payrollItems = [
+  { name: 'Lương cơ bản', color: '#F43F5E', value: 58 },
+  { name: 'Thưởng KPI', color: '#3B82F6', value: 20 },
+  { name: 'BHXH / BHYT', color: '#A78BFA', value: 14 },
+  { name: 'Phụ cấp khác', color: '#1E293B', value: 8 },
 ]
-const costTotal = '1.240'
-const costOption = computed(() => ({
+const payrollTotal = '32.480'
+const payrollOption = computed(() => ({
   tooltip: { trigger: 'item' },
   legend: { show: false },
   series: [{
     type: 'pie', radius: ['55%', '80%'], center: ['50%', '50%'], padAngle: 2,
     itemStyle: { borderRadius: 4 }, label: { show: false },
-    data: costItems.map((d) => ({ name: d.name, value: d.value, itemStyle: { color: d.color } })),
+    data: payrollItems.map((d) => ({ name: d.name, value: d.value, itemStyle: { color: d.color } })),
   }],
 }))
 </script>
@@ -196,18 +202,18 @@ const costOption = computed(() => ({
     class="flex h-full flex-col overflow-hidden bg-[var(--mds-bg-page)] text-[13px] leading-[18px] text-[var(--mds-text)]"
     :style="{ fontFamily: 'var(--mds-font-family)' }"
   >
-    <!-- Header: mode do người dùng chọn trong dialog Thiết lập -->
+    <!-- Header: mode do người dùng chọn trong dialog Thiết lập, dùng chung mọi trang -->
     <MHeaderBar
       :variant="currentHeaderMode"
-      app-name="Kế toán"
-      company-name="Công ty TNHH Dịch vụ Thương mại Toàn Cầu"
-      search-placeholder="Tìm kiếm"
-      :notification-count="9"
-      :user="{ name: 'Việt Thắng' }"
+      app-name="AMIS Nhân sự"
+      company-name="Công ty TNHH Thương mại Việt Phát"
+      search-placeholder="Tìm kiếm trong AMIS Nhân sự"
+      :notification-count="3"
+      :user="{ name: 'Nguyễn Văn An' }"
       @search="toast.info('Mở tìm kiếm toàn hệ thống')"
       @notifications="toast.info('Mở danh sách thông báo')"
       @settings="showSettings = true"
-      @assistant="toast.info('Mở trợ lý AVA Kế toán')"
+      @assistant="toast.info('Mở trợ lý AVA Nhân sự')"
       @chat="toast.info('Mở AMIS Chat')"
       @user-click="toast.info('Mở menu tài khoản')"
       @app-switcher="toast.info('Mở danh sách ứng dụng')"
@@ -236,12 +242,12 @@ const costOption = computed(() => ({
           </button>
         </div>
 
-        <!-- ── Row 1: Tình hình tài chính + 2 card nợ ── -->
+        <!-- ── Row 1: Tình hình nhân sự + 2 card đơn chờ duyệt ── -->
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-[1.7fr_1fr_1fr]">
-          <!-- Tình hình tài chính -->
+          <!-- Tình hình nhân sự -->
           <section class="group mds-card p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Tình hình tài chính</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Tình hình nhân sự</h3>
               <div class="flex items-center gap-1.5">
                 <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                   <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
@@ -253,21 +259,21 @@ const costOption = computed(() => ({
                 </select>
               </div>
             </div>
-            <p class="mb-2 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <p class="mb-2 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đơn vị: Người</p>
             <div class="flex gap-0">
               <div class="flex-1">
                 <div class="flex items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5">
-                  <span class="text-[12px] font-semibold uppercase text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tổng tiền</span>
-                  <span class="text-[13px] font-semibold">{{ tongTien }}</span>
+                  <span class="text-[12px] font-semibold uppercase text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tổng nhân sự</span>
+                  <span class="text-[13px] font-semibold">{{ tongNhanSu }}</span>
                 </div>
-                <div v-for="r in tchLeft" :key="r.label" class="flex items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 pl-2 last:border-b-0">
+                <div v-for="r in nsLeft" :key="r.label" class="flex items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 pl-2 last:border-b-0">
                   <span class="text-[13px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">{{ r.label }}</span>
                   <span class="text-[13px] font-semibold text-[var(--mds-brand-600)]">{{ r.value }}</span>
                 </div>
               </div>
               <div class="mx-4 w-px shrink-0 bg-[var(--mds-border-light,var(--mds-border))]" />
               <div class="flex-1">
-                <div v-for="r in tchRight" :key="r.label" class="flex items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 last:border-b-0">
+                <div v-for="r in nsRight" :key="r.label" class="flex items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 last:border-b-0">
                   <span class="text-[13px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">{{ r.label }}</span>
                   <span class="text-[13px] font-semibold text-[var(--mds-brand-600)]">{{ r.value }}</span>
                 </div>
@@ -279,57 +285,57 @@ const costOption = computed(() => ({
             </div>
           </section>
 
-          <!-- Nợ phải thu -->
+          <!-- Đơn nghỉ phép chờ duyệt -->
           <section class="group mds-card flex flex-col p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Nợ phải thu theo hạn nợ</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Đơn nghỉ phép chờ duyệt</h3>
               <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                 <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
               </button>
             </div>
             <div class="mt-2 flex items-baseline gap-1.5">
-              <span class="text-[28px] font-bold leading-none">{{ rPhaiThu.total }}</span>
-              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+              <span class="text-[28px] font-bold leading-none">{{ donNghiPhep.total }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Đơn</span>
             </div>
             <p class="mb-2.5 mt-1.5 text-[11px] uppercase text-[var(--mds-text-muted)]">Tổng</p>
             <div class="mb-2.5 flex justify-between">
               <div>
-                <div class="text-[14px] font-semibold text-[var(--mds-warning)]">{{ rPhaiThu.overdue }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Triệu đồng</span></div>
-                <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-warning)]">Quá hạn</div>
+                <div class="text-[14px] font-semibold text-[var(--mds-warning)]">{{ donNghiPhep.overdue }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Đơn</span></div>
+                <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-warning)]">Quá hạn xử lý</div>
               </div>
               <div class="text-right">
-                <div class="text-[14px] font-semibold">{{ rPhaiThu.current }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Triệu đồng</span></div>
+                <div class="text-[14px] font-semibold">{{ donNghiPhep.current }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Đơn</span></div>
                 <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-text-muted)]">Trong hạn</div>
               </div>
             </div>
             <div class="h-1.5 overflow-hidden rounded-full bg-[var(--mds-border-light,var(--mds-border))]">
-              <div class="h-full rounded-full bg-[var(--mds-warning)]" :style="{ width: rPhaiThuPct + '%' }" />
+              <div class="h-full rounded-full bg-[var(--mds-warning)]" :style="{ width: donNghiPhepPct + '%' }" />
             </div>
             <div class="mt-auto border-t border-[var(--mds-border-light,var(--mds-border))] pt-2 text-[11px] text-[var(--mds-text-muted)]">
               Số liệu tính đến 14h58 <button type="button" class="ml-1 font-medium text-[var(--mds-brand-600)] hover:underline">Tải lại</button>
             </div>
           </section>
 
-          <!-- Nợ phải trả -->
+          <!-- Đơn tăng ca chờ duyệt -->
           <section class="group mds-card flex flex-col p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Nợ phải trả theo hạn nợ</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Đơn tăng ca chờ duyệt</h3>
               <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                 <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
               </button>
             </div>
             <div class="mt-2 flex items-baseline gap-1.5">
-              <span class="text-[28px] font-bold leading-none">{{ rPhaiTra.total }}</span>
-              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+              <span class="text-[28px] font-bold leading-none">{{ donTangCa.total }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Đơn</span>
             </div>
             <p class="mb-2.5 mt-1.5 text-[11px] uppercase text-[var(--mds-text-muted)]">Tổng</p>
             <div class="mb-2.5 flex justify-between">
               <div>
-                <div class="text-[14px] font-semibold text-[var(--mds-warning)]">{{ rPhaiTra.overdue }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Triệu đồng</span></div>
-                <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-warning)]">Quá hạn</div>
+                <div class="text-[14px] font-semibold text-[var(--mds-warning)]">{{ donTangCa.overdue }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Đơn</span></div>
+                <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-warning)]">Quá hạn xử lý</div>
               </div>
               <div class="text-right">
-                <div class="text-[14px] font-semibold">{{ rPhaiTra.current }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Triệu đồng</span></div>
+                <div class="text-[14px] font-semibold">{{ donTangCa.current }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Đơn</span></div>
                 <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-text-muted)]">Trong hạn</div>
               </div>
             </div>
@@ -342,11 +348,11 @@ const costOption = computed(() => ({
           </section>
         </div>
 
-        <!-- ── Row 2: Doanh thu-chi phí-lợi nhuận + Hàng tồn kho ── -->
+        <!-- ── Row 2: Tuyển mới/Nghỉ việc/Chênh lệch + Nhân sự theo phòng ban ── -->
         <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_1fr]">
           <section class="group mds-card p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Doanh thu, chi phí, lợi nhuận</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Tuyển mới, nghỉ việc, chênh lệch</h3>
               <div class="flex items-center gap-1.5">
                 <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                   <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
@@ -358,13 +364,13 @@ const costOption = computed(() => ({
                 </select>
               </div>
             </div>
-            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đơn vị: Người</p>
             <MChart :option="barLineOption" :height="280" />
           </section>
 
           <section class="group mds-card flex flex-col p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Hàng hóa tồn kho</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Nhân sự theo phòng ban</h3>
               <div class="flex items-center gap-1.5">
                 <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                   <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
@@ -374,22 +380,22 @@ const costOption = computed(() => ({
                 </button>
               </div>
             </div>
-            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đơn vị: Người</p>
             <div class="flex items-baseline gap-1.5">
-              <span class="text-[22px] font-bold leading-none">{{ inventoryTotal }}</span>
-              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+              <span class="text-[22px] font-bold leading-none">{{ departmentTotal }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Người</span>
             </div>
-            <p class="mb-2 mt-1 text-[12px] text-[var(--mds-text-muted)]">Tổng giá trị</p>
+            <p class="mb-2 mt-1 text-[12px] text-[var(--mds-text-muted)]">Tổng nhân sự</p>
             <table class="w-full border-collapse text-[12px]">
               <thead>
                 <tr>
-                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-left font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tên</th>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-left font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Phòng ban</th>
                   <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Số lượng</th>
-                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Giá trị</th>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tỷ trọng</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="r in inventoryRows" :key="r.name" class="hover:bg-[var(--mds-bg-hover-soft)]">
+                <tr v-for="r in departmentRows" :key="r.name" class="hover:bg-[var(--mds-bg-hover-soft)]">
                   <td class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5">
                     <span class="mr-1.5 inline-block h-2 w-2 rounded-full align-middle" :style="{ background: r.color }" />{{ r.name }}
                   </td>
@@ -405,11 +411,11 @@ const costOption = computed(() => ({
           </section>
         </div>
 
-        <!-- ── Row 3: Doanh thu + Mặt hàng bán chạy ── -->
+        <!-- ── Row 3: Tổng nhân sự qua các tháng + Phòng ban tuyển nhiều nhất ── -->
         <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_1fr]">
           <section class="group mds-card p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Doanh thu</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Tổng nhân sự qua các tháng</h3>
               <div class="flex items-center gap-1.5">
                 <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                   <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
@@ -421,18 +427,18 @@ const costOption = computed(() => ({
                 </select>
               </div>
             </div>
-            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đơn vị: Người</p>
             <div class="mb-1 flex items-baseline gap-1.5">
-              <span class="text-[22px] font-bold leading-none">{{ revenueTotal }}</span>
-              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+              <span class="text-[22px] font-bold leading-none">{{ headcountTotal }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Người</span>
             </div>
-            <p class="mb-1 text-[12px] text-[var(--mds-text-muted)]">Tổng doanh thu</p>
-            <MChart :option="revenueOnly" :height="220" />
+            <p class="mb-1 text-[12px] text-[var(--mds-text-muted)]">Tổng nhân sự hiện tại</p>
+            <MChart :option="headcountOnly" :height="220" />
           </section>
 
           <section class="group mds-card flex flex-col p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Mặt hàng bán chạy</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Phòng ban tuyển nhiều nhất</h3>
               <div class="flex items-center gap-1.5">
                 <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                   <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
@@ -447,22 +453,22 @@ const costOption = computed(() => ({
                 </select>
               </div>
             </div>
-            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đơn vị: Người</p>
             <div class="flex items-baseline gap-1.5">
-              <span class="text-[22px] font-bold leading-none">{{ sellingTotal }}</span>
-              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+              <span class="text-[22px] font-bold leading-none">{{ hiringTotal }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Người</span>
             </div>
-            <p class="mb-2 mt-1 text-[12px] text-[var(--mds-text-muted)]">Tổng doanh thu</p>
+            <p class="mb-2 mt-1 text-[12px] text-[var(--mds-text-muted)]">Tổng tuyển mới tháng này</p>
             <table class="w-full border-collapse text-[12px]">
               <thead>
                 <tr>
-                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-left font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tên</th>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-left font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Phòng ban</th>
                   <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Số lượng</th>
-                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Doanh thu</th>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tỷ trọng</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="r in sellingRows" :key="r.name" class="hover:bg-[var(--mds-bg-hover-soft)]">
+                <tr v-for="r in hiringRows" :key="r.name" class="hover:bg-[var(--mds-bg-hover-soft)]">
                   <td class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5">
                     <span class="mr-1.5 inline-block h-2 w-2 rounded-full align-middle" :style="{ background: r.color }" />{{ r.name }}
                   </td>
@@ -478,11 +484,11 @@ const costOption = computed(() => ({
           </section>
         </div>
 
-        <!-- ── Row 4: Dòng tiền + Chi phí ── -->
+        <!-- ── Row 4: Chấm công + Cơ cấu quỹ lương ── -->
         <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_1fr]">
           <section class="group mds-card p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Dòng tiền</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Chấm công</h3>
               <div class="flex items-center gap-1.5">
                 <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                   <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
@@ -494,13 +500,13 @@ const costOption = computed(() => ({
                 </select>
               </div>
             </div>
-            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
-            <MChart :option="cashOption" :height="260" />
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đơn vị: Người</p>
+            <MChart :option="attendanceOption" :height="260" />
           </section>
 
           <section class="group mds-card flex flex-col p-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-[16px] font-semibold leading-[22px]">Chi phí</h3>
+              <h3 class="text-[16px] font-semibold leading-[22px]">Cơ cấu quỹ lương</h3>
               <div class="flex items-center gap-1.5">
                 <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
                   <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
@@ -512,16 +518,16 @@ const costOption = computed(() => ({
                 </select>
               </div>
             </div>
-            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đơn vị: Triệu đồng</p>
             <div class="mb-1 flex items-baseline gap-1.5">
-              <span class="text-[22px] font-bold leading-none">{{ costTotal }}</span>
+              <span class="text-[22px] font-bold leading-none">{{ payrollTotal }}</span>
               <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
             </div>
-            <p class="mb-1 text-[12px] text-[var(--mds-text-muted)]">Tổng</p>
+            <p class="mb-1 text-[12px] text-[var(--mds-text-muted)]">Tổng quỹ lương tháng</p>
             <div class="flex items-center gap-3">
-              <MChart :option="costOption" :height="160" class="w-[160px] shrink-0" />
+              <MChart :option="payrollOption" :height="160" class="w-[160px] shrink-0" />
               <div class="flex flex-col gap-2">
-                <div v-for="c in costItems" :key="c.name" class="flex items-center gap-2 text-[12px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">
+                <div v-for="c in payrollItems" :key="c.name" class="flex items-center gap-2 text-[12px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">
                   <span class="inline-block h-2 w-2 shrink-0 rounded-full" :style="{ background: c.color }" />
                   {{ c.name }}
                 </div>
