@@ -4,20 +4,71 @@
 
 Ứng dụng trong MISA AMIS Platform có 4 loại màn hình chính. Xác định loại màn hình trước, rồi chọn biến thể phù hợp với nghiệp vụ theo hướng dẫn "Phù hợp khi" của từng biến thể.
 
+## 0. Khung ứng dụng chuẩn (App Shell)
+
+Mọi màn hình đều nằm trong khung sau (kích thước đo từ bộ demo chuẩn của giám đốc thiết kế):
+
+```
+┌──────────────────────────────────────────────┐
+│ Global Header — 48px (nền brand hoặc trắng)  │
+├────────┬─────────────────────────────────────┤
+│Sidebar │ Sub-nav tabs — 48px (nền trắng)     │
+│200px   ├─────────────────────────────────────┤
+│(mở)    │ Page header — 56px (màn List/Detail)│
+│64px    ├─────────────────────────────────────┤
+│(thu    │ Content — nền xám #ECEDEF,          │
+│ gọn)   │ padding 16px, gap giữa card 16px    │
+└────────┴─────────────────────────────────────┘
+```
+
+- Shell dùng `100vw × 100vh`, `overflow: hidden`; chỉ vùng content cuộn (`overflow-y: auto`).
+- **Global Header 48px** (`--layout-header-h`), **Sidebar mở rộng 200px / thu gọn 64px** (`--layout-sidebar-w` / `--layout-sidebar-sm-w`), **Page header 56px** (`--layout-page-header-h`).
+- **Sub-nav tabs** (hàng tab ngay dưới header, vd "Tổng quan / Tính năng mới"): cao 48px, nền trắng, border-bottom 1px; tab active có gạch chân 2px màu brand + chữ brand semibold; tab có thể kèm icon 15px và badge "mới". Góc phải sub-nav có thể đặt hành động phụ (vd nút ghost "Bắt đầu sử dụng").
+- Nền trang (vùng content) là `--bg-page: #ECEDEF`.
+
 ## 1. Màn hình Tổng quan (Dashboard)
 
 - Cho phép tạo **nhiều giao diện** chứa các loại biểu đồ khác nhau.
 - Hỗ trợ **kéo thả vị trí và điều chỉnh độ rộng** của từng widget/biểu đồ.
 - Nút **Lưu/Hủy thống nhất ở cuối trang** khi ở chế độ tùy chỉnh.
-- Các box/card nội dung trên dashboard dùng **nền trắng + stroke/border 1px** theo token `--mds-border`; **không dùng shadow** cho card thường. Shadow chỉ dành cho lớp nổi như popup, dropdown, tooltip, toast, dialog/drawer.
-- Card dashboard bo góc nhẹ theo token/radius chuẩn, khoảng cách giữa các card đều nhau; không tạo cảm giác card nổi trên nền bằng drop shadow.
+- **Card/box trên dashboard (và MỌI box trắng trên nền xám): BẮT BUỘC dùng đúng đoạn sau** (chuẩn thống nhất toàn team — KHÔNG dùng border 1px để đóng khung):
+
+  ```css
+  border-radius: 8px;
+  background: #FFF;
+  /* Drop Shadow/Neutral/All 2 */
+  box-shadow: 0 0 2px 0 var(--Alpha-Black-100, rgba(0, 0, 0, 0.10));
+  ```
+
+  Đây là token `--shadow-card`: bóng mờ đều 4 phía, không offset, tạo cảm giác tách nền tinh tế. KHÔNG dùng drop shadow nổi (md/lg) cho card thường; shadow nổi chỉ dành cho overlay (popup, dropdown, tooltip, toast, dialog/drawer). Border 1px `--stroke-neutral-light` chỉ dùng cho phân tách nội bộ (kẻ dòng, dưới header), không dùng để viền quanh box.
+- Padding card 16px; khoảng cách giữa các card 16px, đều nhau. Hàng card dùng grid (`repeat(2..4, 1fr)` hoặc tỷ lệ tùy chỉnh như `1.7fr 1fr 1fr`).
+
+### Cấu trúc card dashboard chuẩn
+
+- **Tiêu đề card**: H3 16px semibold, dàn ngang — trái là tiêu đề, phải là cụm thao tác.
+- **Cụm thao tác góc phải card**: icon button nhỏ (refresh, settings) **ẩn mặc định, chỉ hiện khi hover vào card**; kèm **select kỳ báo cáo không viền** ("Tháng này/Quý này/Năm nay") chữ 12px màu secondary.
+- **Dòng đơn vị tính**: "Đvt: Triệu đồng" 11px secondary, căn phải, ngay dưới tiêu đề.
+- **Số liệu KPI**: số chính 22–28px bold + đơn vị 14px semibold màu secondary đặt cạnh (baseline); nhãn phân loại 11px UPPERCASE màu secondary ("TỔNG", "DOANH THU"...).
+- **Bảng mini trong card** (top mặt hàng...): row 32px, chữ 12px, header 12px semibold secondary, kẻ ngang 1px `--stroke-neutral-light`, chấm màu 8px trước tên, cột số căn phải semibold; dưới bảng có link "Xem thêm".
+- **Chân card**: "Số liệu tính đến: {giờ} {ngày}" 11px secondary + link "Tải lại" màu brand, ngăn với thân card bằng border-top 1px.
+- Trên cùng vùng content có thể có **thanh lọc chi nhánh** (label "Chi nhánh" + nút chọn text kèm chevron), không phải dropdown viền.
+
+### Quy ước biểu đồ trong card (ECharts)
+
+- Series chính lấy màu brand theme hiện tại; series phụ theo bảng chart palette trong `styles.md`.
+- Bar: `barMaxWidth: 12`, bo đỉnh `borderRadius: [4,4,0,0]`. Line: width 2, `smooth: true`, symbol circle 4. Area: gradient từ brand 27% alpha → trong suốt.
+- Trục: nhãn 11px màu `#717680`, đường lưới ngang `#F0F2F4`, trục `#E9EAEB`; giá trị lớn rút gọn dạng `399k`.
+- Chú giải (legend) đặt dưới biểu đồ, chữ 11px UPPERCASE secondary, chấm màu 8px (tròn cho line/donut, vuông cho bar).
+- Trên biểu đồ cột/đường có thể đặt **hàng 3 số tổng** (18px bold + nhãn 11px uppercase) ngay trên vùng vẽ.
+- Nhãn trục X tự xoay 30° khi card hẹp (<640px).
 
 ## 2. Màn hình Danh sách (List)
 
 ### Đặc điểm chung — áp dụng cho mọi biến thể
 
-- **Nền xám**, có khoảng cách giữa bảng và lề xung quanh (bảng không dính sát mép màn hình).
-- **Bấm vào dòng** để chuyển sang trang chi tiết hoặc mở popup chi tiết.
+- **Nền xám**, có khoảng cách giữa bảng và lề xung quanh (bảng không dính sát mép màn hình) — padding 16px, panel bảng nền trắng bo góc 8px.
+- **Bấm vào dòng** để chuyển sang trang chi tiết hoặc mở popup chi tiết (hoặc mở panel Detail dưới với biến thể Master trên–Detail dưới).
+- Trên panel bảng có thể có **hàng KPI** (3 thẻ chỉ số thu/chi/tồn quỹ...) thu gọn được — spec chi tiết toolbar, KPI, phân trang, resize cột... xem `patterns/data-table.md` mục 13.
 
 ### Quy tắc sắp xếp Toolbar (bắt buộc)
 

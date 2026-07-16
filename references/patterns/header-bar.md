@@ -9,9 +9,18 @@ Header bar là **thanh điều hướng nằm ở phía trên cùng** của giao
 ## 1. Biến thể
 
 - Dùng `light` cho Platform/header nền trắng; chữ và icon neutral, có `border-bottom` 1px.
-- Dùng `brand` cho app cần header theo màu primary (có thể đổi theme); chữ và icon trắng.
-- Chọn theo reference của sản phẩm đang làm. Không tự suy ra biến thể chỉ từ tên app.
-- Ô tìm kiếm ở trạng thái chưa focus phải có cảm giác secondary: `--mds-bg-disabled` trên `light`, `white/15` trên `brand`. Khi focus mới chuyển thành nền trắng/độ tương phản cao.
+- Dùng `brand` cho app cần header theo màu primary (có thể đổi theme); chữ và icon trắng. Theme Gradient tô header bằng `linear-gradient(90deg, #245FDF, #0FBF79)`.
+- **Biến thể do người dùng chọn** trong dialog "Thiết lập màu sắc và hiển thị" (mục Giao diện: **Màu sắc** = brand / **Sáng** = light), lưu `localStorage`. Chọn mặc định theo reference của sản phẩm đang làm; không tự suy ra biến thể chỉ từ tên app.
+- Ô tìm kiếm ở trạng thái chưa focus phải có cảm giác secondary: nền trung tính (`--bg-neutral-light`) trên `light`, `rgba(255,255,255,0.2)` trên `brand`. Khi focus chỉ tăng nhẹ độ tương phản (`rgba(255,255,255,0.28)` trên brand) — không đổi thành input trắng đặc.
+
+### Kích thước chuẩn (từ bộ demo chuẩn)
+
+- Header cao **48px**, padding ngang 16px.
+- Logo app: hộp trắng **32×32px** bo góc 6px, icon brand 18px bên trong (trên header brand); tên app **20px semibold** màu trắng (trên brand) / text-primary (trên light).
+- Sau tên app: vạch dọc 1×20px `rgba(255,255,255,0.25)`, rồi **nút chọn công ty/đơn vị** (chữ 14px medium + chevron-down) và **badge năm dữ liệu** ("Dữ liệu năm 2025": cao 28px, nền white/20, chấm xanh 6px viền trắng).
+- Ô tìm kiếm: rộng **240px**, cao 32px, bo 8px.
+- Icon button trên header: **32×32px**, icon 24px, bo 8px, hover `rgba(255,255,255,0.15)` (brand) / `--bg-neutral-hover` (light); badge đếm đỏ `#F04438` pill min-width 16px chữ 10px bold ở góc trên phải.
+- Avatar người dùng: **30px** tròn, nền trắng, chữ tắt 11px bold màu brand.
 
 ## 2. Tooltip
 
@@ -35,11 +44,42 @@ Theo tài liệu, header bar gồm các nhóm thành phần (bố trí từ trá
 
 *(Chi tiết hình dạng, kích thước từng icon được quy định bằng hình minh họa trong tài liệu gốc; không có giá trị px/hex dạng text nên không liệt kê để tránh sai lệch.)*
 
+## 3b. Dialog "Thiết lập màu sắc và hiển thị" (nút Thiết lập trên header)
+
+Nút Thiết lập (icon settings) mở dialog cá nhân hóa toàn app — dạng dialog full-width trượt từ mép trên (bo góc 12px chỉ 2 góc trên, max-width 1440px), có 3 tab:
+
+1. **Thiết lập màu sắc**: radio Giao diện (**Màu sắc** = header nền brand / **Sáng** = header trắng) + dãy swatch **10 theme màu + Gradient**; bên dưới có **preview thu nhỏ toàn app** (header, sub-nav, sidebar, dashboard) đổi màu theo lựa chọn trước khi Lưu.
+2. **Thiết lập hiển thị**: chọn mật độ dữ liệu — Trung bình (mặc định) / Compact / Rộng, mỗi lựa chọn có preview 3 hàng bảng đúng chiều cao thật (xem bảng density trong `styles.md`).
+3. **Hình nền**: chọn wallpaper cho app (lưới thumbnail + lựa chọn "Không có"). Khi bật wallpaper, giao diện chuyển sang **hiệu ứng kính (glass)**: card/table nền `rgba(255,255,255,0.72–0.80)` + `backdrop-filter: blur(14–16px)` + viền `rgba(255,255,255,0.6)`; header trắng, sidebar, dialog vẫn **solid** để đảm bảo độ đọc; dropdown gần solid (`0.95`).
+
+Footer dialog: Hủy (outline) + Lưu (primary) — chỉ áp dụng thay đổi khi bấm Lưu. Mọi lựa chọn lưu `localStorage` (`mds-theme`, `mds-header-mode`, `mds-density`, `mds-wallpaper`).
+
+## 3c. Màu icon trên header theo chế độ (QUAN TRỌNG — dễ làm sai)
+
+Không phải icon nào trên header cũng đổi màu theo chế độ. Quy tắc từ bộ demo chuẩn:
+
+| Thành phần | Header màu (brand) | Header sáng (light) |
+|---|---|---|
+| Icon thường (Thiết lập, Thông báo, Trợ giúp, More, 9 chấm) | trắng | `--icon-neutral` `#6B707A` |
+| **Icon MISA AI (AVA)** | **giữ nguyên full-color** | **giữ nguyên full-color** |
+| **Icon AMIS Chat** | trắng | **`#1570EF`** (giữ màu nhận diện, KHÔNG chuyển neutral) |
+| Badge đếm trên Chat/Thông báo | đỏ `#F04438`, chữ trắng | đỏ `#F04438`, chữ trắng (không đổi) |
+| Tên app, nút chọn công ty | trắng | `--text-primary` |
+| Badge năm dữ liệu | nền `white/20`, chữ trắng | nền trong suốt + viền 1px `--stroke-neutral`, chữ `--text-primary` |
+| Ô tìm kiếm | nền `white/20`, chữ/icon trắng mờ | nền `--bg-neutral-light`, icon neutral |
+| Vạch ngăn dọc | `rgba(255,255,255,0.25)` | `--stroke-neutral-light` |
+| Avatar người dùng | nền trắng, chữ màu brand | giữ nguyên |
+
+**Icon MISA AI (AVA) là asset full-color cố định** (SVG chuẩn từ Figma, node 20062:2582): hình tròn nền **gradient kim cương cyan `#37E1FF` → xanh `#2B67FF`**, vòng viền trắng 60% opacity 1.5px, bên trong là **mặt mascot AVA** (2 mắt gradient xanh, vùng mặt trắng→xanh nhạt, khoang miệng navy đậm `#0A1496→#020D42`, miệng cười trắng). KHÔNG tự vẽ lại, KHÔNG tint theo màu icon khác, KHÔNG thay bằng icon sparkles/robot generic.
+
+**Icon AMIS Chat** là bong bóng chat tròn có 3 chấm, dạng **filled** (không phải icon stroke message-circle của bộ icon thường).
+
 ## 4. Lưu ý về trợ lý số MISA AVA
 
 - **Avatar trợ lý số MISA AVA chính là avatar mascot của từng ứng dụng.**
 - Ví dụ: ứng dụng AMIS Kế toán là **AVA Kế toán**, CRM là **AVA Bán hàng**...
 - Chỉ dùng asset mascot được Product/Brand cung cấp. Component nhận `assistant.avatarUrl` hoặc slot `assistant`; không tự vẽ hoặc thay bằng avatar người dùng.
+- Nút gọi AVA trong nội dung màn hình (vd nút "AVA Kế toán" cạnh section Hạch toán của form) dùng **button AI gradient** (`#1482FF→#CF11FF`, xem styles.md) kèm chính icon AVA full-color, thường ở dạng split button.
 
 ## 5. Các icon khác (Bán chéo, Kiến thức hữu ích...) để đâu?
 

@@ -35,16 +35,28 @@ Product Designer (PD) của MISA hiện đang dùng Figma → dev tự map lại
 
 - Stack: **Vue 3 + Tailwind CSS**, không xét lại React trừ khi user yêu cầu.
 - Copy-in, không npm publish.
-- 10 theme chính thức cố định (blue mặc định `#245FDF`) — không tự pha thêm theme ngoài bộ này.
-- Dashboard card dùng border 1px, **không shadow**; shadow chỉ dùng cho overlay (popup/dropdown/toast/dialog/drawer).
+- 10 theme màu chính thức cố định (blue mặc định `#245FDF`) — không tự pha thêm theme ngoài bộ này. Từ 2026-07-16 có thêm lựa chọn **Gradient** thứ 11 (token Green + header gradient) theo demo chuẩn của giám đốc thiết kế.
+- Dashboard card dùng **viền mờ `shadow-card` (`0 0 2px rgba(0,0,0,0.10)`) hoặc border 1px, không drop shadow nổi**; shadow nổi chỉ dùng cho overlay (popup/dropdown/toast/dialog/drawer). (Sửa 2026-07-16: demo chuẩn dùng shadow-card thay border.)
 - Sidebar active state là rounded tab trong gutter, không tô nền full-width, không vạch mép trái.
 - Icon bắt buộc qua `MIcon` + registry, cấm inline SVG riêng (trừ vài ngoại lệ đã liệt trong `ui/CONVENTIONS.md`).
+
+### Đồng bộ với demo chuẩn của giám đốc thiết kế (2026-07-16)
+
+Đối chiếu skill với bộ demo chuẩn `http://dvviet-thin:3000/ketoan-dashboard` (source Vite tại `D:/Figma/mds-ui` trên máy dvviet-thin — lấy source qua endpoint `?raw` của Vite dev server; các trang: KetoanDashboard, TienMatPage, TienGuiPage, BanHangPage, PhieuThuForm + components ControlHeader/AppSidebar/TableHeader/TablePaging/AppCheckbox/DropdownMenu/CollapseExpandPanel/TIcon/IconMisaAI/IconAmisChat). Các thay đổi đã áp vào skill: font **InterVariable v4** self-hosted; **density 3 mức** (btn 28/32/36, input 28/36/40, row 32/36/40 — row 2 dòng 56px và 3 dòng 72px cố định); **dialog Thiết lập màu sắc và hiển thị** (theme + chế độ header Màu sắc/Sáng + density + wallpaper/glass); theme **Gradient**; khung app 48/48/56px, sidebar 200/64px hover-overlay; card dashboard dùng `shadow-card`; radius scale 4/6/8/12; chart palette c1–c6 + quy ước ECharts chi tiết (communication.md); button AI gradient `#1482FF→#CF11FF`; **màu icon header theo mode** (AVA full-color cố định — SVG Figma node 20062:2582, AMIS Chat trắng/`#1570EF`, badge luôn đỏ) trong header-bar.md 3c; spec bảng dữ liệu đầy đủ (data-table.md mục 13: toolbar 4 icon cố định + bulk action, KPI row, paging 48px, resize cột, sticky action column); spec form chứng từ full màn hình (popup-form.md mục 5: form bar 48px, footer tối `--neutral-800` 52px với hint phím tắt + toggle + Cất/Cất và Thêm, bảng hạch toán inline-edit, dropzone đính kèm, biến thể aside 300px); checkbox/dropdown menu spec. Files: `SKILL.md`, `assets/tokens.css`, `references/styles.md`, `layout-patterns.md`, `communication.md`, `patterns/{header-bar,sidebar,data-table,popup-form}.md`, `components/{input,checkbox,context-menu}.md`.
+
+**Phản hồi giám đốc thiết kế (2026-07-16, kèm ảnh Figma variables) — đã áp:**
+- **Stroke dùng chính thang Neutral** (không hex riêng): Stroke Neutral = Neutral/400 `#CED1D6`, Neutral Light = Neutral/300 `#E9EAEB` (dùng cho phân tách **rất nhẹ**: dưới header/sub-nav, kẻ trong card), Divider = Neutral/300, Disable = Neutral/200; semantic (Brand/Info/Warning/Danger/Success) stroke = base/600, Light = /300, Disabled = /400. → styles.md bảng Stroke mapping, tokens.css var tham chiếu.
+- **Box shadow là CHUẨN BẮT BUỘC toàn team** cho mọi box trắng trên nền xám (không dùng border đóng khung): `border-radius:8px; background:#FFF; box-shadow: 0 0 2px 0 var(--Alpha-Black-100, rgba(0,0,0,0.10))` — tên Figma "Drop Shadow/Neutral/All 2". Đây chốt lại điểm mâu thuẫn "border vs shadow" của bản trước: **dùng shadow-card, KHÔNG phải border 1px**. Đã sửa SKILL.md, styles.md, layout-patterns.md, tokens.css (value chính xác `0 0 2px 0`).
+- **Icon co/cụp sidebar**: nút đáy đảo chiều icon + đổi hình dạng theo trạng thái (mở = 40×40 góc phải bo trên-trái; thu gọn = full-width đáy); + CollapseExpandPanel cho KPI/detail. → sidebar.md.
+
+**2 điểm trước cần PD quyết → giám đốc chốt "cứ theo demo":** (1) Nguồn icon = **Tabler Icons stroke 1.5** (theo demo) — không còn coi là fallback. (2) `ui/components/` vẫn cần đồng bộ (việc còn mở). HomePage platform-home vẫn để ngoài skill (chưa có chỉ đạo đưa vào).
 
 ## 5. Việc còn mở
 
 - Chờ feedback từ team PD MISA sau khi xem playground trên Netlify (link share ~2026-07-13) — có thể kéo theo yêu cầu đổi thẩm mỹ.
 - Control chưa có: Tree, Upload, form validation helper (ghi trong `ui/README.md` mục Lộ trình).
 - Chưa test bộ control trong một project MISA thật (pilot) — theo plan gốc, đây là bước cần làm trước khi đề xuất nhân rộng ra ngoài phòng của PM.
+- Đồng bộ `ui/components/` + `ui/templates/` theo demo chuẩn 2026-07-16: input height 36px (density tokens), settings dialog (theme/mode/density/wallpaper), sidebar hover-overlay 200/64px, card shadow-card, font InterVariable, button AI.
 
 ## 6. Cách dùng file này
 

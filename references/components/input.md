@@ -4,6 +4,8 @@
 
 Tài liệu này mô tả toàn bộ họ component Input của MDS 2.0 để AI coding agent triển khai đúng thiết kế. Mọi giá trị px và mã màu hex bên dưới được đo trực tiếp từ dữ liệu vector trong file Figma export (không suy đoán). PDF không chứa chú thích đo đạc dạng chữ; những thông số không đọc được đã được lược bỏ thay vì phỏng đoán.
 
+> **Cập nhật theo bộ demo chuẩn (07/2026):** chiều cao control giờ theo **mật độ hiển thị** (xem `styles.md` mục Density): input **36px** ở mật độ Trung bình (mặc định), 28px Compact, 40px Rộng — dùng token `--mds-input-height`, KHÔNG hard-code 32px. Các giá trị "32px" trong tài liệu này là bản Figma cũ, giữ nguyên để tham khảo tỷ lệ các phần tử con; button vẫn 32px ở mật độ Trung bình.
+
 ## 1. Mô tả & phạm vi
 
 Input là nhóm ô nhập liệu dùng trong form và bảng dữ liệu. PDF định nghĩa các loại sau (cùng chung nền tảng khung ô nhập):

@@ -129,6 +129,18 @@ Ngữ cảnh sử dụng:
 - Thư viện biểu đồ: dựa trên **Apache ECharts**.
 - Bo góc: "Sử dụng bo góc chung cho Pie, column, bar là: **4px**" — tạo cảm giác mềm mại, hiện đại.
 
+### Spec render chuẩn (đo từ bộ demo chuẩn của giám đốc thiết kế)
+
+- **Màu series**: series chính = màu brand của theme hiện tại (đổi theme → chart đổi màu theo, lắng nghe sự kiện đổi theme để vẽ lại); series phụ theo chart palette trong `styles.md` (`#12B76A` thu/success, `#F79009` chi/warning, `#0BA5EC` tồn/info, `#98A2B3` neutral so sánh, `#7A5AF8` accent).
+- **Cột (bar)**: `barMaxWidth: 12`, bo đỉnh `borderRadius: [4,4,0,0]`.
+- **Đường (line)**: width 2, `smooth: true`, điểm `symbol: 'circle'` size 4; area dùng gradient dọc từ màu series ~27% alpha → trong suốt.
+- **Donut**: `radius: ['50%','80%']`, `padAngle: 2`, `borderRadius: 4`, không hiện label trên lát (`label.show: false`) — tên hiển thị ở legend/bảng kèm theo.
+- **Trục & lưới**: nhãn trục 11px màu `#717680`; đường trục `#E9EAEB`; chỉ kẻ lưới ngang màu `#F0F2F4`; giá trị lớn rút gọn (`399k`); nhãn trục X tự xoay 30° khi vùng vẽ hẹp (<640px).
+- **Chú thích (legend)**: đặt DƯỚI biểu đồ, căn giữa, chữ **11px UPPERCASE màu secondary**, gap 16px giữa các mục; ký hiệu màu 8×8px — **tròn cho line/donut, vuông cho bar**. Bar/line chỉ 1 series thì KHÔNG hiện legend (tiêu đề card đã đủ nghĩa).
+- **Tooltip**: `trigger: 'axis'` cho bar/line (so sánh nhiều series tại 1 mốc), `trigger: 'item'` cho donut; chữ 12px.
+- **Hàng số tổng trên biểu đồ**: có thể đặt 2–3 chỉ số tổng ngay trên vùng vẽ — số 18px bold + nhãn 11px UPPERCASE secondary (vd DOANH THU / CHI PHÍ / LỢI NHUẬN).
+- **Dòng đơn vị**: "Đvt: Triệu đồng" 11px secondary căn phải dưới tiêu đề card; **chân card**: "Số liệu tính đến: {giờ}" + link "Tải lại" màu brand, 11px, border-top 1px.
+
 ### Tham số/chức năng trên biểu đồ
 - Trạng thái bình thường: **ẩn các chức năng** trên card để tránh giao diện rối.
 - Khi hover, hiển thị chức năng theo quy tắc:

@@ -162,6 +162,43 @@ Dành cho các bảng dữ liệu phức tạp như: Bảng lương.
 - Khi cuộn chuột thì **cuộn cả page** cho đến khi **header của bảng chạm vào header bar** thì **ghim lại header của bảng**, sau đó chỉ scroll trong vùng nội dung của bảng.
 - **Lưu ý**: Một số dạng bảng phức tạp có thêm panel bên phải có thể cân nhắc giữ nguyên vùng tiêu đề trang, tổng quan, header bảng và footer — **chỉ cuộn nội dung bên trong bảng**.
 
+## 13. Spec chuẩn từ bộ demo của giám đốc thiết kế (07/2026)
+
+Giá trị đo trực tiếp từ bộ demo chuẩn — dùng làm mặc định khi dựng bảng mới.
+
+### Khối bảng trong màn hình Danh sách
+
+- Bảng nằm trong panel trắng bo góc 8px trên nền xám; cấu trúc dọc: `[KPI row (tùy chọn)] → [Table toolbar] → [Header bảng] → [Body cuộn] → [Footer Tổng] → [Thanh phân trang]`. Footer và phân trang nằm NGOÀI vùng cuộn.
+- **Hàng KPI trên bảng** (tùy chọn): 3 card ngang gap 12px — icon 36px bo 8px nền màu nhạt theo ngữ nghĩa (success/warning/brand) + label 12px medium + giá trị 18px semibold cùng màu + chip giờ cập nhật (icon clock + "15:59") 11px secondary; nút refresh ẩn, hiện khi hover card. Cả hàng KPI thu gọn được bằng nút **CollapseExpandPanel** (tab 40×16px nền trắng viền 1px, bo 4px 2 góc dưới, icon chevron 13px) căn giữa.
+
+### Table toolbar (TableHeader)
+
+- Cao tối thiểu 56px, padding 12×16px, nền trắng.
+- **Trái**: ô tìm kiếm (ibox) 240–280px + các filter phụ (vd select "Trường: Tất cả").
+- **Phải**: cụm 4 icon button outline cố định theo thứ tự **Làm mới → Xuất file → Thiết lập cột → Bộ lọc** | vạch dọc 1×20px | cụm nút chính.
+- Nút chính thường là **split button**: nút hành động chính primary ("Thêm thu tiền" + mũi tên chevron-down chọn biến thể), nút hành động phụ split neutral, cuối cùng là nút More (⋯) icon outline mở DropdownMenu tiện ích (Nhập/Xuất Excel, In danh sách, Tùy chỉnh cột...).
+- **Chế độ bulk action**: khi tick ≥ 1 dòng, phần phải toolbar đổi thành `Đã chọn **N**` + link "Bỏ chọn" màu brand + tối đa 3 nút hàng loạt (outline neutral) + nút More; ô tìm kiếm giữ nguyên vị trí bên trái.
+
+### Kích thước bảng
+
+- Cột checkbox đầu tiên 44px; checkbox 16×16px bo 3px viền 1.5px, hover có vòng tròn 20px nền brand-light quanh box; checked nền brand + check trắng; header dùng trạng thái indeterminate (gạch ngang) khi chọn một phần.
+- Header: nền `--neutral-200`, border trên/dưới 1px `--stroke-neutral`, chữ 13px semibold, sticky khi cuộn; cell header ngăn nhau bằng vạch liền 1px.
+- Body row: cao theo density (36px mặc định), border-bottom 1px; **các cell trong row ngăn nhau bằng vạch chấm (dotted) 1px** — khác header (liền). Hover row: nền `--bg-brand-light`; row đang chọn/active cũng nền brand-light.
+- Số tiền: căn phải, semibold, `font-feature-settings: 'tnum'`. Số chứng từ là link (`dt-action-link` màu link, hover gạch chân).
+- Footer "Tổng": nền `--neutral-150`, chữ semibold, border-top 1px.
+- **Resize cột**: hotspot 8px mép phải cell header, hover hiện vạch 2px brand + đường chỉ dọc full-height mờ; kéo để đổi width, min 60px.
+- **Cột thao tác dòng**: sticky mép phải, rộng ~140px, chỉ hiện khi hover/chọn dòng, nền gradient trong suốt → brand-light; gồm icon button outline nhỏ: Xem (eye), Sửa (pencil), Xóa (trash, đỏ), More (dots).
+
+### Thanh phân trang (TablePaging)
+
+- Cao 48px, border-top 1px, nền trắng.
+- **Trái**: `Tổng số: **N**` (label secondary, số semibold). **Phải**: "Số dòng/trang" + select 72px (20/50/100) + range `1 - 20` semibold + 4 nút icon: về đầu (chevron-left-pipe), trước, sau, về cuối (chevron-right-pipe).
+
+### Master trên – Detail dưới (spec)
+
+- Click dòng → mở panel Detail bên dưới (cao mặc định ~280px), có: nút CollapseExpandPanel thu/mở ở đỉnh, tab "Chi tiết" (36px), bảng con + phân trang riêng.
+- Giữa 2 panel có **thanh kéo resize** cao 8px (hover hiện thanh ngang 32×3px bo tròn màu `--stroke-neutral`), kéo dọc đổi chiều cao Detail (min 80px).
+
 ---
 
-*Ghi chú: Tài liệu gốc mô tả hành vi và quy tắc bằng lời kèm hình minh họa; các giá trị px/hex cụ thể nằm trong hình ảnh nên không liệt kê tại đây để tránh sai lệch.*
+*Ghi chú: Tài liệu gốc mô tả hành vi và quy tắc bằng lời kèm hình minh họa; các giá trị px/hex cụ thể lấy từ bộ demo chuẩn của giám đốc thiết kế (mục 13).*

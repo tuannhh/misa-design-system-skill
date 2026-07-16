@@ -46,17 +46,23 @@ Skill này giúp AI xây dựng UI đúng quy chuẩn thiết kế MISA khi phá
 - **Mọi thao tác của người dùng phải có phản hồi**: disable button hoặc hiện busy indicator sau khi click; xử lý > 5 giây phải có thanh tiến trình (progress bar).
 - **Lỗi nhập liệu**: cảnh báo dễ hiểu bằng tiếng Việt, tự động focus vào trường lỗi đầu tiên.
 - **Icon và phím tắt của cùng một chức năng phải đồng nhất** trên toàn bộ ứng dụng; phím tắt phải có tooltip.
-- **Icon: Figma MDS là nguồn chuẩn; [assets/icons/](assets/icons/) là gói lõi đã xác minh, không phải toàn bộ thư viện.** Tra bundle → bảng map → trang Icons Figma. Dùng `MIcon.vue`, không inline SVG/map path riêng. Nếu Figma có nhưng bundle thiếu, bổ sung đúng SVG chính thức và chạy generator; chỉ dùng Tabler/tự vẽ sau khi xác minh Figma thật sự chưa có. Không trộn FontAwesome, Material, Lucide hay emoji vào app.
+- **Icon: dùng Tabler Icons với `stroke-width: 1.5`** làm thư viện triển khai (bộ demo chuẩn của giám đốc thiết kế dùng `@tabler/icons-vue`, wrapper `.ti`/`MIcon.vue`, icon kích thước `1em` theo font-size) — bộ icon MDS trên Figma cùng phong cách stroke 1.5 outline nên khớp với Tabler. Dùng qua component wrapper, **không inline SVG/map path riêng**, không trộn nhiều thư viện (FontAwesome, Material, Lucide, emoji). Ngoại lệ full-color: icon MISA AI (AVA) và AMIS Chat trên header là SVG asset riêng — xem [header-bar.md](references/patterns/header-bar.md) mục 3c.
 - **Màu sắc, font, kích thước: dùng token trong [assets/tokens.css](assets/tokens.css)** — không hard-code mã hex.
 - **Header Platform MISA luôn có nút chuyển ứng dụng 9 chấm ở mép trái**, trước logo/tên app; không thay bằng hamburger hoặc icon khác.
-- **Header Platform chọn đúng biến thể theo sản phẩm/reference**: `light` (nền trắng) hoặc `brand` (nền primary). Ô tìm kiếm ở trạng thái chưa focus là nền trung tính/white-alpha mờ; không dùng input trắng đặc trên header brand. Cụm tiện ích theo thứ tự: Thiết lập → AVA → Chat → Thông báo → Hỗ trợ → More tròn → avatar người dùng.
+- **Header Platform chọn đúng biến thể theo sản phẩm/reference**: `light` (nền trắng) hoặc `brand` (nền primary) — người dùng đổi được trong dialog Thiết lập (Giao diện: Màu sắc/Sáng). Ô tìm kiếm ở trạng thái chưa focus là nền trung tính/white-alpha mờ; không dùng input trắng đặc trên header brand. Cụm tiện ích theo thứ tự: Thiết lập → AVA → Chat → Thông báo → Hỗ trợ → More tròn → avatar người dùng.
+- **Màu icon header theo chế độ có ngoại lệ**: icon MISA AI (AVA) là asset full-color giữ nguyên ở cả 2 chế độ; icon AMIS Chat trắng trên header brand nhưng chuyển **#1570EF** (không phải neutral) trên header sáng; badge đếm luôn đỏ #F04438 — bảng đầy đủ trong [references/patterns/header-bar.md](references/patterns/header-bar.md) mục 3c.
 - **AVA là asset mascot chính thức của MISA**: truyền asset chuẩn qua prop/slot, không tự minh họa lại mascot hoặc thay bằng avatar ngẫu nhiên.
-- **Sidebar trắng kiểu mới dùng item bo góc trong gutter**, kể cả trạng thái thu gọn; không tô active tràn sát mép và không dùng vạch active 3px mép trái.
-- **Dashboard card/box dùng stroke 1px, không dùng shadow**; shadow chỉ dùng cho overlay như popup/dropdown/toast/dialog/drawer.
+- **Sidebar trắng kiểu mới dùng item bo góc trong gutter**, kể cả trạng thái thu gọn; không tô active tràn sát mép và không dùng vạch active 3px mép trái. Kích thước chuẩn: mở rộng 200px / thu gọn 64px, hover khi thu gọn thì mở đè lên app (không đẩy layout).
+- **Mọi box trắng trên nền xám (dashboard card, KPI, panel bảng...) BẮT BUỘC dùng `box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)` (token `--mds-shadow-card`, "Drop Shadow/Neutral/All 2") + `border-radius: 8px`** — chuẩn thống nhất toàn team, KHÔNG dùng border 1px để đóng khung, KHÔNG dùng drop shadow nổi. Shadow nổi (md/lg/dialog) chỉ dùng cho overlay (popup/dropdown/toast/dialog/drawer).
+- **Màu viền (stroke) dùng chính thang Neutral**: viền mặc định = Stroke Neutral (Neutral/400 `#CED1D6`); phân tách rất nhẹ (dưới header, kẻ trong card, giữa dòng) = Stroke Neutral Light (Neutral/300 `#E9EAEB`). Không tạo hex viền riêng.
+- **Khung app theo kích thước chuẩn**: Global Header 48px, Sub-nav tab 48px, Page header 56px, nền content xám `#ECEDEF`, padding/gap card 16px — xem mục "Khung ứng dụng chuẩn" trong [references/layout-patterns.md](references/layout-patterns.md).
+- **Chiều cao control theo mật độ hiển thị (density)**: mặc định Trung bình (button 32px, input 36px, row bảng 36px); người dùng đổi được sang Compact/Rộng trong dialog Thiết lập — dùng token, không hard-code chiều cao.
 
 ## Chọn tone màu (theme) cho ứng dụng
 
-MDS có **10 theme chính thức**: blue (mặc định MISA, Brand/600 `#245FDF`), indigo, cyan, teal, green, orange, red, pink, purple, blue-gray — mỗi theme là 1 file trong [assets/tokens/themes/](assets/tokens/themes/) chứa đủ thang Brand 50→900 + màu Text/Icon/Stroke/Bg tương ứng.
+MDS có **10 theme màu chính thức**: blue (mặc định MISA, Brand/600 `#245FDF`), indigo, cyan, teal, green, orange, red, pink, purple, blue-gray — mỗi theme là 1 file trong [assets/tokens/themes/](assets/tokens/themes/) chứa đủ thang Brand 50→900 + màu Text/Icon/Stroke/Bg tương ứng. Trong dialog Thiết lập của app còn có lựa chọn thứ 11 **Gradient** (token theme Green + header gradient `#245FDF→#0FBF79` — xem `references/styles.md`).
+
+**Theme/giao diện là thiết lập của người dùng cuối, không chỉ của dev**: app chuẩn có dialog "Thiết lập màu sắc và hiển thị" mở từ nút Thiết lập trên header — gồm 3 tab: màu sắc (theme + chế độ header Màu sắc/Sáng), mật độ hiển thị (Compact/Trung bình/Rộng), hình nền (wallpaper + hiệu ứng kính). Spec chi tiết trong [references/patterns/header-bar.md](references/patterns/header-bar.md).
 
 **Khi người dùng muốn chọn/đổi tone màu app:**
 1. Mở [assets/theme-preview.html](assets/theme-preview.html) trong trình duyệt (hoặc render các thẻ swatch tương tự) để người dùng xem 10 theme với thang màu + nút/tag minh họa và chọn.
@@ -107,7 +113,8 @@ Kiểm tra từng mục, sửa ngay nếu chưa đạt:
 - [ ] Header có nút chuyển ứng dụng 9 chấm ở mép trái trước logo/tên app
 - [ ] Header dùng đúng biến thể `light`/`brand`; đủ cụm Setting, AVA, Chat, Notification, Help, More, avatar theo scope sản phẩm
 - [ ] Sidebar collapsed/expanded giống rail trắng MISA: item bo góc trong gutter, active không tràn mép
-- [ ] Card/box dashboard dùng border/stroke 1px, không dùng shadow
+- [ ] Mọi box trắng trên nền xám dùng đúng `box-shadow: 0 0 2px 0 rgba(0,0,0,0.10)` + radius 8px (không border đóng khung, không shadow nổi); stroke dùng thang Neutral (400 mặc định / 300 phân tách nhẹ); header 48px, sub-nav 48px, sidebar 200/64px đúng khung chuẩn
+- [ ] Chiều cao control dùng token density (button 32/input 36 ở mật độ Trung bình), không hard-code
 - [ ] Slideshow dùng `MImageViewer`, có Esc, mũi tên, counter, thumbnail và alt text
 - [ ] Mobile/PWA đã kiểm tra theo `mobile-pwa.md`: đổi layout theo size class, không có desktop sidebar cố định ở compact, touch target >= 48px trên coarse pointer, safe area/bàn phím không che footer hoặc field
 - [ ] Số định dạng kiểu Việt Nam: chấm ngăn nghìn, phẩy thập phân (1.234.567,89)

@@ -51,6 +51,47 @@ Popup là **cửa sổ nổi bật giữa màn hình, có lớp phủ (overlay)*
 
 - Nút Lưu **vẫn hành xử như khi có thay đổi**; tuy nhiên DEV có thể kiểm tra thay đổi và **không gọi cập nhật dữ liệu** để tối ưu hệ thống.
 
+## 5. Spec form chứng từ full màn hình (từ bộ demo chuẩn — mẫu "Phiếu thu")
+
+Form chứng từ kế toán mở **full màn hình thay thế vùng nội dung** (header + sidebar app vẫn giữ nguyên). Cấu trúc dọc: `Form bar → Form body (cuộn) → Form footer (ghim)`.
+
+### Form bar (thay cho sub-nav, cao 48px)
+
+- **Trái**: hộp icon 28px nền brand-light bo 6px chứa icon nghiệp vụ màu brand → tiêu đề "Phiếu thu **PT00020**" 13px (số chứng từ đậm) → vạch dọc 1×20px → combobox loại chứng từ (200px, có nút + thêm nhanh) → ô tìm kiếm chứng từ nguồn (flex, max 360px).
+- **Phải**: nút "Hướng dẫn sử dụng" (outline neutral, icon help màu success, chevron-down) → icon settings outline → **nút X đóng form** (icon outline).
+
+### Vùng field thông tin chung
+
+- Label 13px medium đặt **trên** input, cách 4px; các hàng field dàn flex gap 16px với **bề rộng cột cố định thống nhất giữa các hàng** (vd 200px / flex / 220px / 175px) để các ô thẳng cột.
+- Input dùng khung `ibox`: icon hành động bên trong ô (dấu **+** = thêm nhanh danh mục, **chevron-down** = mở combobox, **calendar** = date picker, icon **bảng** = chọn mẫu diễn giải).
+- Ô ghép ("Kèm theo [số] | chứng từ gốc"): input số + vạch ngăn dọc + label tĩnh secondary trong cùng một ibox.
+- **Tổng tiền hiển thị lớn ở góc phải trên**: label 12px secondary + giá trị **28px bold** căn phải, cập nhật realtime theo bảng hạch toán.
+
+### Section bảng hạch toán (inline edit)
+
+- Tiêu đề section H3 "Hạch toán"; bên phải: **split button AI "AVA Kế toán"** (gradient AI + icon AVA full-color) + select "Loại tiền" (VND/USD/EUR).
+- Bảng viền ngoài 1px bo 8px; header + footer nền `--bg-neutral-light`, chữ header 12px medium secondary; row body cao 36px, hover nền brand-light.
+- Ô nhập trong cell cao 28px: viền trong suốt khi nghỉ → hover viền neutral nền trắng → focus viền brand + ring nhạt; cột số căn phải `tnum`. Cột cuối là nút xóa dòng (trash đỏ).
+- Dưới bảng: trái = nút "Thêm dòng" + "Xóa hết dòng" (outline neutral); phải = "Tổng số: N bản ghi" + phân trang.
+
+### Đính kèm
+
+- Icon paperclip + label "Đính kèm" + chú thích "Dung lượng tối đa 5MB" secondary.
+- Dropzone ~280×60px viền **dashed 1.5px** bo 8px, chữ "Kéo/thả tệp vào đây hoặc bấm vào đây" secondary; hover → viền brand + nền brand-light.
+
+### Form footer — thanh tối ghim đáy (điểm nhận diện của form chứng từ)
+
+- Cao 52px, **nền tối `--neutral-800` `#484E59`**, ghim cuối form (không trôi).
+- **Trái**: gợi ý phím tắt "F3 - Tìm nhanh, F9 - Thêm nhanh" 12px trắng 50%.
+- **Giữa/phải theo thứ tự**: nút **Hủy** (ghost viền trắng 25%, chữ trắng) → toggle "Hiển thị tài khoản" (switch 36×20px, bật = nền success) → nút **Cất** (ghost viền trắng) → **split button primary "Cất và Thêm"** ở ngoài cùng bên phải (đúng quy tắc Primary ngoài cùng phải).
+
+### Biến thể form có aside phải (mẫu "Bán hàng")
+
+- Form header 56px: icon 32px brand-light + tiêu đề H3 + mã chứng từ dạng badge nền neutral bo 4px.
+- Dưới header có **options strip** (padding 8×16px): các radio/checkbox/select nhỏ 28px cấu hình chứng từ, ngăn nhóm bằng vạch dọc.
+- Body chia 2 cột: nội dung chính (tab + field grid 2 cột gap 12×24px + bảng chi tiết) và **aside phải 300px** (border-left) chứa các card tóm tắt viền 1px bo 8px: trạng thái (badge), thông tin key-value, khối tổng tiền (giá trị chính 18px bold).
+- Footer của biến thể này nền trắng 56px, border-top.
+
 ---
 
-*Ghi chú: Tài liệu gốc mô tả quy tắc bằng lời kèm hình minh họa; các giá trị px/hex cụ thể nằm trong hình ảnh nên không liệt kê tại đây để tránh sai lệch.*
+*Ghi chú: Mục 1–4 từ tài liệu quy chuẩn gốc (mô tả bằng lời); mục 5 đo trực tiếp từ bộ demo chuẩn của giám đốc thiết kế.*

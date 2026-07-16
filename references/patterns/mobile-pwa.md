@@ -95,7 +95,7 @@ Quy tắc chuyển lớp:
 - Compact dùng một cột; KPI có thể 2 cột nếu giá trị dài nhất vẫn không tràn. Chart có chiều cao ổn định và hiển thị nhãn số quan trọng, không yêu cầu hover.
 - Medium dùng lưới 2 cột; Expanded/Large dùng lưới desktop theo `layout-patterns.md`.
 - Bộ lọc thời gian đặt gần tiêu đề dashboard hoặc chart liên quan. Filter không vừa phải mở bottom sheet/drawer, không xuống nhiều dòng lộn xộn.
-- Card dashboard tiếp tục dùng stroke 1px, không dùng shadow.
+- Card dashboard dùng `--shadow-card` (`0 0 2px 0 rgba(0,0,0,0.10)`) như desktop — box trắng trên nền xám dùng shadow, không đóng khung bằng border 1px.
 
 ### 4.5. Dialog, drawer và bottom sheet
 
