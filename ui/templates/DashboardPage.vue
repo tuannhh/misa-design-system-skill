@@ -524,12 +524,16 @@ const payrollOption = computed(() => ({
               <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
             </div>
             <p class="mb-1 text-[12px] text-[var(--mds-text-muted)]">Tổng quỹ lương tháng</p>
-            <div class="flex items-center gap-3">
-              <MChart :option="payrollOption" :height="160" class="w-[160px] shrink-0" />
-              <div class="flex flex-col gap-2">
-                <div v-for="c in payrollItems" :key="c.name" class="flex items-center gap-2 text-[12px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">
+            <div class="flex min-w-0 items-center gap-3">
+              <!-- Bọc trong div có width cố định — MChart tự có class w-full nội bộ,
+                   truyền class="w-[...]" trực tiếp vào MChart sẽ bị w-full đè mất -->
+              <div class="w-[160px] shrink-0">
+                <MChart :option="payrollOption" :height="160" />
+              </div>
+              <div class="flex min-w-0 flex-1 flex-col gap-2">
+                <div v-for="c in payrollItems" :key="c.name" class="flex min-w-0 items-center gap-2 text-[12px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">
                   <span class="inline-block h-2 w-2 shrink-0 rounded-full" :style="{ background: c.color }" />
-                  {{ c.name }}
+                  <span class="truncate">{{ c.name }}</span>
                 </div>
               </div>
             </div>
