@@ -3,7 +3,6 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import MIcon from './MIcon.vue'
 import MHeaderIconAva from './MHeaderIconAva.vue'
-import MHeaderIconChat from './MHeaderIconChat.vue'
 
 const props = defineProps({
   variant: { type: String, default: 'light', validator: (v) => ['light', 'brand'].includes(v) },
@@ -34,6 +33,12 @@ const headerClass = computed(() => isBrand.value
 const buttonClass = computed(() => isBrand.value
   ? 'text-white hover:bg-white/15 focus-visible:outline-white'
   : 'text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]')
+// AMIS Chat: icon "message" đúng bản trong thư viện (assets/icons/message.svg qua MIcon),
+// giữ màu nhận diện #1570EF trên header sáng (KHÔNG chuyển neutral như icon thường),
+// trắng trên header brand giống các icon khác. Xem header-bar.md mục 3c.
+const chatButtonClass = computed(() => isBrand.value
+  ? 'text-white hover:bg-white/15 focus-visible:outline-white'
+  : 'text-[#1570EF] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]')
 const searchClass = computed(() => isBrand.value
   ? 'bg-white/15 text-white placeholder:text-white/70 focus:bg-white focus:text-[var(--mds-text)] focus:placeholder:text-[var(--mds-text-placeholder)]'
   : 'bg-[var(--mds-bg-disabled)] text-[var(--mds-text)] placeholder:text-[var(--mds-text-muted)] focus:bg-white focus:ring-1 focus:ring-[var(--mds-brand-600)]')
@@ -101,12 +106,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKeydown))
           <MHeaderIconAva v-else :size="24" />
         </slot>
       </button>
-      <!-- AMIS Chat: asset màu CỐ ĐỊNH (badge tròn xanh #1570EF), giữ nguyên ở
-           mọi chế độ header — KHÔNG đổi trắng trên brand như icon thường (đối
-           chiếu ảnh chụp sản phẩm thật do giám đốc thiết kế gửi) -->
-      <button v-if="showChat" type="button" class="grid h-8 w-8 place-items-center overflow-hidden rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]" title="AMIS Chat" @click="emit('chat')">
-        <MHeaderIconChat :size="24" />
-      </button>
+      <!-- AMIS Chat: icon "message" đúng bản trong thư viện (MIcon/assets/icons/message.svg),
+           không phải SVG tự vẽ — giữ màu #1570EF trên header sáng, trắng trên brand -->
+      <button v-if="showChat" type="button" :class="chatButtonClass" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="AMIS Chat" @click="emit('chat')"><MIcon name="message" :size="20" /></button>
       <button v-if="showNotifications" type="button" :class="buttonClass" class="relative grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Thông báo" @click="emit('notifications')"><MIcon name="bell" :size="20" /><span v-if="notificationCount > 0" class="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--mds-danger)] px-1 text-[10px] font-medium leading-none text-white">{{ badgeText }}</span></button>
       <button v-if="showHelp" type="button" :class="buttonClass" class="hidden h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Hỗ trợ" @click="emit('help')"><MIcon name="help" :size="20" /></button>
       <button v-if="showMore" type="button" :class="isBrand ? 'border-white/40 text-white hover:bg-white/15 focus-visible:outline-white' : 'border-[var(--mds-border)] text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]'" class="hidden h-7 w-7 place-items-center rounded-full border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Thêm" @click="emit('more')"><MIcon name="dots" :size="16" /></button>
