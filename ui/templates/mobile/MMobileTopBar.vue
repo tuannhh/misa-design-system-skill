@@ -36,7 +36,7 @@ const emit = defineEmits(['back', 'app-switcher', 'notifications', 'user-click',
       aria-label="Quay lại"
       @click="emit('back')"
     >
-      <MIcon name="chevron-left" :size="22" />
+      <MIcon name="chevron-left" :size="24" />
     </button>
 
     <h1 class="min-w-0 flex-1 truncate text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
