@@ -2,6 +2,7 @@
 // MHeaderBar — Header Platform MISA: light hoặc brand theo reference sản phẩm.
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import MIcon from './MIcon.vue'
+import MHeaderIconAva from './MHeaderIconAva.vue'
 
 const props = defineProps({
   variant: { type: String, default: 'light', validator: (v) => ['light', 'brand'].includes(v) },
@@ -24,12 +25,19 @@ const searchInput = ref(null)
 const searchText = ref('')
 
 const isBrand = computed(() => props.variant === 'brand')
+// 'mds-header--brand' là class hook để theme Gradient tô gradient lên header
+// (xem assets/tokens/themes/gradient.css) — không xóa dù trông "thừa" so với Tailwind.
 const headerClass = computed(() => isBrand.value
-  ? 'bg-[var(--mds-brand-600)] text-white'
+  ? 'mds-header--brand bg-[var(--mds-brand-600)] text-white'
   : 'border-b border-[var(--mds-border)] bg-[var(--mds-bg)] text-[var(--mds-text)]')
 const buttonClass = computed(() => isBrand.value
   ? 'text-white hover:bg-white/15 focus-visible:outline-white'
   : 'text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]')
+// AMIS Chat: giữ màu nhận diện #1570EF trên nền sáng (KHÔNG chuyển neutral như icon
+// thường) — trắng trên nền brand giống các icon khác. Xem header-bar.md mục 3c.
+const chatButtonClass = computed(() => isBrand.value
+  ? 'text-white hover:bg-white/15 focus-visible:outline-white'
+  : 'text-[#1570EF] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]')
 const searchClass = computed(() => isBrand.value
   ? 'bg-white/15 text-white placeholder:text-white/70 focus:bg-white focus:text-[var(--mds-text)] focus:placeholder:text-[var(--mds-text-placeholder)]'
   : 'bg-[var(--mds-bg-disabled)] text-[var(--mds-text)] placeholder:text-[var(--mds-text-muted)] focus:bg-white focus:ring-1 focus:ring-[var(--mds-brand-600)]')
@@ -39,7 +47,6 @@ const searchIconClass = computed(() => isBrand.value
 const badgeText = computed(() => props.notificationCount > 99 ? '99+' : String(props.notificationCount))
 const appInitial = computed(() => (props.appName || '').trim().charAt(0).toUpperCase())
 const userInitials = computed(() => initials(props.user?.name))
-const assistantInitials = computed(() => initials(props.assistant?.name || 'AVA'))
 
 function initials(name) {
   const words = (name || '').trim().split(/\s+/).filter(Boolean)
@@ -90,8 +97,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKeydown))
     <div class="flex shrink-0 items-center gap-1">
       <slot name="actions" />
       <button v-if="showSettings" type="button" :class="buttonClass" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Thiết lập" @click="emit('settings')"><MIcon name="settings" :size="20" /></button>
-      <button v-if="showAssistant" type="button" class="grid h-8 w-8 place-items-center overflow-hidden rounded-full bg-[var(--mds-brand-100)] text-[11px] font-semibold text-[var(--mds-brand-700)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]" :title="assistant?.name || 'MISA AVA'" @click="emit('assistant')"><slot name="assistant"><img v-if="assistant?.avatarUrl" :src="assistant.avatarUrl" :alt="assistant.name || 'MISA AVA'" class="h-full w-full object-cover" /><span v-else>{{ assistantInitials }}</span></slot></button>
-      <button v-if="showChat" type="button" :class="buttonClass" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Chat" @click="emit('chat')"><MIcon name="message" :size="20" /></button>
+      <button v-if="showAssistant" type="button" class="grid h-8 w-8 place-items-center overflow-hidden rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]" :title="assistant?.name || 'MISA AVA'" @click="emit('assistant')">
+        <!-- Mặc định: icon AVA full-color cố định (giữ nguyên màu ở mọi mode) — app có
+        thể truyền avatarUrl/slot riêng nếu có mascot chuyên biệt của phân hệ -->
+        <slot name="assistant">
+          <img v-if="assistant?.avatarUrl" :src="assistant.avatarUrl" :alt="assistant.name || 'MISA AVA'" class="h-full w-full object-cover" />
+          <MHeaderIconAva v-else :size="24" />
+        </slot>
+      </button>
+      <button v-if="showChat" type="button" :class="chatButtonClass" class="grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="AMIS Chat" @click="emit('chat')"><MIcon name="message" :size="20" /></button>
       <button v-if="showNotifications" type="button" :class="buttonClass" class="relative grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Thông báo" @click="emit('notifications')"><MIcon name="bell" :size="20" /><span v-if="notificationCount > 0" class="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--mds-danger)] px-1 text-[10px] font-medium leading-none text-white">{{ badgeText }}</span></button>
       <button v-if="showHelp" type="button" :class="buttonClass" class="hidden h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Hỗ trợ" @click="emit('help')"><MIcon name="help" :size="20" /></button>
       <button v-if="showMore" type="button" :class="isBrand ? 'border-white/40 text-white hover:bg-white/15 focus-visible:outline-white' : 'border-[var(--mds-border)] text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]'" class="hidden h-7 w-7 place-items-center rounded-full border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Thêm" @click="emit('more')"><MIcon name="dots" :size="16" /></button>

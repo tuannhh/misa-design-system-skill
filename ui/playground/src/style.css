@@ -7,7 +7,8 @@
 @import "@assets/tokens/base-colors.css";
 @import "@assets/tokens/number.css";
 @import "@assets/tokens/font.css";
-/* 10 theme chính thức — đổi bằng data-mds-theme trên <html> */
+@import "@assets/tokens/chart-palette.css";
+/* 11 theme chính thức (10 màu + Gradient) — đổi bằng data-mds-theme trên <html> */
 @import "@assets/tokens/themes/blue.css";
 @import "@assets/tokens/themes/indigo.css";
 @import "@assets/tokens/themes/cyan.css";
@@ -18,11 +19,22 @@
 @import "@assets/tokens/themes/pink.css";
 @import "@assets/tokens/themes/purple.css";
 @import "@assets/tokens/themes/blue-gray.css";
+@import "@assets/tokens/themes/gradient.css";
 
 body {
-  font-family: 'Inter', var(--mds-font-family);
+  /* InterVariable tự host chưa có trong repo demo này — fallback 'Inter var' phục vụ
+     bởi rsms.me/inter/inter.css (preload trong index.html) cho tới khi có file woff2 thật */
+  font-family: var(--mds-font-family);
   font-size: var(--mds-font-size-body);
   line-height: var(--mds-line-height-body);
   color: var(--mds-text);
-  background: var(--mds-bg-disabled);
+  background: var(--mds-bg-page);
+  font-feature-settings: 'liga' 1, 'calt' 1, 'tnum' 1, 'lnum' 1;
+}
+
+/* Box trắng trên nền xám — chuẩn bắt buộc toàn team (Drop Shadow/Neutral/All 2) */
+.mds-card {
+  border-radius: var(--mds-radius-default);
+  background: var(--mds-bg);
+  box-shadow: var(--mds-shadow-card);
 }

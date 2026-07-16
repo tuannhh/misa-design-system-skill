@@ -120,3 +120,17 @@
   --mds-icon-xl: 32px;
   --mds-icon-touch-target: 40px;
 }
+
+/* ── Density overrides ─────────────────────────────────────
+   Đặt data-density="compact"|"comfortable" trên <html>; bỏ thuộc tính
+   (hoặc "medium") = mật độ Trung bình mặc định ở khối :root phía trên. */
+:root[data-density="compact"] {
+  --mds-btn-height: 28px;
+  --mds-input-height: 28px;
+  --mds-dt-row-height: 32px;
+}
+:root[data-density="comfortable"] {
+  --mds-btn-height: 36px;
+  --mds-input-height: 40px;
+  --mds-dt-row-height: 40px;
+}

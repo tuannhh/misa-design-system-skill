@@ -64,7 +64,7 @@ function clear() {
 <template>
   <div class="w-full">
     <div
-      class="flex h-8 w-full items-center gap-2 rounded-lg border bg-[var(--mds-bg)] px-3 transition-colors"
+      class="flex h-[var(--mds-input-height)] w-full items-center gap-2 rounded-lg border bg-[var(--mds-bg)] px-3 transition-colors"
       :class="[
         error
           ? 'border-[var(--mds-danger)]'
@@ -72,7 +72,7 @@ function clear() {
         disabled
           ? 'cursor-not-allowed bg-[var(--mds-bg-disabled)]'
           : !readonly && !error
-            ? 'hover:border-[var(--mds-brand-600)] focus-within:border-[var(--mds-brand-600)] focus-within:shadow-[0_0_0_2px_var(--mds-brand-100)]'
+            ? 'hover:border-[var(--mds-brand-600)] focus-within:border-[var(--mds-brand-600)] focus-within:shadow-[0_0_0_3px_rgba(4,153,228,0.12)]'
             : '',
       ]"
     >

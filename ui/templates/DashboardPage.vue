@@ -1,291 +1,541 @@
 <script setup>
 /**
- * DashboardPage — template màn hình Tổng quan (Dashboard) chuẩn MDS 2.0
- * MHeaderBar + MSidebar + main nền xám: hàng KPI 4 card trắng,
- * hàng biểu đồ cột + đường (MChart/ECharts), hàng doughnut + bảng mini.
- * Màu biểu đồ lấy từ CSS variables MDS (không hard-code hex).
+ * DashboardPage — template màn hình Tổng quan (Dashboard) chuẩn MDS 2.0.
+ * Dựng lại theo bộ demo chuẩn của giám đốc thiết kế (đối chiếu 2026-07):
+ * header 48px + sub-nav 48px, sidebar 200/64px hover-overlay, card dùng
+ * .mds-card (shadow-card thay border), dialog Thiết lập màu sắc/hiển thị,
+ * bảng mini trong card, biểu đồ ECharts theo spec communication.md.
+ * Nội dung nghiệp vụ (kế toán) viết mới, không sao chép số liệu/văn bản
+ * của bên thứ ba — chỉ tái hiện cấu trúc để đối chiếu hệ thống thiết kế.
  */
-import { ref, computed, watch } from 'vue'
+import { computed, ref } from 'vue'
 import MHeaderBar from '../components/MHeaderBar.vue'
 import MSidebar from '../components/MSidebar.vue'
+import MSettingsDialog from '../components/MSettingsDialog.vue'
 import MChart from '../components/MChart.vue'
-import MDataTable from '../components/MDataTable.vue'
-import MTag from '../components/MTag.vue'
+import MIcon from '../components/MIcon.vue'
+import MTabs from '../components/MTabs.vue'
 import MToast from '../components/MToast.vue'
 import { useToast } from '../components/toast.js'
+import { currentTheme, currentHeaderMode, sidebarCollapsed } from '../components/theme-state.js'
 
 const toast = useToast()
 
 /* ── Điều hướng ─────────────────────────────────────────────── */
 
 const sidebarItems = [
-  { key: 'dashboard', label: 'Tổng quan', icon: 'home' },
-  {
-    key: 'nhan-vien',
-    label: 'Nhân viên',
-    icon: 'users',
-    children: [
-      { key: 'ds-nhan-vien', label: 'Danh sách' },
-      { key: 'hop-dong', label: 'Hợp đồng' },
-    ],
-  },
-  { key: 'cham-cong', label: 'Chấm công', icon: 'calendar' },
+  { key: 'tong-quan', label: 'Tổng quan', icon: 'home' },
+  { key: 'tien-mat', label: 'Tiền mặt', icon: 'cash' },
+  { key: 'tien-gui', label: 'Tiền gửi', icon: 'wallet' },
+  { key: 'mua-hang', label: 'Mua hàng', icon: 'briefcase' },
+  { key: 'ban-hang', label: 'Bán hàng', icon: 'receipt' },
+  { key: 'kho', label: 'Kho', icon: 'building' },
+  { key: 'tien-luong', label: 'Tiền lương', icon: 'users' },
+  { key: 'thue', label: 'Thuế', icon: 'file-text' },
   { key: 'bao-cao', label: 'Báo cáo', icon: 'chart-bar' },
-  { key: 'thiet-lap', label: 'Thiết lập', icon: 'settings' },
+  { key: 'ke-toan-dv', label: 'Kế toán dịch vụ', icon: 'database' },
+  { key: 'danh-muc', label: 'Danh mục', icon: 'list' },
 ]
+const activeMenu = ref('tong-quan')
 
-const activeMenu = ref('dashboard')
-const sidebarCollapsed = ref(false)
+const subTabs = [
+  { key: 'tong-quan', label: 'Tổng quan' },
+  { key: 'tinh-nang-moi', label: 'Tính năng mới' },
+]
+const activeSubTab = ref('tong-quan')
 
-// Các mục còn lại có dữ liệu demo ở màn hình Danh sách (ListPage) → điều hướng sang đó
-watch(activeMenu, (val) => {
-  if (val !== 'dashboard') location.hash = 'list'
-})
+/* ── Dialog Thiết lập ───────────────────────────────────────── */
+const showSettings = ref(false)
 
-/* ── Màu biểu đồ từ token MDS (ECharts cần chuỗi màu thật nên
-      đọc giá trị CSS variable lúc runtime — vẫn KHÔNG hard-code hex) ── */
-
+/* ── Màu biểu đồ — computed để tự đổi theo theme (Settings dialog) ── */
 function cssVar(name) {
   if (typeof window === 'undefined') return ''
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim()
 }
-
-const brand600 = cssVar('--mds-brand-600')
-const brand300 = cssVar('--mds-brand-300')
-const danger = cssVar('--mds-danger')
-const info = cssVar('--mds-info')
-const warning = cssVar('--mds-warning')
-const purple = cssVar('--mds-purple')
-const textMuted = cssVar('--mds-text-muted')
-const border = cssVar('--mds-border')
-
-// Axis/legend dùng chung cho các biểu đồ trục
-const axisLabel = { color: textMuted, fontSize: 12, fontFamily: 'Inter' }
-const splitLine = { lineStyle: { color: border, type: 'dashed' } }
-
-/* ── Hàng 1: KPI cards ──────────────────────────────────────── */
-
-const kpis = [
-  { label: 'Tổng nhân sự', value: '1.284', delta: '+2,4%', color: 'success' },
-  { label: 'Tuyển mới tháng này', value: '36', delta: '+12,5%', color: 'success' },
-  { label: 'Nghỉ việc', value: '12', delta: '+8,3%', color: 'danger' },
-  { label: 'Tỷ lệ nghỉ', value: '0,9%', delta: '-0,2%', color: 'success' },
-]
-
-/* ── Hàng 2: biểu đồ cột + đường ────────────────────────────── */
-
-// Nhân sự theo phòng ban
-const barOption = computed(() => ({
-  // Chỉ 1 series, tiêu đề card đã đủ ngữ nghĩa → tắt legend để không đè lên nhãn trục
-  legend: { show: false },
-  grid: { left: 8, right: 8, top: 16, bottom: 0, containLabel: true },
-  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-  xAxis: {
-    type: 'category',
-    data: ['Kinh doanh', 'Phát triển SP', 'CSKH', 'Marketing', 'Kế toán', 'Nhân sự'],
-    axisLabel: { ...axisLabel, interval: 0 },
-    axisTick: { show: false },
-    axisLine: { lineStyle: { color: border } },
-  },
-  yAxis: { type: 'value', axisLabel, splitLine },
-  series: [
-    {
-      name: 'Nhân sự',
-      type: 'bar',
-      data: [412, 296, 188, 152, 132, 104],
-      barWidth: 28,
-      itemStyle: { color: brand600, borderRadius: [4, 4, 0, 0] },
-    },
-  ],
-}))
-
-// Biến động nhân sự 12 tháng: Tuyển mới / Nghỉ việc
-const months = Array.from({ length: 12 }, (_, i) => `Thg ${i + 1}`)
-
-const lineOption = computed(() => ({
-  grid: { left: 8, right: 16, top: 40, bottom: 0, containLabel: true },
-  tooltip: { trigger: 'axis' },
-  legend: { top: 0, left: 0, itemWidth: 12, itemHeight: 8, textStyle: axisLabel },
-  xAxis: {
-    type: 'category',
-    boundaryGap: false,
-    data: months,
-    axisLabel,
-    axisTick: { show: false },
-    axisLine: { lineStyle: { color: border } },
-  },
-  yAxis: { type: 'value', axisLabel, splitLine },
-  series: [
-    {
-      name: 'Tuyển mới',
-      type: 'line',
-      smooth: true,
-      symbolSize: 6,
-      data: [18, 22, 31, 26, 24, 28, 33, 29, 35, 30, 27, 36],
-      itemStyle: { color: brand600 },
-      lineStyle: { color: brand600, width: 2 },
-      areaStyle: { color: brand300, opacity: 0.15 },
-    },
-    {
-      name: 'Nghỉ việc',
-      type: 'line',
-      smooth: true,
-      symbolSize: 6,
-      data: [8, 6, 10, 7, 9, 12, 8, 11, 9, 13, 10, 12],
-      itemStyle: { color: danger },
-      lineStyle: { color: danger, width: 2 },
-    },
-  ],
-}))
-
-/* ── Hàng 3: doughnut + bảng mini ───────────────────────────── */
-
-// Cơ cấu theo loại hợp đồng
-const contractData = [
-  { value: 812, name: 'Không xác định thời hạn' },
-  { value: 296, name: 'Xác định thời hạn' },
-  { value: 98, name: 'Thử việc' },
-  { value: 78, name: 'Thời vụ / Cộng tác viên' },
-]
-const contractTotal = contractData.reduce((s, d) => s + d.value, 0)
-// Legend mặc định hiện %, hover mới thấy số đếm tuyệt đối (qua tooltip)
-function legendPercentLabel(name) {
-  const item = contractData.find((d) => d.name === name)
-  const pct = item ? ((item.value / contractTotal) * 100).toFixed(1).replace('.', ',') : ''
-  return `${name}  ${pct}%`
+// void currentTheme.value: ép Vue theo dõi phụ thuộc dù cssVar đọc DOM, không reactive tự nhiên
+function themedVar(name) {
+  return computed(() => { void currentTheme.value; return cssVar(name) })
 }
+const brand600 = themedVar('--mds-brand-600')
+const success = themedVar('--mds-success')
+const warning = themedVar('--mds-warning')
+const info = themedVar('--mds-info')
+const danger = themedVar('--mds-danger')
+const textMuted = themedVar('--mds-text-muted')
+const border = themedVar('--mds-border')
 
-const pieOption = computed(() => ({
-  tooltip: { trigger: 'item', valueFormatter: (v) => `${v} nhân viên` },
-  legend: {
-    orient: 'vertical',
-    left: '62%',
-    top: 'middle',
-    itemWidth: 12,
-    itemHeight: 12,
-    itemGap: 12,
-    textStyle: axisLabel,
-    formatter: legendPercentLabel,
-  },
-  color: [brand600, info, warning, purple],
+const axisLabel = computed(() => ({ color: textMuted.value, fontSize: 11, fontFamily: 'Inter' }))
+const splitLine = computed(() => ({ lineStyle: { color: cssVar('--mds-bg-disabled') } }))
+// Legend chuẩn dashboard: dưới chart, chữ nhỏ uppercase, chấm màu — theo communication.md
+const legendBelow = computed(() => ({
+  bottom: 0, left: 'center', icon: 'circle', itemWidth: 8, itemHeight: 8, itemGap: 16,
+  textStyle: { color: textMuted.value, fontSize: 11, fontFamily: 'Inter' },
+}))
+
+/* ── Chi nhánh (bộ lọc trên cùng) ───────────────────────────── */
+const branchName = ref('Công ty TNHH Dịch vụ Thương mại Toàn Cầu')
+
+/* ── Row 1: Tình hình tài chính + 2 card nợ ─────────────────── */
+const periodTch = ref('Tháng này')
+const tchLeft = [
+  { label: 'Tiền mặt', value: '312' },
+  { label: 'Tiền gửi', value: '208.451' },
+  { label: 'Phải thu', value: '31.204' },
+  { label: 'Phải trả', value: '402.118' },
+]
+const tchRight = [
+  { label: 'Doanh thu', value: '33.480' },
+  { label: 'Chi phí', value: '18.240' },
+  { label: 'Lợi nhuận', value: '15.240' },
+  { label: 'Hàng tồn kho', value: '311.006' },
+]
+const tongTien = '208.971'
+
+const periodRphaithu = ref('Tháng này')
+const rPhaiThu = { total: '38.204', overdue: '412', current: '37.792' }
+const rPhaiThuPct = 1.1 // % quá hạn/tổng, chỉ để vẽ thanh tiến trình minh họa
+
+const rPhaiTra = { total: '0', overdue: '0', current: '0' }
+
+/* ── Row 2: Doanh thu-chi phí-lợi nhuận + Hàng tồn kho ──────── */
+const periodBar = ref('Năm nay')
+const MONTHS = ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6', 'Th7', 'Th8', 'Th9', 'Th10', 'Th11', 'Th12']
+
+const revenueData = [30120, 28640, 34210, 36880, 33480, 12040, 27960, 39420, 35180, 43260, 61240, 56980]
+const costData_ = [17000, 15800, 19200, 20600, 18240, 6800, 15400, 21600, 19600, 23800, 32800, 30200]
+const profitData = revenueData.map((v, i) => v - costData_[i])
+
+const barLineOption = computed(() => ({
+  legend: legendBelow.value,
+  grid: { left: 8, right: 8, top: 16, bottom: 32, containLabel: true },
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: MONTHS, axisLabel: axisLabel.value, axisTick: { show: false }, axisLine: { lineStyle: { color: border.value } } },
+  yAxis: { type: 'value', axisLabel: { ...axisLabel.value, formatter: (v) => (v / 1000).toFixed(0) + 'tr' }, splitLine: splitLine.value },
   series: [
-    {
-      name: 'Loại hợp đồng',
-      type: 'pie',
-      radius: ['55%', '80%'],
-      center: ['30%', '50%'],
-      avoidLabelOverlap: true,
-      itemStyle: { borderWidth: 2, borderColor: cssVar('--mds-bg') },
-      label: { show: false },
-      data: contractData,
-    },
+    { name: 'DOANH THU', type: 'bar', data: revenueData, barMaxWidth: 14, itemStyle: { color: brand600.value, borderRadius: [4, 4, 0, 0] } },
+    { name: 'CHI PHÍ', type: 'bar', data: costData_, barMaxWidth: 14, itemStyle: { color: '#98A2B3', borderRadius: [4, 4, 0, 0] } },
+    { name: 'LỢI NHUẬN', type: 'line', data: profitData, smooth: true, symbolSize: 6, lineStyle: { color: warning.value, width: 2 }, itemStyle: { color: warning.value } },
   ],
 }))
 
-// Nhân viên mới nhất (bảng mini, không selectable)
-const newestColumns = [
-  { key: 'code', label: 'Mã nhân viên', width: 110 },
-  { key: 'name', label: 'Họ và tên', width: 160 },
-  { key: 'department', label: 'Phòng ban', width: 140 },
-  { key: 'startDate', label: 'Ngày vào làm', width: 110 },
+const inventoryTotal = '311.006'
+const inventoryRows = [
+  { name: 'Giấy in văn phòng A4', qty: '182.400', value: '2.104', color: '#F59E0B' },
+  { name: 'Mực in laser HP', qty: '96.220', value: '1.822', color: '#3B82F6' },
+  { name: 'Bàn ghế văn phòng', qty: '54.100', value: '3.960', color: '#8B5CF6' },
+  { name: 'Thiết bị mạng', qty: '31.760', value: '2.408', color: '#6B7280' },
+  { name: 'Vật tư tiêu hao', qty: '128.900', value: '1.140', color: '#EF4444' },
 ]
 
-const newestEmployees = [
-  { id: 1, code: 'NV-1284', name: 'Lý Thu Trang', department: 'Marketing', startDate: '02/07/2026' },
-  { id: 2, code: 'NV-1283', name: 'Phan Đình Khoa', department: 'Kinh doanh', startDate: '29/06/2026' },
-  { id: 3, code: 'NV-1282', name: 'Trương Mỹ Linh', department: 'CSKH', startDate: '25/06/2026' },
-  { id: 4, code: 'NV-1281', name: 'Đinh Công Sơn', department: 'Phát triển sản phẩm', startDate: '22/06/2026' },
-  { id: 5, code: 'NV-1280', name: 'Mai Ngọc Ánh', department: 'Kế toán', startDate: '18/06/2026' },
+/* ── Row 3: Doanh thu + Mặt hàng bán chạy ────────────────────── */
+const periodRev = ref('Năm nay')
+const revenueTotal = '399.568'
+const revenueOnly = computed(() => ({
+  grid: { left: 8, right: 8, top: 16, bottom: 8, containLabel: true },
+  tooltip: { trigger: 'axis' },
+  legend: { show: false },
+  xAxis: { type: 'category', boundaryGap: false, data: MONTHS, axisLabel: axisLabel.value, axisTick: { show: false }, axisLine: { lineStyle: { color: border.value } } },
+  yAxis: { type: 'value', axisLabel: { ...axisLabel.value, formatter: (v) => (v / 1000).toFixed(0) + 'tr' }, splitLine: splitLine.value },
+  series: [{
+    type: 'line', data: revenueData, smooth: true, symbolSize: 6,
+    lineStyle: { color: brand600.value, width: 2 }, itemStyle: { color: brand600.value },
+    areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: brand600.value + '33' }, { offset: 1, color: brand600.value + '00' }] } },
+  }],
+}))
+
+const periodSell = ref('Năm nay')
+const sellingTotal = '399.568'
+const sellingRows = [
+  { name: 'Bàn ghế văn phòng', qty: '18.400', revenue: '3.960', color: '#3B82F6' },
+  { name: 'Thiết bị mạng', qty: '12.900', revenue: '2.408', color: '#8B5CF6' },
+  { name: 'Giấy in văn phòng A4', qty: '61.200', revenue: '2.104', color: '#F59E0B' },
+  { name: 'Vật tư tiêu hao', qty: '44.100', revenue: '1.140', color: '#6B7280' },
+  { name: 'Mực in laser HP', qty: '9.600', revenue: '1.822', color: '#F97316' },
 ]
+
+/* ── Row 4: Dòng tiền + Chi phí ───────────────────────────────── */
+const periodCash = ref('Năm nay')
+const tonData = [140000, 152000, 168000, 183000, 208971, 205000, 224000, 241000, 258000, 279000, 305000, 328000]
+const chiData = [22000, 26000, 32000, 40000, 46000, 44000, 51000, 58000, 66000, 74000, 84000, 90000]
+const thuData = tonData.map((v, i) => Math.round(v * 1.12) - (i > 0 ? tonData[i - 1] : 100000))
+
+const cashOption = computed(() => ({
+  legend: legendBelow.value,
+  grid: { left: 8, right: 8, top: 16, bottom: 32, containLabel: true },
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: MONTHS, axisLabel: axisLabel.value, axisTick: { show: false }, axisLine: { lineStyle: { color: border.value } } },
+  yAxis: { type: 'value', axisLabel: { ...axisLabel.value, formatter: (v) => (v / 1000).toFixed(0) + 'tr' }, splitLine: splitLine.value },
+  series: [
+    { name: 'THU', type: 'line', data: thuData, smooth: true, symbolSize: 6, lineStyle: { color: success.value, width: 2 }, itemStyle: { color: success.value } },
+    { name: 'CHI', type: 'line', data: chiData, smooth: true, symbolSize: 6, lineStyle: { color: warning.value, width: 2 }, itemStyle: { color: warning.value } },
+    { name: 'TỒN', type: 'line', data: tonData, smooth: true, symbolSize: 6, lineStyle: { color: info.value, width: 2 }, itemStyle: { color: info.value } },
+  ],
+}))
+
+const periodCost = ref('Năm nay')
+const costItems = [
+  { name: 'Chi phí quảng cáo', color: '#F43F5E', value: 42 },
+  { name: 'Chi phí sửa chữa, bảo dưỡng', color: '#3B82F6', value: 24 },
+  { name: 'Chi phí tiếp khách', color: '#A78BFA', value: 18 },
+  { name: 'Chi phí khác', color: '#1E293B', value: 16 },
+]
+const costTotal = '1.240'
+const costOption = computed(() => ({
+  tooltip: { trigger: 'item' },
+  legend: { show: false },
+  series: [{
+    type: 'pie', radius: ['55%', '80%'], center: ['50%', '50%'], padAngle: 2,
+    itemStyle: { borderRadius: 4 }, label: { show: false },
+    data: costItems.map((d) => ({ name: d.name, value: d.value, itemStyle: { color: d.color } })),
+  }],
+}))
 </script>
 
 <template>
   <div
-    class="flex h-full flex-col overflow-hidden bg-[var(--mds-bg-disabled)] text-[13px] leading-[18px] text-[var(--mds-text)]"
+    class="flex h-full flex-col overflow-hidden bg-[var(--mds-bg-page)] text-[13px] leading-[18px] text-[var(--mds-text)]"
     :style="{ fontFamily: 'var(--mds-font-family)' }"
   >
-    <!-- Header nền brand-600 chữ trắng -->
+    <!-- Header: mode do người dùng chọn trong dialog Thiết lập -->
     <MHeaderBar
-      app-name="AMIS Nhân sự"
-      search-placeholder="Tìm kiếm trong AMIS Nhân sự"
-      :notification-count="3"
-      :user="{ name: 'Nguyễn Văn An' }"
+      :variant="currentHeaderMode"
+      app-name="Kế toán"
+      company-name="Công ty TNHH Dịch vụ Thương mại Toàn Cầu"
+      search-placeholder="Tìm kiếm"
+      :notification-count="9"
+      :user="{ name: 'Việt Thắng' }"
       @search="toast.info('Mở tìm kiếm toàn hệ thống')"
       @notifications="toast.info('Mở danh sách thông báo')"
-      @settings="toast.info('Mở thiết lập ứng dụng')"
+      @settings="showSettings = true"
+      @assistant="toast.info('Mở trợ lý AVA Kế toán')"
+      @chat="toast.info('Mở AMIS Chat')"
       @user-click="toast.info('Mở menu tài khoản')"
       @app-switcher="toast.info('Mở danh sách ứng dụng')"
     />
+
+    <!-- Sub-nav 48px -->
+    <div class="flex h-12 shrink-0 items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] bg-[var(--mds-bg)] px-4">
+      <MTabs v-model="activeSubTab" :tabs="subTabs" class="[&_[role=tablist]]:border-b-0" />
+      <button type="button" class="flex items-center gap-1.5 text-[13px] font-medium text-[var(--mds-success)] hover:underline">
+        <MIcon name="check" :size="12" />
+        Bắt đầu sử dụng
+      </button>
+    </div>
 
     <div class="flex min-h-0 flex-1">
       <MSidebar v-model="activeMenu" v-model:collapsed="sidebarCollapsed" :items="sidebarItems" />
 
       <!-- Main nền xám, cuộn dọc -->
-      <main class="min-h-0 min-w-0 flex-1 overflow-y-auto px-4 pb-4 pt-3">
-        <h2 class="mb-3 text-[20px] font-semibold leading-[28px] text-[var(--mds-text)]">Tổng quan</h2>
+      <main class="min-h-0 min-w-0 flex-1 overflow-y-auto p-4">
+        <!-- Chi nhánh filter -->
+        <div class="mb-3 flex items-center gap-2 text-[13px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">
+          <span class="shrink-0">Chi nhánh</span>
+          <button type="button" class="flex items-center gap-1 text-[13px] font-medium text-[var(--mds-text)] hover:text-[var(--mds-brand-600)]">
+            {{ branchName }}
+            <MIcon name="chevron-down" :size="12" />
+          </button>
+        </div>
 
-        <!-- Hàng 1: 4 KPI card trắng -->
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <div
-            v-for="kpi in kpis"
-            :key="kpi.label"
-            class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4"
-          >
-            <p class="text-[12px] leading-[16px] text-[var(--mds-text-muted)]">{{ kpi.label }}</p>
-            <div class="mt-1 flex items-center gap-2">
-              <span class="text-[24px] font-semibold leading-[36px] text-[var(--mds-text)]">
-                {{ kpi.value }}
-              </span>
-              <!-- % so với tháng trước -->
-              <MTag :color="kpi.color" size="sm">{{ kpi.delta }}</MTag>
+        <!-- ── Row 1: Tình hình tài chính + 2 card nợ ── -->
+        <div class="grid grid-cols-1 gap-4 xl:grid-cols-[1.7fr_1fr_1fr]">
+          <!-- Tình hình tài chính -->
+          <section class="group mds-card p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Tình hình tài chính</h3>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+                <select v-model="periodTch" class="cursor-pointer bg-transparent text-[11px] text-[var(--mds-text-secondary,var(--mds-text-muted))] outline-none">
+                  <option>Tháng này</option>
+                  <option>Quý này</option>
+                  <option>Năm nay</option>
+                </select>
+              </div>
             </div>
-          </div>
+            <p class="mb-2 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <div class="flex gap-0">
+              <div class="flex-1">
+                <div class="flex items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5">
+                  <span class="text-[12px] font-semibold uppercase text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tổng tiền</span>
+                  <span class="text-[13px] font-semibold">{{ tongTien }}</span>
+                </div>
+                <div v-for="r in tchLeft" :key="r.label" class="flex items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 pl-2 last:border-b-0">
+                  <span class="text-[13px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">{{ r.label }}</span>
+                  <span class="text-[13px] font-semibold text-[var(--mds-brand-600)]">{{ r.value }}</span>
+                </div>
+              </div>
+              <div class="mx-4 w-px shrink-0 bg-[var(--mds-border-light,var(--mds-border))]" />
+              <div class="flex-1">
+                <div v-for="r in tchRight" :key="r.label" class="flex items-center justify-between border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 last:border-b-0">
+                  <span class="text-[13px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">{{ r.label }}</span>
+                  <span class="text-[13px] font-semibold text-[var(--mds-brand-600)]">{{ r.value }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 border-t border-[var(--mds-border-light,var(--mds-border))] pt-2 text-[11px] text-[var(--mds-text-muted)]">
+              Số liệu tính đến 15h47
+              <button type="button" class="ml-1 font-medium text-[var(--mds-brand-600)] hover:underline">Tải lại</button>
+            </div>
+          </section>
+
+          <!-- Nợ phải thu -->
+          <section class="group mds-card flex flex-col p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Nợ phải thu theo hạn nợ</h3>
+              <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+              </button>
+            </div>
+            <div class="mt-2 flex items-baseline gap-1.5">
+              <span class="text-[28px] font-bold leading-none">{{ rPhaiThu.total }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+            </div>
+            <p class="mb-2.5 mt-1.5 text-[11px] uppercase text-[var(--mds-text-muted)]">Tổng</p>
+            <div class="mb-2.5 flex justify-between">
+              <div>
+                <div class="text-[14px] font-semibold text-[var(--mds-warning)]">{{ rPhaiThu.overdue }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Triệu đồng</span></div>
+                <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-warning)]">Quá hạn</div>
+              </div>
+              <div class="text-right">
+                <div class="text-[14px] font-semibold">{{ rPhaiThu.current }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Triệu đồng</span></div>
+                <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-text-muted)]">Trong hạn</div>
+              </div>
+            </div>
+            <div class="h-1.5 overflow-hidden rounded-full bg-[var(--mds-border-light,var(--mds-border))]">
+              <div class="h-full rounded-full bg-[var(--mds-warning)]" :style="{ width: rPhaiThuPct + '%' }" />
+            </div>
+            <div class="mt-auto border-t border-[var(--mds-border-light,var(--mds-border))] pt-2 text-[11px] text-[var(--mds-text-muted)]">
+              Số liệu tính đến 14h58 <button type="button" class="ml-1 font-medium text-[var(--mds-brand-600)] hover:underline">Tải lại</button>
+            </div>
+          </section>
+
+          <!-- Nợ phải trả -->
+          <section class="group mds-card flex flex-col p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Nợ phải trả theo hạn nợ</h3>
+              <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+              </button>
+            </div>
+            <div class="mt-2 flex items-baseline gap-1.5">
+              <span class="text-[28px] font-bold leading-none">{{ rPhaiTra.total }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+            </div>
+            <p class="mb-2.5 mt-1.5 text-[11px] uppercase text-[var(--mds-text-muted)]">Tổng</p>
+            <div class="mb-2.5 flex justify-between">
+              <div>
+                <div class="text-[14px] font-semibold text-[var(--mds-warning)]">{{ rPhaiTra.overdue }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Triệu đồng</span></div>
+                <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-warning)]">Quá hạn</div>
+              </div>
+              <div class="text-right">
+                <div class="text-[14px] font-semibold">{{ rPhaiTra.current }} <span class="text-[11px] font-normal text-[var(--mds-text-muted)]">Triệu đồng</span></div>
+                <div class="mt-0.5 text-[11px] uppercase text-[var(--mds-text-muted)]">Trong hạn</div>
+              </div>
+            </div>
+            <div class="h-1.5 overflow-hidden rounded-full bg-[var(--mds-border-light,var(--mds-border))]">
+              <div class="h-full w-full rounded-full bg-[var(--mds-warning)] opacity-40" />
+            </div>
+            <div class="mt-auto border-t border-[var(--mds-border-light,var(--mds-border))] pt-2 text-[11px] text-[var(--mds-text-muted)]">
+              Số liệu tính đến 14h58 <button type="button" class="ml-1 font-medium text-[var(--mds-brand-600)] hover:underline">Tải lại</button>
+            </div>
+          </section>
         </div>
 
-        <!-- Hàng 2: biểu đồ cột + đường -->
-        <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
-            <h3 class="mb-3 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
-              Nhân sự theo phòng ban
-            </h3>
-            <MChart :option="barOption" :height="300" />
+        <!-- ── Row 2: Doanh thu-chi phí-lợi nhuận + Hàng tồn kho ── -->
+        <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_1fr]">
+          <section class="group mds-card p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Doanh thu, chi phí, lợi nhuận</h3>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+                <select v-model="periodBar" class="cursor-pointer bg-transparent text-[11px] text-[var(--mds-text-secondary,var(--mds-text-muted))] outline-none">
+                  <option>Năm nay</option>
+                  <option>Tháng này</option>
+                  <option>Quý này</option>
+                </select>
+              </div>
+            </div>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <MChart :option="barLineOption" :height="280" />
           </section>
 
-          <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
-            <h3 class="mb-3 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
-              Biến động nhân sự 12 tháng
-            </h3>
-            <MChart :option="lineOption" :height="300" />
+          <section class="group mds-card flex flex-col p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Hàng hóa tồn kho</h3>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="settings" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+              </div>
+            </div>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-[22px] font-bold leading-none">{{ inventoryTotal }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+            </div>
+            <p class="mb-2 mt-1 text-[12px] text-[var(--mds-text-muted)]">Tổng giá trị</p>
+            <table class="w-full border-collapse text-[12px]">
+              <thead>
+                <tr>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-left font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tên</th>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Số lượng</th>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Giá trị</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="r in inventoryRows" :key="r.name" class="hover:bg-[var(--mds-bg-hover-soft)]">
+                  <td class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5">
+                    <span class="mr-1.5 inline-block h-2 w-2 rounded-full align-middle" :style="{ background: r.color }" />{{ r.name }}
+                  </td>
+                  <td class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right">{{ r.qty }}</td>
+                  <td class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold">{{ r.value }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <button type="button" class="mt-1.5 self-start text-[11px] font-medium text-[var(--mds-brand-600)] hover:underline">Xem thêm</button>
+            <div class="mt-auto border-t border-[var(--mds-border-light,var(--mds-border))] pt-2 text-[11px] text-[var(--mds-text-muted)]">
+              Số liệu tính đến 14h58 <button type="button" class="ml-1 font-medium text-[var(--mds-brand-600)] hover:underline">Tải lại</button>
+            </div>
           </section>
         </div>
 
-        <!-- Hàng 3: doughnut + bảng mini -->
-        <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
-          <section class="rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
-            <h3 class="mb-3 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
-              Cơ cấu theo loại hợp đồng
-            </h3>
-            <MChart :option="pieOption" :height="300" />
+        <!-- ── Row 3: Doanh thu + Mặt hàng bán chạy ── -->
+        <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_1fr]">
+          <section class="group mds-card p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Doanh thu</h3>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+                <select v-model="periodRev" class="cursor-pointer bg-transparent text-[11px] text-[var(--mds-text-secondary,var(--mds-text-muted))] outline-none">
+                  <option>Năm nay</option>
+                  <option>Tháng này</option>
+                  <option>Quý này</option>
+                </select>
+              </div>
+            </div>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <div class="mb-1 flex items-baseline gap-1.5">
+              <span class="text-[22px] font-bold leading-none">{{ revenueTotal }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+            </div>
+            <p class="mb-1 text-[12px] text-[var(--mds-text-muted)]">Tổng doanh thu</p>
+            <MChart :option="revenueOnly" :height="220" />
           </section>
 
-          <section class="flex flex-col rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] p-4">
-            <h3 class="mb-3 text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">
-              Nhân viên mới nhất
-            </h3>
-            <MDataTable
-              :columns="newestColumns"
-              :rows="newestEmployees"
-              row-key="id"
-              class="min-h-0 flex-1"
-              @row-click="(row) => toast.info(`Mở chi tiết nhân viên ${row.name}`)"
-            >
-              <template #footer-info>{{ newestEmployees.length }} nhân viên vào làm gần nhất</template>
-            </MDataTable>
+          <section class="group mds-card flex flex-col p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Mặt hàng bán chạy</h3>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="settings" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+                <select v-model="periodSell" class="cursor-pointer bg-transparent text-[11px] text-[var(--mds-text-secondary,var(--mds-text-muted))] outline-none">
+                  <option>Năm nay</option>
+                  <option>Tháng này</option>
+                  <option>Quý này</option>
+                </select>
+              </div>
+            </div>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-[22px] font-bold leading-none">{{ sellingTotal }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+            </div>
+            <p class="mb-2 mt-1 text-[12px] text-[var(--mds-text-muted)]">Tổng doanh thu</p>
+            <table class="w-full border-collapse text-[12px]">
+              <thead>
+                <tr>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-left font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Tên</th>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Số lượng</th>
+                  <th class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Doanh thu</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="r in sellingRows" :key="r.name" class="hover:bg-[var(--mds-bg-hover-soft)]">
+                  <td class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5">
+                    <span class="mr-1.5 inline-block h-2 w-2 rounded-full align-middle" :style="{ background: r.color }" />{{ r.name }}
+                  </td>
+                  <td class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right">{{ r.qty }}</td>
+                  <td class="border-b border-[var(--mds-border-light,var(--mds-border))] py-1.5 text-right font-semibold">{{ r.revenue }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <button type="button" class="mt-1.5 self-start text-[11px] font-medium text-[var(--mds-brand-600)] hover:underline">Xem thêm</button>
+            <div class="mt-auto border-t border-[var(--mds-border-light,var(--mds-border))] pt-2 text-[11px] text-[var(--mds-text-muted)]">
+              Số liệu tính đến 15h47 <button type="button" class="ml-1 font-medium text-[var(--mds-brand-600)] hover:underline">Tải lại</button>
+            </div>
+          </section>
+        </div>
+
+        <!-- ── Row 4: Dòng tiền + Chi phí ── -->
+        <div class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_1fr]">
+          <section class="group mds-card p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Dòng tiền</h3>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+                <select v-model="periodCash" class="cursor-pointer bg-transparent text-[11px] text-[var(--mds-text-secondary,var(--mds-text-muted))] outline-none">
+                  <option>Năm nay</option>
+                  <option>Tháng này</option>
+                  <option>Quý này</option>
+                </select>
+              </div>
+            </div>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <MChart :option="cashOption" :height="260" />
+          </section>
+
+          <section class="group mds-card flex flex-col p-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-[16px] font-semibold leading-[22px]">Chi phí</h3>
+              <div class="flex items-center gap-1.5">
+                <button type="button" class="flex h-6 w-6 items-center justify-center rounded opacity-0 transition-opacity hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100">
+                  <MIcon name="refresh" :size="12" class="text-[var(--mds-icon-neutral)]" />
+                </button>
+                <select v-model="periodCost" class="cursor-pointer bg-transparent text-[11px] text-[var(--mds-text-secondary,var(--mds-text-muted))] outline-none">
+                  <option>Năm nay</option>
+                  <option>Tháng này</option>
+                  <option>Quý này</option>
+                </select>
+              </div>
+            </div>
+            <p class="mb-1 mt-0.5 text-right text-[11px] text-[var(--mds-text-muted)]">Đvt: Triệu đồng</p>
+            <div class="mb-1 flex items-baseline gap-1.5">
+              <span class="text-[22px] font-bold leading-none">{{ costTotal }}</span>
+              <span class="text-[14px] font-semibold text-[var(--mds-text-secondary,var(--mds-text-muted))]">Triệu đồng</span>
+            </div>
+            <p class="mb-1 text-[12px] text-[var(--mds-text-muted)]">Tổng</p>
+            <div class="flex items-center gap-3">
+              <MChart :option="costOption" :height="160" class="w-[160px] shrink-0" />
+              <div class="flex flex-col gap-2">
+                <div v-for="c in costItems" :key="c.name" class="flex items-center gap-2 text-[12px] text-[var(--mds-text-secondary,var(--mds-text-muted))]">
+                  <span class="inline-block h-2 w-2 shrink-0 rounded-full" :style="{ background: c.color }" />
+                  {{ c.name }}
+                </div>
+              </div>
+            </div>
+            <div class="mt-auto border-t border-[var(--mds-border-light,var(--mds-border))] pt-2 text-[11px] text-[var(--mds-text-muted)]">
+              Số liệu tính đến 15h47 <button type="button" class="ml-1 font-medium text-[var(--mds-brand-600)] hover:underline">Tải lại</button>
+            </div>
           </section>
         </div>
       </main>
     </div>
 
+    <MSettingsDialog v-model="showSettings" />
     <MToast />
   </div>
 </template>

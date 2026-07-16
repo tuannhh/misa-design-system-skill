@@ -156,7 +156,7 @@ function toggleCollapsed() {
   <!-- Sidebar trắng, border phải, transition width 200ms giữa 2 chế độ -->
   <aside
     class="flex h-full shrink-0 flex-col overflow-hidden border-r border-[var(--mds-border)] bg-[var(--mds-bg)] transition-[width] duration-200"
-    :class="collapsed ? 'w-14' : 'w-60'"
+    :class="collapsed ? 'w-[var(--mds-layout-sidebar-sm-w)]' : 'w-[var(--mds-layout-sidebar-w)]'"
   >
     <nav class="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2" aria-label="Menu chính">
       <template v-for="item in items" :key="item.key">
