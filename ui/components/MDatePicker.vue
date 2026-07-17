@@ -292,10 +292,10 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="w-full">
-    <!-- Trigger giống input 32px: icon calendar trái + input gõ tay + nút × -->
+    <!-- Trigger giống input: icon calendar trái + input gõ tay + nút × -->
     <div
       ref="triggerRef"
-      class="flex h-9 w-full items-center gap-2 rounded-lg border bg-[var(--mds-bg)] px-3 transition-colors"
+      class="flex h-[var(--mds-input-height)] w-full items-center gap-2 rounded-lg border bg-[var(--mds-bg)] px-3 transition-colors"
       :class="[
         error ? 'border-[var(--mds-danger)]' : 'border-[var(--mds-border)]',
         disabled

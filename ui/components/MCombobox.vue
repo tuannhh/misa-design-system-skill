@@ -382,7 +382,7 @@ onBeforeUnmount(() => {
       role="combobox"
       :aria-expanded="open"
       aria-haspopup="listbox"
-      class="flex h-9 w-full items-center gap-1 overflow-hidden rounded-lg border px-3 transition-colors"
+      class="flex h-[var(--mds-input-height)] w-full items-center gap-1 overflow-hidden rounded-lg border px-3 transition-colors"
       :class="[
         error ? 'border-[var(--mds-danger)]' : 'border-[var(--mds-border)]',
         disabled

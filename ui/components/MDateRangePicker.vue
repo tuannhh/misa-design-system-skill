@@ -367,7 +367,7 @@ onBeforeUnmount(() => {
       :aria-expanded="open"
       aria-haspopup="dialog"
       :disabled="disabled"
-      class="flex h-9 w-full items-center gap-2 rounded-lg border px-3 text-left text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
+      class="flex h-[var(--mds-input-height)] w-full items-center gap-2 rounded-lg border px-3 text-left text-[13px] leading-[18px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]"
       :class="[
         error ? 'border-[var(--mds-danger)]' : 'border-[var(--mds-border)]',
         disabled
