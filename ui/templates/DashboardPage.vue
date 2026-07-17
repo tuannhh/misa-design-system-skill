@@ -209,6 +209,7 @@ const payrollOption = computed(() => ({
       company-name="Công ty TNHH Thương mại Việt Phát"
       search-placeholder="Tìm kiếm trong AMIS Nhân sự"
       :notification-count="3"
+      :chat-count="20"
       :user="{ name: 'Nguyễn Văn An' }"
       @search="toast.info('Mở tìm kiếm toàn hệ thống')"
       @notifications="toast.info('Mở danh sách thông báo')"
