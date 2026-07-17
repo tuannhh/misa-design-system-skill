@@ -23,6 +23,7 @@ import MContextMenu from '@mds/MContextMenu.vue'
 import MTooltip from '@mds/MTooltip.vue'
 import MDropdownMenu from '@mds/MDropdownMenu.vue'
 import MImageViewer from '@mds/MImageViewer.vue'
+import MCollapseExpandPanel from '@mds/MCollapseExpandPanel.vue'
 
 const toast = useToast()
 const themes = ['blue', 'indigo', 'cyan', 'teal', 'green', 'orange', 'red', 'pink', 'purple', 'blue-gray']
@@ -94,6 +95,10 @@ const reportRange = ref({ start: null, end: null })
 // Drawer + menus
 const drawerOpen = ref(false)
 const ctxMenuRef = ref(null)
+const collapseDemoBottom = ref(false)
+const collapseDemoTop = ref(false)
+const collapseDemoLeft = ref(false)
+const collapseDemoRight = ref(false)
 const menuItems = [
   { key: 'edit', label: 'Sửa', icon: 'edit' },
   { key: 'copy', label: 'Nhân bản', icon: 'copy' },
@@ -245,6 +250,28 @@ const menuItems = [
     <section class="rounded-lg bg-white p-6 space-y-4">
       <h3 class="text-[16px] leading-[22px] font-semibold">Image viewer / Slideshow</h3>
       <MButton variant="primary" @click="imageViewerOpen = true">Xem ảnh đính kèm</MButton>
+    </section>
+
+    <section class="rounded-lg bg-white p-6 space-y-4">
+      <h3 class="text-[16px] leading-[22px] font-semibold flex items-center gap-2">Collapse/Expand Panel <MTag color="brand" size="sm">Đợt 2</MTag></h3>
+      <div class="flex flex-wrap items-center gap-10">
+        <div class="flex flex-col items-center gap-1">
+          <span class="text-[12px] text-[var(--mds-text-secondary)]">side="bottom" (hàng KPI)</span>
+          <MCollapseExpandPanel v-model:collapsed="collapseDemoBottom" side="bottom" />
+        </div>
+        <div class="flex flex-col items-center gap-1">
+          <span class="text-[12px] text-[var(--mds-text-secondary)]">side="top"</span>
+          <MCollapseExpandPanel v-model:collapsed="collapseDemoTop" side="top" />
+        </div>
+        <div class="flex flex-col items-center gap-1">
+          <span class="text-[12px] text-[var(--mds-text-secondary)]">side="left"</span>
+          <MCollapseExpandPanel v-model:collapsed="collapseDemoLeft" side="left" />
+        </div>
+        <div class="flex flex-col items-center gap-1">
+          <span class="text-[12px] text-[var(--mds-text-secondary)]">side="right"</span>
+          <MCollapseExpandPanel v-model:collapsed="collapseDemoRight" side="right" />
+        </div>
+      </div>
     </section>
 
     <MDialog v-model="dialogOpen" title="Xóa hợp đồng" type="danger"

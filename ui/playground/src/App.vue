@@ -5,6 +5,7 @@ import ListPage from '@tpl/ListPage.vue'
 import FormPage from '@tpl/FormPage.vue'
 import DetailPage from '@tpl/DetailPage.vue'
 import DashboardPage from '@tpl/DashboardPage.vue'
+import DocumentFormPage from '@tpl/DocumentFormPage.vue'
 import ListPageMobile from '@tpl/mobile/ListPageMobile.vue'
 import FormPageMobile from '@tpl/mobile/FormPageMobile.vue'
 import DetailPageMobile from '@tpl/mobile/DetailPageMobile.vue'
@@ -19,6 +20,7 @@ const views = [
   { key: 'form', label: 'Mẫu: Thêm/Sửa', component: FormPage },
   { key: 'detail', label: 'Mẫu: Chi tiết', component: DetailPage },
   { key: 'dashboard', label: 'Mẫu: Tổng quan', component: DashboardPage },
+  { key: 'doc-form', label: 'Mẫu: Chứng từ', component: DocumentFormPage },
   { key: 'm-dashboard', label: 'Mobile: Tổng quan', component: DashboardPageMobile, frame: 'phone' },
   { key: 'm-list', label: 'Mobile: Danh sách', component: ListPageMobile, frame: 'phone' },
   { key: 'm-form', label: 'Mobile: Thêm/Sửa', component: FormPageMobile, frame: 'phone' },
@@ -53,7 +55,7 @@ onMounted(() => {
           : 'text-[var(--mds-text)] hover:bg-[var(--mds-bg-disabled)]'">
         {{ v.label }}
       </button>
-      <span class="ml-auto text-[12px] text-[var(--mds-text-placeholder)]">24 control + 4 màn hình mẫu · chuẩn MDS 2.0</span>
+      <span class="ml-auto text-[12px] text-[var(--mds-text-placeholder)]">28 control + 5 màn hình mẫu · chuẩn MDS 2.0</span>
     </nav>
     <div class="min-h-0 flex-1" :class="active === 'controls' ? 'overflow-auto' : 'overflow-hidden'">
       <div v-if="activeView.frame === 'phone'" class="flex h-full items-center justify-center overflow-auto bg-[var(--mds-bg-disabled)] py-6">

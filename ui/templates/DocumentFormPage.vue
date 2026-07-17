@@ -1,0 +1,367 @@
+<script setup>
+/**
+ * DocumentFormPage — mẫu form chứng từ kế toán full màn hình (mẫu "Phiếu thu"),
+ * spec references/patterns/popup-form.md mục 5. Mở full màn hình THAY THẾ vùng
+ * nội dung, header + sidebar app vẫn giữ nguyên (dùng chung MHeaderBar/MSidebar
+ * app "AMIS Kế toán" — domain khác ListPage/DashboardPage "AMIS Nhân sự").
+ * Cấu trúc dọc: Form bar (48px) → Form body (cuộn) → Form footer tối (ghim đáy).
+ */
+import { computed, reactive, ref } from 'vue'
+import MHeaderBar from '../components/MHeaderBar.vue'
+import MSidebar from '../components/MSidebar.vue'
+import MSettingsDialog from '../components/MSettingsDialog.vue'
+import MButton from '../components/MButton.vue'
+import MInput from '../components/MInput.vue'
+import MCombobox from '../components/MCombobox.vue'
+import MDatePicker from '../components/MDatePicker.vue'
+import MSelect from '../components/MSelect.vue'
+import MSwitch from '../components/MSwitch.vue'
+import MIcon from '../components/MIcon.vue'
+import MHeaderIconAva from '../components/MHeaderIconAva.vue'
+import MToast from '../components/MToast.vue'
+import { useToast } from '../components/toast.js'
+import { currentHeaderMode, sidebarCollapsed } from '../components/theme-state.js'
+
+const toast = useToast()
+
+/* ── Điều hướng app "AMIS Kế toán" ──────────────────────────── */
+
+const sidebarItems = [
+  { key: 'tong-quan', label: 'Tổng quan', icon: 'home' },
+  {
+    key: 'tien-mat',
+    label: 'Tiền mặt',
+    icon: 'cash',
+    children: [
+      { key: 'phieu-thu', label: 'Phiếu thu' },
+      { key: 'phieu-chi', label: 'Phiếu chi' },
+    ],
+  },
+  { key: 'tien-gui', label: 'Tiền gửi', icon: 'building' },
+  { key: 'bao-cao', label: 'Báo cáo', icon: 'chart-bar' },
+  { key: 'thiet-lap', label: 'Thiết lập', icon: 'settings' },
+]
+const activeMenu = ref('phieu-thu')
+const showSettings = ref(false)
+
+/* ── Combobox loại chứng từ nguồn ───────────────────────────── */
+
+const documentTypeOptions = [
+  { label: 'Phiếu thu tiền mặt', value: 'pt-tien-mat' },
+  { label: 'Phiếu thu tạm ứng', value: 'pt-tam-ung' },
+  { label: 'Phiếu thu khác', value: 'pt-khac' },
+]
+const currencyOptions = [
+  { label: 'VND', value: 'VND' },
+  { label: 'USD', value: 'USD' },
+  { label: 'EUR', value: 'EUR' },
+]
+
+/* ── State form (mock) ──────────────────────────────────────── */
+
+const form = reactive({
+  documentType: 'pt-tien-mat',
+  sourceSearch: '',
+  date: new Date(2026, 6, 17),
+  payer: '',
+  reason: '',
+  attachedCount: 1,
+  currency: 'VND',
+  showAccount: true,
+})
+
+const entries = ref([
+  { id: 1, account: '1111', accountName: 'Tiền mặt VND', debit: 15000000, credit: 0 },
+  { id: 2, account: '1311', accountName: 'Phải thu khách hàng — Cty TNHH Việt Phát', debit: 0, credit: 15000000 },
+])
+
+const totalAmount = computed(() => entries.value.reduce((sum, e) => sum + e.debit, 0))
+const formatMoney = (v) => Number(v || 0).toLocaleString('vi-VN')
+
+function addEntryRow() {
+  entries.value.push({ id: Date.now(), account: '', accountName: '', debit: 0, credit: 0 })
+}
+function clearEntryRows() {
+  entries.value = []
+}
+function removeEntryRow(id) {
+  entries.value = entries.value.filter((e) => e.id !== id)
+}
+
+function closeForm() {
+  toast.info('Đóng phiếu thu PT00020')
+}
+function saveDocument() {
+  toast.success('Đã cất phiếu thu PT00020')
+}
+function saveAndAdd() {
+  toast.success('Đã cất phiếu thu PT00020. Tiếp tục thêm mới.')
+}
+</script>
+
+<template>
+  <div
+    class="flex h-full flex-col overflow-hidden bg-[var(--mds-bg-page)] text-[13px] leading-[18px] text-[var(--mds-text)]"
+    :style="{ fontFamily: 'var(--mds-font-family)' }"
+  >
+    <!-- Header app: GIỮ NGUYÊN khi form chứng từ mở full màn hình (spec mục 5) -->
+    <MHeaderBar
+      :variant="currentHeaderMode"
+      app-name="AMIS Kế toán"
+      search-placeholder="Tìm kiếm trong AMIS Kế toán"
+      :notification-count="1"
+      :user="{ name: 'Nguyễn Văn An' }"
+      @settings="showSettings = true"
+    />
+
+    <div class="flex min-h-0 flex-1">
+      <MSidebar v-model="activeMenu" v-model:collapsed="sidebarCollapsed" :items="sidebarItems" />
+
+      <!-- Vùng nội dung: form chứng từ thay thế toàn bộ (Form bar/body/footer) -->
+      <main class="flex min-w-0 flex-1 flex-col overflow-hidden bg-[var(--mds-bg)]">
+        <!-- ── Form bar (thay sub-nav, 48px) ── -->
+        <div class="flex h-12 shrink-0 items-center justify-between gap-3 border-b border-[var(--mds-border-light,var(--mds-border))] px-4">
+          <div class="flex min-w-0 flex-1 items-center gap-3">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--mds-brand-50)] text-[var(--mds-brand-600)]">
+              <MIcon name="cash" :size="16" />
+            </span>
+            <span class="shrink-0 whitespace-nowrap text-[13px] text-[var(--mds-text)]">
+              Phiếu thu <span class="font-semibold">PT00020</span>
+            </span>
+            <span class="h-5 w-px shrink-0 bg-[var(--mds-border)]" />
+            <div class="w-[200px] shrink-0">
+              <MCombobox v-model="form.documentType" :options="documentTypeOptions" allow-create @create="toast.info('Thêm nhanh loại chứng từ')" />
+            </div>
+            <div class="min-w-0 max-w-[360px] flex-1">
+              <MInput v-model="form.sourceSearch" placeholder="Tìm chứng từ nguồn (đơn hàng, hợp đồng...)" clearable>
+                <template #prefix><MIcon name="search" :size="16" /></template>
+              </MInput>
+            </div>
+          </div>
+
+          <div class="flex shrink-0 items-center gap-2">
+            <MButton variant="outline">
+              <template #icon><MIcon name="help" :size="16" class="text-[var(--mds-success)]" /></template>
+              Hướng dẫn sử dụng
+              <MIcon name="chevron-down" :size="14" />
+            </MButton>
+            <button
+              type="button"
+              class="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--mds-border)] text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)]"
+              title="Thiết lập"
+            >
+              <MIcon name="settings" :size="16" />
+            </button>
+            <button
+              type="button"
+              class="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)]"
+              aria-label="Đóng"
+              @click="closeForm"
+            >
+              <MIcon name="x" :size="18" />
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Form body: cuộn, header/footer ghim ── -->
+        <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+          <!-- Vùng field thông tin chung + tổng tiền lớn góc phải trên -->
+          <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+            <div class="flex flex-1 flex-wrap gap-4">
+              <div class="w-[200px]">
+                <label class="mb-1 block font-medium text-[var(--mds-text)]">Ngày hạch toán</label>
+                <MDatePicker v-model="form.date" />
+              </div>
+              <div class="min-w-[220px] flex-1">
+                <label class="mb-1 block font-medium text-[var(--mds-text)]">Người nộp tiền</label>
+                <MInput v-model="form.payer" placeholder="Nhập tên người nộp">
+                  <template #suffix><MIcon name="plus" :size="16" class="cursor-pointer" @click="toast.info('Thêm nhanh danh mục người nộp')" /></template>
+                </MInput>
+              </div>
+              <div class="w-[220px]">
+                <label class="mb-1 block font-medium text-[var(--mds-text)]">Lý do nộp</label>
+                <MInput v-model="form.reason" placeholder="VD: Thu tiền bán hàng">
+                  <template #suffix><MIcon name="list" :size="16" class="cursor-pointer" /></template>
+                </MInput>
+              </div>
+              <div class="w-[175px]">
+                <label class="mb-1 block font-medium text-[var(--mds-text)]">Kèm theo</label>
+                <div class="flex h-8 items-center gap-2 rounded-lg border border-[var(--mds-border)] bg-[var(--mds-bg)] px-2">
+                  <input
+                    v-model.number="form.attachedCount"
+                    type="number"
+                    min="0"
+                    class="w-8 bg-transparent text-right outline-none [appearance:textfield]"
+                  />
+                  <span class="h-4 w-px shrink-0 bg-[var(--mds-border)]" />
+                  <span class="truncate text-[var(--mds-text-secondary)]">chứng từ gốc</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="shrink-0 text-right">
+              <div class="text-[12px] text-[var(--mds-text-secondary)]">Tổng tiền</div>
+              <div class="text-[28px] font-bold leading-tight text-[var(--mds-text)]">{{ formatMoney(totalAmount) }}</div>
+            </div>
+          </div>
+
+          <!-- Section bảng hạch toán (inline edit) -->
+          <section class="mb-6">
+            <div class="mb-2 flex items-center justify-between gap-3">
+              <h3 class="text-[16px] font-semibold leading-[22px] text-[var(--mds-text)]">Hạch toán</h3>
+              <div class="flex items-center gap-2">
+                <MButton variant="ai">
+                  <template #icon><MHeaderIconAva :size="16" /></template>
+                  AVA Kế toán
+                  <MIcon name="chevron-down" :size="14" />
+                </MButton>
+                <div class="w-[110px]">
+                  <MSelect v-model="form.currency" :options="currencyOptions" />
+                </div>
+              </div>
+            </div>
+
+            <div class="overflow-hidden rounded-lg border border-[var(--mds-border)]">
+              <table class="w-full table-fixed border-collapse text-[13px] leading-[18px]">
+                <thead>
+                  <tr class="h-9 bg-[var(--mds-bg-page)] text-[12px] font-medium text-[var(--mds-text-secondary)]">
+                    <th class="w-[120px] border-b border-[var(--mds-border)] px-3 text-left">Tài khoản</th>
+                    <th class="border-b border-[var(--mds-border)] px-3 text-left">Tên tài khoản</th>
+                    <th class="w-[150px] border-b border-[var(--mds-border)] px-3 text-right">Nợ</th>
+                    <th class="w-[150px] border-b border-[var(--mds-border)] px-3 text-right">Có</th>
+                    <th class="w-10 border-b border-[var(--mds-border)] px-2"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="row in entries"
+                    :key="row.id"
+                    class="group h-9 border-b border-[var(--mds-border-light,var(--mds-border))] last:border-b-0 hover:bg-[var(--mds-bg-hover-soft)]"
+                  >
+                    <td class="px-1">
+                      <input
+                        v-model="row.account"
+                        class="h-7 w-full rounded border border-transparent bg-transparent px-2 outline-none hover:border-[var(--mds-border)] hover:bg-[var(--mds-bg)] focus:border-[var(--mds-brand-600)] focus:bg-[var(--mds-bg)] focus:ring-2 focus:ring-[var(--mds-brand-50)]"
+                      />
+                    </td>
+                    <td class="px-1">
+                      <input
+                        v-model="row.accountName"
+                        class="h-7 w-full truncate rounded border border-transparent bg-transparent px-2 outline-none hover:border-[var(--mds-border)] hover:bg-[var(--mds-bg)] focus:border-[var(--mds-brand-600)] focus:bg-[var(--mds-bg)] focus:ring-2 focus:ring-[var(--mds-brand-50)]"
+                      />
+                    </td>
+                    <td class="px-1">
+                      <input
+                        v-model.number="row.debit"
+                        type="number"
+                        class="h-7 w-full rounded border border-transparent bg-transparent px-2 text-right font-[inherit] outline-none [font-feature-settings:'tnum'] hover:border-[var(--mds-border)] hover:bg-[var(--mds-bg)] focus:border-[var(--mds-brand-600)] focus:bg-[var(--mds-bg)] focus:ring-2 focus:ring-[var(--mds-brand-50)]"
+                      />
+                    </td>
+                    <td class="px-1">
+                      <input
+                        v-model.number="row.credit"
+                        type="number"
+                        class="h-7 w-full rounded border border-transparent bg-transparent px-2 text-right outline-none [font-feature-settings:'tnum'] hover:border-[var(--mds-border)] hover:bg-[var(--mds-bg)] focus:border-[var(--mds-brand-600)] focus:bg-[var(--mds-bg)] focus:ring-2 focus:ring-[var(--mds-brand-50)]"
+                      />
+                    </td>
+                    <td class="text-center">
+                      <button
+                        type="button"
+                        class="flex h-7 w-7 items-center justify-center rounded text-[var(--mds-danger)] opacity-0 hover:bg-[var(--mds-bg-hover-soft)] group-hover:opacity-100"
+                        aria-label="Xóa dòng"
+                        @click="removeEntryRow(row.id)"
+                      >
+                        <MIcon name="trash" :size="14" />
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr class="h-9 bg-[var(--mds-bg-page)] text-[12px] font-medium text-[var(--mds-text-secondary)]">
+                    <td colspan="2" class="border-t border-[var(--mds-border)] px-3">Tổng</td>
+                    <td class="border-t border-[var(--mds-border)] px-3 text-right font-semibold text-[var(--mds-text)] [font-feature-settings:'tnum']">{{ formatMoney(totalAmount) }}</td>
+                    <td class="border-t border-[var(--mds-border)] px-3 text-right font-semibold text-[var(--mds-text)] [font-feature-settings:'tnum']">{{ formatMoney(totalAmount) }}</td>
+                    <td class="border-t border-[var(--mds-border)]"></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div class="mt-2 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <MButton variant="outline" @click="addEntryRow">
+                  <template #icon><MIcon name="plus" :size="14" /></template>
+                  Thêm dòng
+                </MButton>
+                <MButton variant="outline" @click="clearEntryRows">
+                  <template #icon><MIcon name="trash" :size="14" /></template>
+                  Xóa hết dòng
+                </MButton>
+              </div>
+              <span class="text-[12px] text-[var(--mds-text-secondary)]">Tổng số: {{ entries.length }} bản ghi</span>
+            </div>
+          </section>
+
+          <!-- Đính kèm -->
+          <section>
+            <div class="mb-2 flex items-center gap-2 text-[var(--mds-text)]">
+              <MIcon name="paperclip" :size="16" class="text-[var(--mds-icon-neutral)]" />
+              <span class="font-medium">Đính kèm</span>
+              <span class="text-[12px] text-[var(--mds-text-secondary)]">Dung lượng tối đa 5MB</span>
+            </div>
+            <label
+              class="flex h-[60px] w-[280px] cursor-pointer items-center justify-center rounded-lg border-[1.5px] border-dashed border-[var(--mds-border)] text-center text-[12px] text-[var(--mds-text-secondary)] transition-colors hover:border-[var(--mds-brand-600)] hover:bg-[var(--mds-brand-50)]"
+            >
+              Kéo/thả tệp vào đây hoặc bấm vào đây
+              <input type="file" class="hidden" multiple />
+            </label>
+          </section>
+        </div>
+
+        <!-- ── Form footer: thanh tối ghim đáy (điểm nhận diện form chứng từ) ── -->
+        <div class="flex h-[52px] shrink-0 items-center justify-between gap-4 bg-[var(--mds-neutral-800,#484E59)] px-4">
+          <span class="hidden shrink-0 text-[12px] text-white/50 sm:block">
+            F3 - Tìm nhanh, F9 - Thêm nhanh
+          </span>
+          <div class="ml-auto flex items-center gap-3">
+            <button
+              type="button"
+              class="rounded-lg border border-white/25 px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-white/10"
+              @click="closeForm"
+            >
+              Hủy
+            </button>
+            <MSwitch v-model="form.showAccount" label="Hiển thị tài khoản" class="text-white" />
+            <button
+              type="button"
+              class="rounded-lg border border-white/25 px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-white/10"
+              @click="saveDocument"
+            >
+              Cất
+            </button>
+            <!-- Split button primary "Cất và Thêm" — Primary ngoài cùng bên phải theo MDS -->
+            <div class="flex overflow-hidden rounded-lg">
+              <button
+                type="button"
+                class="border-r border-white/20 bg-[var(--mds-brand-600)] px-3.5 py-1.5 text-[13px] font-medium text-white transition-colors hover:bg-[var(--mds-brand-700)]"
+                @click="saveAndAdd"
+              >
+                Cất và Thêm
+              </button>
+              <button
+                type="button"
+                class="flex items-center justify-center bg-[var(--mds-brand-600)] px-2 text-white transition-colors hover:bg-[var(--mds-brand-700)]"
+                aria-label="Chọn biến thể lưu"
+              >
+                <MIcon name="chevron-down" :size="14" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <MSettingsDialog v-model="showSettings" />
+    <MToast />
+  </div>
+</template>

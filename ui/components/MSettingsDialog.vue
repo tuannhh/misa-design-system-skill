@@ -1,11 +1,11 @@
 <script setup>
 /**
  * MSettingsDialog — dialog "Thiết lập màu sắc và hiển thị" mở từ nút Thiết lập
- * (gear) trên MHeaderBar. 2 tab: Thiết lập màu sắc (theme 11 lựa chọn + chế độ
- * header Màu sắc/Sáng) và Thiết lập hiển thị (mật độ 3 mức).
- * Tab Hình nền (wallpaper/glass) CHƯA làm ở bản này — xem MEMORY.md việc còn mở.
+ * (gear) trên MHeaderBar. 3 tab: Thiết lập màu sắc (theme 11 lựa chọn + chế độ
+ * header Màu sắc/Sáng), Thiết lập hiển thị (mật độ 3 mức) và Hình nền
+ * (wallpaper — bật wallpaper tự kéo theo hiệu ứng kính, không có toggle riêng).
  * Thay đổi chỉ áp dụng khi bấm Lưu (draft state), khớp
- * references/patterns/header-bar.md mục 3b.
+ * references/patterns/header-bar.md mục 3b/3.
  */
 import { computed, ref, watch } from 'vue'
 import MDialog from './MDialog.vue'
@@ -14,6 +14,7 @@ import {
   THEME_LIST, currentTheme, applyTheme,
   currentHeaderMode, applyHeaderMode,
   DENSITY_LIST, currentDensity, applyDensity,
+  WALLPAPER_LIST, currentWallpaper, applyWallpaper,
 } from './theme-state.js'
 
 const props = defineProps({
@@ -25,11 +26,13 @@ const activeTab = ref('color')
 const tabs = [
   { id: 'color', label: 'Thiết lập màu sắc' },
   { id: 'display', label: 'Thiết lập hiển thị' },
+  { id: 'wallpaper', label: 'Hình nền' },
 ]
 
 const draftTheme = ref(currentTheme.value)
 const draftMode = ref(currentHeaderMode.value)
 const draftDensity = ref(currentDensity.value)
+const draftWallpaper = ref(currentWallpaper.value)
 
 // Mở dialog: nạp lại draft từ giá trị đang áp dụng (hủy không mất thay đổi cũ)
 watch(
@@ -39,6 +42,7 @@ watch(
       draftTheme.value = currentTheme.value
       draftMode.value = currentHeaderMode.value
       draftDensity.value = currentDensity.value
+      draftWallpaper.value = currentWallpaper.value
       activeTab.value = 'color'
     }
   }
@@ -56,6 +60,7 @@ function onSave() {
   applyTheme(draftTheme.value)
   applyHeaderMode(draftMode.value)
   applyDensity(draftDensity.value)
+  applyWallpaper(draftWallpaper.value)
   close()
 }
 </script>
@@ -134,8 +139,39 @@ function onSave() {
       </div>
     </div>
 
+    <!-- ── Tab: Hình nền ── -->
+    <div v-else-if="activeTab === 'wallpaper'" class="flex flex-col gap-3 pb-2">
+      <p class="text-center text-[12px] text-[var(--mds-text-secondary)]">
+        Chọn hình nền cho ứng dụng — khi bật, các khối nội dung tự chuyển sang hiệu ứng kính (glass)
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <button
+          v-for="w in WALLPAPER_LIST"
+          :key="w.id"
+          type="button"
+          class="flex w-[120px] flex-col items-center gap-1.5 rounded-lg border-2 p-1.5 transition-colors"
+          :class="draftWallpaper === w.id ? 'border-[var(--mds-brand-600)]' : 'border-transparent hover:bg-[var(--mds-bg-hover-soft)]'"
+          @click="draftWallpaper = w.id"
+        >
+          <span
+            class="relative flex h-16 w-full items-center justify-center overflow-hidden rounded-md border border-[var(--mds-border-light,var(--mds-border))]"
+            :style="w.css ? { backgroundImage: w.css, backgroundSize: 'cover' } : { background: 'repeating-linear-gradient(45deg, var(--mds-bg-disabled), var(--mds-bg-disabled) 6px, var(--mds-bg) 6px, var(--mds-bg) 12px)' }"
+          >
+            <MIcon v-if="!w.css" name="circle-x" :size="18" class="text-[var(--mds-text-placeholder)]" />
+            <MIcon
+              v-if="draftWallpaper === w.id"
+              name="check"
+              :size="12"
+              class="absolute right-1 top-1 text-white drop-shadow"
+            />
+          </span>
+          <span class="whitespace-nowrap text-[12px] font-medium text-[var(--mds-text)]">{{ w.label }}</span>
+        </button>
+      </div>
+    </div>
+
     <!-- ── Tab: Thiết lập hiển thị ── -->
-    <div v-else class="flex flex-wrap justify-center gap-4 pb-2">
+    <div v-else-if="activeTab === 'display'" class="flex flex-wrap justify-center gap-4 pb-2">
       <button
         v-for="d in DENSITY_LIST"
         :key="d.id"

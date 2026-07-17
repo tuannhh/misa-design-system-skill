@@ -95,6 +95,14 @@ const filteredRows = computed(() => {
 const selected = ref([])
 const page = ref(1)
 const pageSize = ref(20)
+const kpiCollapsed = ref(false)
+
+// Hàng KPI trên bảng Nhân viên (spec data-table.md mục 13)
+const employeeKpis = [
+  { label: 'Đang làm việc', value: '1.192', icon: 'users', color: 'var(--mds-success)' },
+  { label: 'Thử việc', value: '68', icon: 'user', color: 'var(--mds-warning)' },
+  { label: 'Tổng quỹ lương', value: '18,4 tỷ', icon: 'cash', color: 'var(--mds-brand-600)' },
+]
 
 // Số tiền định dạng VN: 13.500.000
 const formatMoney = (v) => Number(v || 0).toLocaleString('vi-VN')
@@ -323,49 +331,89 @@ function saveEmployee() {
       <main class="flex min-w-0 flex-1 flex-col overflow-hidden px-4 pb-4 pt-3">
         <!-- Nhân viên > Danh sách -->
         <template v-if="activeMenu === 'ds-nhan-vien'">
-          <!-- Toolbar: TRÁI tiêu đề — PHẢI thao tác, Primary ngoài cùng phải + More bên phải Primary -->
-          <div class="mb-3 flex shrink-0 flex-wrap items-center justify-between gap-3">
+          <div class="mb-3 flex shrink-0 items-center justify-between gap-3">
             <h2 class="text-[20px] font-semibold leading-[28px] text-[var(--mds-text)]">Nhân viên</h2>
+          </div>
 
-            <div class="flex flex-wrap items-center gap-2">
+          <!-- Bảng danh sách: KPI row + toolbar chuẩn (search trái, 4 icon cố định +
+               nút chính phải), chọn nhiều dòng, bulk actions, cột thao tác sticky
+               (spec data-table.md mục 13) -->
+          <MDataTable
+            v-model:selected="selected"
+            v-model:page="page"
+            v-model:page-size="pageSize"
+            v-model:kpi-collapsed="kpiCollapsed"
+            :columns="columns"
+            :rows="filteredRows"
+            :total="filteredRows.length"
+            row-key="id"
+            selectable
+            :has-next="false"
+            class="min-h-0 flex-1"
+            @row-click="openDetail"
+            @refresh="toast.info('Đang tải lại danh sách')"
+            @export="onMore('export')"
+            @column-settings="onMore('columns')"
+            @filter-click="toast.info('Mở bộ lọc nâng cao')"
+          >
+            <!-- Hàng KPI: 3 card icon+label+giá trị+chip giờ cập nhật -->
+            <template #kpi>
+              <div class="flex flex-wrap gap-3 pb-3">
+                <div
+                  v-for="kpi in employeeKpis"
+                  :key="kpi.label"
+                  class="group flex flex-1 min-w-[200px] items-center gap-3 rounded-lg border border-[var(--mds-border-light,var(--mds-border))] p-3"
+                >
+                  <span
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                    :style="{ background: `color-mix(in srgb, ${kpi.color} 12%, white)`, color: kpi.color }"
+                  >
+                    <MIcon :name="kpi.icon" :size="18" />
+                  </span>
+                  <div class="flex min-w-0 flex-1 flex-col">
+                    <span class="truncate text-[12px] font-medium text-[var(--mds-text-secondary)]">{{ kpi.label }}</span>
+                    <span class="text-[18px] font-semibold" :style="{ color: kpi.color }">{{ kpi.value }}</span>
+                  </div>
+                  <span class="hidden shrink-0 items-center gap-1 text-[11px] text-[var(--mds-text-secondary)] sm:flex">
+                    <MIcon name="clock" :size="12" />
+                    15:59
+                    <MIcon
+                      name="refresh"
+                      :size="12"
+                      class="ml-1 opacity-0 transition-opacity group-hover:opacity-100"
+                    />
+                  </span>
+                </div>
+              </div>
+            </template>
+
+            <!-- Toolbar trái: ô tìm kiếm + filter phụ -->
+            <template #toolbar-search>
               <div class="w-[240px]">
                 <MInput v-model="search" placeholder="Tìm kiếm mã, tên nhân viên" clearable />
               </div>
               <div class="w-[236px]">
                 <MDateRangePicker v-model="dateRange" />
               </div>
-              <!-- Nút phụ: bên trái nút chính -->
+            </template>
+
+            <!-- Toolbar phải (sau vạch dọc + 4 icon cố định): cụm nút chính -->
+            <template #toolbar-actions>
               <MButton variant="secondary" @click="onImport">
                 <template #icon>
                   <MIcon name="upload" :size="16" />
                 </template>
                 Nhập khẩu
               </MButton>
-              <!-- Nút Primary: ngoài cùng bên phải -->
               <MButton variant="primary" @click="openDrawer">
                 <template #icon>
                   <MIcon name="plus" :size="16" />
                 </template>
                 Thêm nhân viên
               </MButton>
-              <!-- Nút More: ngay bên phải nút Primary -->
               <MDropdownMenu :items="moreItems" @select="onMore" />
-            </div>
-          </div>
+            </template>
 
-          <!-- Bảng danh sách: chọn nhiều dòng + bulk actions + row actions -->
-          <MDataTable
-            v-model:selected="selected"
-            v-model:page="page"
-            v-model:page-size="pageSize"
-            :columns="columns"
-            :rows="filteredRows"
-            row-key="id"
-            selectable
-            :has-next="false"
-            class="min-h-0 flex-1"
-            @row-click="openDetail"
-          >
             <!-- Lương: định dạng số VN 13.500.000, căn phải theo cột -->
             <template #cell-salary="{ value }">
               {{ formatMoney(value) }}
@@ -382,13 +430,33 @@ function saveEmployee() {
               <MButton variant="danger" @click="bulkDelete">Xóa</MButton>
             </template>
 
-            <!-- Row actions: hiện khi hover dòng -->
+            <!-- Row actions: cột sticky riêng, hiện khi hover dòng -->
             <template #row-actions="{ row }">
+              <button
+                type="button"
+                title="Xem"
+                class="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--mds-border)] bg-[var(--mds-bg)] text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)]"
+                @click="openDetail(row)"
+              >
+                <MIcon name="eye" :size="14" />
+              </button>
+              <button
+                type="button"
+                title="Sửa"
+                class="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--mds-border)] bg-[var(--mds-bg)] text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)]"
+                @click="openDrawer()"
+              >
+                <MIcon name="pencil" :size="14" />
+              </button>
+              <button
+                type="button"
+                title="Xóa"
+                class="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--mds-border)] bg-[var(--mds-bg)] text-[var(--mds-danger)] hover:bg-[var(--mds-bg-hover-soft)]"
+                @click="toast.info(`Xóa ${row.name}`)"
+              >
+                <MIcon name="trash" :size="14" />
+              </button>
               <MDropdownMenu :items="rowMenuItems" @select="onRowAction($event, row)" />
-            </template>
-
-            <template #footer-info>
-              Tổng số bản ghi hiển thị: {{ filteredRows.length }}
             </template>
           </MDataTable>
         </template>

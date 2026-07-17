@@ -54,8 +54,9 @@
   --mds-alpha-black-100: rgba(0,0,0,0.10);       /* Alpha-Black-100 — dùng cho shadow-card */
 
   /* ── Typography (Inter Variable v4 — font thống nhất toàn MISA) ─
-     Self-host InterVariable.woff2 (weight 100–900); alias 'Inter var' giữ
-     tương thích ngược. Bật 'tnum','lnum' để số liệu thẳng cột. */
+     Self-host InterVariable.woff2 thật (weight 100–900) qua assets/fonts/inter.css;
+     alias 'Inter var' giữ tương thích ngược nếu project khác đã cài theo tên đó.
+     Bật 'tnum','lnum' để số liệu thẳng cột. */
   --mds-font-family: InterVariable, 'Inter var', 'Inter', -apple-system, 'Segoe UI', sans-serif;
   --mds-font-size-body: 13px;      /* Body Regular 13/18 — mặc định mọi text */
   --mds-line-height-body: 18px;
@@ -103,6 +104,12 @@
   --mds-shadow-lg: 0 12px 16px -4px rgba(16,24,40,0.08), 0 4px 6px -2px rgba(16,24,40,0.03);
   --mds-shadow-dialog: 0 8px 24px rgba(16,24,40,0.15);
 
+  /* ── Hình nền + hiệu ứng kính (header-bar.md mục 3 "Hình nền") ──── */
+  --mds-wallpaper-image: none;
+  --mds-glass-bg: rgba(255,255,255,0.78);
+  --mds-glass-border: rgba(255,255,255,0.6);
+  --mds-glass-dropdown-bg: rgba(255,255,255,0.95);
+
   /* ── Chart palette (series chính lấy brand theme hiện tại) ─ */
   --mds-chart-c1: var(--mds-brand-600);
   --mds-chart-c2: #12B76A;
@@ -133,4 +140,28 @@
   --mds-btn-height: 36px;
   --mds-input-height: 40px;
   --mds-dt-row-height: 40px;
+}
+
+/* ── Hình nền + hiệu ứng kính ────────────────────────────────
+   MSettingsDialog tab "Hình nền" set data-mds-wallpaper (id) +
+   data-mds-glass="true" trên <html> khi chọn wallpaper khác "Không có"
+   (header-bar.md mục 3). Áp wallpaper lên nền trang; card/table/dropdown
+   dùng class .mds-card / .mds-dropdown-glass để ăn hiệu ứng kính —
+   header, sidebar, dialog KHÔNG có 2 class này nên vẫn solid như spec. */
+:root[data-mds-wallpaper] body {
+  background-image: var(--mds-wallpaper-image);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-mds-glass="true"] .mds-card {
+  background: var(--mds-glass-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--mds-glass-border);
+}
+:root[data-mds-glass="true"] .mds-dropdown-glass {
+  background: var(--mds-glass-dropdown-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }

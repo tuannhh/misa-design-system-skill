@@ -64,6 +64,35 @@ export function applyDensity(id) {
 }
 if (currentDensity.value !== 'medium') document.documentElement.setAttribute('data-density', currentDensity.value)
 
+/* ── Hình nền (wallpaper) + hiệu ứng kính (glass) ───────────────
+   Bật wallpaper (khác 'none') tự động kéo theo hiệu ứng kính — không có
+   toggle riêng, khớp header-bar.md mục 3 "Hình nền": card/table chuyển
+   nền bán trong suốt + backdrop-blur, header/sidebar/dialog vẫn solid. ── */
+export const WALLPAPER_LIST = [
+  { id: 'none', label: 'Không có', css: null },
+  { id: 'aurora', label: 'Aurora', css: 'linear-gradient(135deg, #a5c0ff 0%, #d6b8f5 45%, #ffd6ec 100%)' },
+  { id: 'ocean', label: 'Đại dương', css: 'linear-gradient(135deg, #8fd3f4 0%, #84fab0 100%)' },
+  { id: 'sunset', label: 'Hoàng hôn', css: 'linear-gradient(135deg, #ffafbd 0%, #ffc3a0 100%)' },
+  { id: 'mesh', label: 'Mesh đêm', css: 'radial-gradient(at 20% 20%, #667eea 0, transparent 55%), radial-gradient(at 80% 0%, #43cbff 0, transparent 55%), radial-gradient(at 80% 90%, #9708cc 0, transparent 55%), linear-gradient(#0f1b3d, #0f1b3d)' },
+]
+const WALLPAPER_KEY = 'mds-wallpaper'
+export const currentWallpaper = ref(readStorage(WALLPAPER_KEY, 'none'))
+export function applyWallpaper(id) {
+  currentWallpaper.value = id
+  const item = WALLPAPER_LIST.find((w) => w.id === id)
+  if (!item || !item.css) {
+    document.documentElement.removeAttribute('data-mds-wallpaper')
+    document.documentElement.removeAttribute('data-mds-glass')
+    document.documentElement.style.removeProperty('--mds-wallpaper-image')
+  } else {
+    document.documentElement.setAttribute('data-mds-wallpaper', id)
+    document.documentElement.setAttribute('data-mds-glass', 'true')
+    document.documentElement.style.setProperty('--mds-wallpaper-image', item.css)
+  }
+  writeStorage(WALLPAPER_KEY, id)
+}
+if (currentWallpaper.value !== 'none') applyWallpaper(currentWallpaper.value)
+
 /* ── Sidebar collapsed — singleton dùng chung mọi trang ────────── */
 const SIDEBAR_KEY = 'mds-sidebar-expanded'
 const storedExpanded = readStorage(SIDEBAR_KEY, null)

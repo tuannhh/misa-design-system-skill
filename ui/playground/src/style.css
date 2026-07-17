@@ -2,6 +2,9 @@
 @source "../../components";
 @source "../../templates";
 
+/* Font InterVariable tự host (file .woff2 thật trong assets/fonts/) */
+@import "@assets/fonts/inter.css";
+
 /* Design tokens MDS */
 @import "@assets/tokens.css";
 @import "@assets/tokens/base-colors.css";
@@ -22,8 +25,6 @@
 @import "@assets/tokens/themes/gradient.css";
 
 body {
-  /* InterVariable tự host chưa có trong repo demo này — fallback 'Inter var' phục vụ
-     bởi rsms.me/inter/inter.css (preload trong index.html) cho tới khi có file woff2 thật */
   font-family: var(--mds-font-family);
   font-size: var(--mds-font-size-body);
   line-height: var(--mds-line-height-body);
