@@ -16,6 +16,7 @@ import MCombobox from '../components/MCombobox.vue'
 import MDatePicker from '../components/MDatePicker.vue'
 import MSelect from '../components/MSelect.vue'
 import MSwitch from '../components/MSwitch.vue'
+import MUpload from '../components/MUpload.vue'
 import MIcon from '../components/MIcon.vue'
 import MHeaderIconAva from '../components/MHeaderIconAva.vue'
 import MToast from '../components/MToast.vue'
@@ -86,6 +87,24 @@ function clearEntryRows() {
 }
 function removeEntryRow(id) {
   entries.value = entries.value.filter((e) => e.id !== id)
+}
+
+/* ── Đính kèm (MUpload — component không tự upload, chỉ mô phỏng ở đây) ── */
+const attachments = ref([])
+function onAttachFiles(files) {
+  for (const file of files) {
+    const id = Date.now() + Math.random()
+    attachments.value.push({ id, name: file.name, size: file.size, status: 'uploading', progress: 0 })
+    const timer = setInterval(() => {
+      const item = attachments.value.find((f) => f.id === id)
+      if (!item) return clearInterval(timer)
+      item.progress = Math.min(100, (item.progress || 0) + 25)
+      if (item.progress >= 100) {
+        clearInterval(timer)
+        item.status = 'done'
+      }
+    }, 250)
+  }
 }
 
 function closeForm() {
@@ -304,17 +323,13 @@ function saveAndAdd() {
 
           <!-- Đính kèm -->
           <section>
-            <div class="mb-2 flex items-center gap-2 text-[var(--mds-text)]">
-              <MIcon name="paperclip" :size="16" class="text-[var(--mds-icon-neutral)]" />
-              <span class="font-medium">Đính kèm</span>
-              <span class="text-[12px] text-[var(--mds-text-secondary)]">Dung lượng tối đa 5MB</span>
-            </div>
-            <label
-              class="flex h-[60px] w-[280px] cursor-pointer items-center justify-center rounded-lg border-[1.5px] border-dashed border-[var(--mds-border)] text-center text-[12px] text-[var(--mds-text-secondary)] transition-colors hover:border-[var(--mds-brand-600)] hover:bg-[var(--mds-brand-50)]"
-            >
-              Kéo/thả tệp vào đây hoặc bấm vào đây
-              <input type="file" class="hidden" multiple />
-            </label>
+            <MUpload
+              v-model="attachments"
+              :max-size-m-b="5"
+              @select-files="onAttachFiles"
+              @oversized="(files) => toast.info(`${files.length} tệp vượt quá 5MB`)"
+              @remove="(id) => (attachments = attachments.filter((f) => f.id !== id))"
+            />
           </section>
         </div>
 

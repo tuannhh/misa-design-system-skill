@@ -15,6 +15,7 @@ import MTextarea from '../components/MTextarea.vue'
 import MToast from '../components/MToast.vue'
 import MIcon from '../components/MIcon.vue'
 import { useToast } from '../components/toast.js'
+import { useFormValidation, rules } from '../components/useFormValidation.js'
 
 const toast = useToast()
 
@@ -49,8 +50,16 @@ const form = reactive({
   note: '',
 })
 
-const errors = reactive({ name: '' })
 const saving = ref(false)
+
+// Validate dùng chung: bắt buộc focus vào ô lỗi đầu tiên khi bấm Lưu mà còn lỗi
+// (KHÔNG disable nút — spec popup-form.md mục 4). Field cần focus được phải bọc
+// bằng data-field="key" trong template (xem useFormValidation.js).
+const { errors, validate, clearErrors } = useFormValidation({
+  name: [rules.required('Họ tên không được để trống')],
+  email: [rules.email()],
+  phone: [rules.phoneVN()],
+})
 
 function resetForm() {
   form.name = ''
@@ -61,15 +70,9 @@ function resetForm() {
   form.email = ''
   form.phone = ''
   form.note = ''
-  errors.name = ''
+  clearErrors()
   // Mã NV mock: tăng số cuối để mô phỏng sinh mã tự động
   form.code = `NV-${String(Number(form.code.slice(3)) + 1).padStart(4, '0')}`
-}
-
-// Validate: trường bắt buộc trống → viền danger + message đỏ dưới control
-function validate() {
-  errors.name = form.name.trim() ? '' : 'Họ tên không được để trống'
-  return !errors.name
 }
 
 function goBack() {
@@ -81,7 +84,7 @@ function cancel() {
 }
 
 function save() {
-  if (!validate()) return
+  if (!validate(form)) return
   saving.value = true
   toast.success(`Đã lưu nhân viên ${form.name.trim()}`)
   saving.value = false
@@ -90,7 +93,7 @@ function save() {
 
 // Lưu và Thêm mới: lưu xong reset form để nhập tiếp bản ghi mới
 function saveAndNew() {
-  if (!validate()) return
+  if (!validate(form)) return
   saving.value = true
   toast.success(`Đã lưu nhân viên ${form.name.trim()}. Tiếp tục thêm mới.`)
   saving.value = false
@@ -128,7 +131,7 @@ function saveAndNew() {
 
           <!-- Form 2 cột; label 13px medium trên input, dấu * đỏ cho bắt buộc -->
           <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
-            <div>
+            <div data-field="name">
               <label class="mb-1 block text-[13px] font-medium leading-[18px] text-[var(--mds-text)]">
                 Họ tên <span class="text-[var(--mds-danger)]">*</span>
               </label>
@@ -173,18 +176,18 @@ function saveAndNew() {
               <MInput v-model="form.title" placeholder="VD: Nhân viên kinh doanh" />
             </div>
 
-            <div>
+            <div data-field="email">
               <label class="mb-1 block text-[13px] font-medium leading-[18px] text-[var(--mds-text)]">
                 Email
               </label>
-              <MInput v-model="form.email" type="email" placeholder="ten@misa.com.vn" />
+              <MInput v-model="form.email" type="email" placeholder="ten@misa.com.vn" :error="errors.email" />
             </div>
 
-            <div>
+            <div data-field="phone">
               <label class="mb-1 block text-[13px] font-medium leading-[18px] text-[var(--mds-text)]">
                 Số điện thoại
               </label>
-              <MInput v-model="form.phone" placeholder="VD: 0912 345 678" />
+              <MInput v-model="form.phone" placeholder="VD: 0912 345 678" :error="errors.phone" />
             </div>
 
             <!-- Ghi chú: full 2 cột -->

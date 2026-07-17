@@ -24,6 +24,8 @@ import MTooltip from '@mds/MTooltip.vue'
 import MDropdownMenu from '@mds/MDropdownMenu.vue'
 import MImageViewer from '@mds/MImageViewer.vue'
 import MCollapseExpandPanel from '@mds/MCollapseExpandPanel.vue'
+import MTree from '@mds/MTree.vue'
+import MUpload from '@mds/MUpload.vue'
 
 const toast = useToast()
 const themes = ['blue', 'indigo', 'cyan', 'teal', 'green', 'orange', 'red', 'pink', 'purple', 'blue-gray']
@@ -99,6 +101,72 @@ const collapseDemoBottom = ref(false)
 const collapseDemoTop = ref(false)
 const collapseDemoLeft = ref(false)
 const collapseDemoRight = ref(false)
+
+/* ── Tree demo ──────────────────────────────────────────────── */
+
+const treeNodes = [
+  {
+    id: 'cty',
+    label: 'Công ty TNHH Thương mại Việt Phát',
+    children: [
+      {
+        id: 'kd',
+        label: 'Phòng Kinh doanh',
+        subtext: '24 nhân viên',
+        children: [
+          { id: 'kd-hn', label: 'Chi nhánh Hà Nội' },
+          { id: 'kd-hcm', label: 'Chi nhánh Hồ Chí Minh' },
+        ],
+      },
+      {
+        id: 'kt',
+        label: 'Phòng Kế toán',
+        accent: true,
+        children: [{ id: 'kt-thue', label: 'Nhóm Thuế' }],
+      },
+      { id: 'ns', label: 'Phòng Nhân sự', disabled: true },
+    ],
+  },
+]
+const treeSelected = ref(null)
+const treeExpanded = ref(['cty', 'kd'])
+const treeExpanded2 = ref(['cty'])
+const treeChecked = ref([])
+
+/* ── Upload demo ────────────────────────────────────────────── */
+
+const uploadFiles = ref([
+  { id: 1, name: 'hop-dong-lao-dong.pdf', size: 512000, status: 'done' },
+])
+
+function onUploadSelectFiles(files) {
+  for (const file of files) {
+    const id = Date.now() + Math.random()
+    uploadFiles.value.push({ id, name: file.name, size: file.size, status: 'uploading', progress: 0 })
+    simulateUpload(id)
+  }
+}
+
+// Mock tiến trình tải lên (component không tự upload — xem useUpload.vue comment đầu file)
+function simulateUpload(id) {
+  const item = uploadFiles.value.find((f) => f.id === id)
+  if (!item) return
+  const timer = setInterval(() => {
+    item.progress = Math.min(100, (item.progress || 0) + 20)
+    if (item.progress >= 100) {
+      clearInterval(timer)
+      item.status = 'done'
+    }
+  }, 300)
+}
+
+function onUploadRetry(id) {
+  const item = uploadFiles.value.find((f) => f.id === id)
+  if (!item) return
+  item.status = 'uploading'
+  item.progress = 0
+  simulateUpload(id)
+}
 const menuItems = [
   { key: 'edit', label: 'Sửa', icon: 'edit' },
   { key: 'copy', label: 'Nhân bản', icon: 'copy' },
@@ -272,6 +340,36 @@ const menuItems = [
           <MCollapseExpandPanel v-model:collapsed="collapseDemoRight" side="right" />
         </div>
       </div>
+    </section>
+
+    <section class="rounded-lg bg-white p-6 space-y-4">
+      <h3 class="text-[16px] leading-[22px] font-semibold flex items-center gap-2">Tree <MTag color="brand" size="sm">Đợt 3</MTag></h3>
+      <div class="flex flex-wrap gap-10">
+        <div class="w-[280px]">
+          <span class="mb-2 block text-[12px] text-[var(--mds-text-secondary)]">Không checkbox — single-select</span>
+          <MTree
+            :nodes="treeNodes"
+            v-model:selected="treeSelected"
+            v-model:expanded="treeExpanded"
+            @node-click="(n) => toast.info(`Chọn: ${n.label}`)"
+          />
+        </div>
+        <div class="w-[280px]">
+          <span class="mb-2 block text-[12px] text-[var(--mds-text-secondary)]">Có checkbox — chọn nhiều node (cascade)</span>
+          <MTree :nodes="treeNodes" checkable v-model:checked="treeChecked" v-model:expanded="treeExpanded2" />
+        </div>
+      </div>
+    </section>
+
+    <section class="rounded-lg bg-white p-6 space-y-4">
+      <h3 class="text-[16px] leading-[22px] font-semibold flex items-center gap-2">Upload <MTag color="brand" size="sm">Đợt 3</MTag></h3>
+      <MUpload
+        v-model="uploadFiles"
+        @select-files="onUploadSelectFiles"
+        @oversized="(files) => toast.info(`${files.length} tệp vượt quá dung lượng cho phép`)"
+        @remove="(id) => (uploadFiles = uploadFiles.filter((f) => f.id !== id))"
+        @retry="onUploadRetry"
+      />
     </section>
 
     <MDialog v-model="dialogOpen" title="Xóa hợp đồng" type="danger"
