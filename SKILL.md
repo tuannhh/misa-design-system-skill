@@ -84,6 +84,18 @@ Repo này kèm **bộ control Vue 3 + Tailwind viết sẵn** tại [ui/componen
 
 Xem/duyệt toàn bộ control: `cd ui/playground && npm install && npm run dev` (có nút đổi 10 theme).
 
+## Khi project KHÔNG dùng Vue 3, hoặc đã có kiến trúc/UI riêng từ trước
+
+Nhiều project MISA không phải Vue 3 sạch từ đầu — ví dụ app vanilla JS/jQuery cũ, React, Angular, hoặc "lai" (1 khung Vue nhỏ bọc ngoài + phần thân trang render bằng chuỗi HTML/DOM thuần, template server-side...). Bài học rút ra từ 1 vụ thực tế (2026-07-20, app "MISA PR Workstation"): AI đã tự viết lại `<select>` gốc trình duyệt + class `.btn` tự chế "cho giống" MDS thay vì dùng đúng component/token — kết quả lệch hẳn bản demo dù nhìn "tạm ổn" ở cái nhìn đầu tiên. Để không lặp lại:
+
+1. **Không tự chế lại token.** Dù không dùng được file `.vue` thật, vẫn PHẢI import nguyên vẹn `assets/tokens.css` (+ theme cần dùng trong `assets/tokens/themes/`) vào project, dùng đúng biến `var(--mds-*)`. **Tuyệt đối không tự khai báo lại một bộ biến số song song** (ví dụ tự viết `:root{--layout-sidebar-w: 240px}` bên cạnh `--mds-layout-sidebar-w: 200px` đã import) — hai bộ token lệch nhau là dấu hiệu chắc chắn đã làm sai, rất khó phát hiện bằng mắt vì cả hai đều "nhìn giống nhau".
+2. **Không dùng phần tử HTML thô cho control đã có trong bộ**, kể cả khi framework không phải Vue: `<select>` gốc, `<button>` tự set style tay, checkbox/radio mặc định trình duyệt đều SAI quy chuẩn (không có chevron riêng, không đúng radius/state hover-focus-disabled, checkbox không bo góc 4px/tô brand khi check...). Thứ tự ưu tiên khi không thể mount thẳng file `.vue`:
+   - **Ưu tiên 1**: viết lại phần UI đó thành đảo Vue nhỏ (mount 1 component Vue cụ thể vào 1 vùng DOM), dùng đúng file `.vue` trong `ui/components/` — áp dụng được cả trong app không phải Vue-SPA nếu có Vite/bundler.
+   - **Ưu tiên 2** (framework khác hẳn Vue, hoặc không thể refactor lớn): viết lại đúng hành vi + markup + class CSS của component MDS bằng ngôn ngữ/framework của project (ví dụ dropdown popover tự dựng bằng React/vanilla JS y hệt cấu trúc trigger+popover của `MSelect.vue`), đọc kỹ file `.vue` gốc để chép đúng class Tailwind/token, KHÔNG chỉ nhìn ảnh chụp rồi áng chừng.
+   - **Ưu tiên 3** (rủi ro rewrite quá lớn cho app cũ đang chạy production thật — vd sửa hàng chục nơi dùng native `<select>` trong 1 file JS khổng lồ có thể gãy logic `onchange` khắp nơi): CHO PHÉP giữ nguyên phần tử HTML gốc + chỉ ép CSS để đạt tối đa sự giống nhau về mặt nhìn (native `<select>` thêm `appearance:none` + `background-image` chevron đúng SVG/màu MDS; checkbox/radio thêm `appearance:none` + vẽ lại đúng 16px/radius 4px/màu brand khi check) — nhưng PHẢI nói rõ với người dùng đây là "parity một phần" (hành vi/markup panel dropdown vẫn là mặc định trình duyệt, không có bàn phím nav/animation như MSelect thật), không được báo cáo là "đã dùng đúng component".
+3. **Đừng chỉ nhìn ảnh chụp tĩnh là xong.** Bug thực tế ở trên (nút thu gọn sidebar không phản hồi khi bấm, icon rơi về `help-circle`) chỉ lộ ra khi bấm/hover thật và soi CSS đang thắng ở trạng thái nào — ảnh chụp trạng thái mặc định không thấy được. Trước khi báo "xong", phải tự thao tác (click, hover, đổi theme/density) trên trình duyệt thật, không chỉ đọc code hoặc xem 1 tấm ảnh.
+4. **Nếu có bản build/deploy tách biệt với source đang sửa** (Cloud Run, Railway, Netlify...), luôn build+test lại **local trước**, đối chiếu commit đang chạy production có khớp source hiện tại không — một bug "code đúng nhưng vẫn lỗi trên production" nhiều khả năng là do bản deploy đang chạy cũ hơn source, không phải do logic sai.
+
 ## Chọn control nhập liệu theo số lượng lựa chọn
 
 | Số lựa chọn | Control |
@@ -120,3 +132,4 @@ Kiểm tra từng mục, sửa ngay nếu chưa đạt:
 - [ ] Số định dạng kiểu Việt Nam: chấm ngăn nghìn, phẩy thập phân (1.234.567,89)
 - [ ] Có empty state đúng chuẩn (initial state ≠ no data state); có cảnh báo thoát trang khi form đang nhập dở
 - [ ] Chức năng phức tạp có hướng dẫn ngay trên form
+- [ ] **Nếu project không dùng Vue 3 / không mount được file `.vue` thật**: đã import nguyên `assets/tokens.css` (không tự khai báo token song song), control select/checkbox/radio/button đã được style lại đúng chuẩn (không phải mặc định trình duyệt) — đã tự bấm/hover/thao tác thật trên trình duyệt để xác nhận, không chỉ xem ảnh chụp tĩnh
