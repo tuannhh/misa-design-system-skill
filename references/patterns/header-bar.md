@@ -35,6 +35,8 @@ Theo tài liệu, header bar gồm các nhóm thành phần (bố trí từ trá
 - **Ở giữa/bên phải**: Ô **tìm kiếm**.
 - **Bên phải**: Cụm icon tiện ích theo thứ tự: **thiết lập**, **trợ lý số MISA AVA**, **chat**, **thông báo**, **hỗ trợ**, **More** trong vòng tròn, rồi **avatar người dùng** ở ngoài cùng bên phải. Có thể ẩn một tiện ích khi không thuộc scope app, nhưng không đảo thứ tự các mục còn lại.
 
+> **Bẫy thường gặp khi triển khai bằng `MHeaderBar.vue`**: slot `actions` render **TRƯỚC** nút Thiết lập (dùng cho nút phụ ngoài cụm chuẩn, ví dụ nút "Đăng nhập" khi chưa login) — **không được** nhét notification/identity tự chế vào slot này, sẽ đẩy chúng lệch sang trái thay vì đúng vị trí trong cụm/ngoài cùng bên phải. Muốn tuỳ biến nút avatar (vd dropdown kèm tên/vai trò thay vì chỉ avatar đơn giản) → dùng slot `user` (bọc quanh nút avatar mặc định, giữ đúng vị trí ngoài cùng bên phải). Ca lỗi thật đã gặp: app "AMIS Kho Ảnh" từng đặt cả chuông thông báo lẫn dropdown identity vào slot `actions`, khiến chúng hiện ở đầu cụm thay vì cuối — đã sửa 2026-07-20.
+
 ### Quy tắc app switcher 9 chấm
 
 - Luôn đặt ở mép trái header, trước logo/tên app.

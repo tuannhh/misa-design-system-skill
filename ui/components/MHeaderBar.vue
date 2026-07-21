@@ -119,7 +119,13 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onGlobalKeydown))
       <button v-if="showNotifications" type="button" :class="buttonClass" class="relative grid h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" title="Thông báo" @click="emit('notifications')"><MIcon name="bell" :size="20" /><span v-if="notificationCount > 0" class="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[var(--mds-danger)] px-1 text-[10px] font-medium leading-none text-white">{{ badgeText }}</span></button>
       <button v-if="showHelp" type="button" :class="buttonClass" class="hidden h-8 w-8 place-items-center rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Hỗ trợ" @click="emit('help')"><MIcon name="help" :size="20" /></button>
       <button v-if="showMore" type="button" :class="isBrand ? 'border-white/40 text-white hover:bg-white/15 focus-visible:outline-white' : 'border-[var(--mds-border)] text-[var(--mds-icon-neutral)] hover:bg-[var(--mds-bg-hover-soft)] focus-visible:outline-[var(--mds-brand-600)]'" class="hidden h-7 w-7 place-items-center rounded-full border focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 md:grid" title="Thêm" @click="emit('more')"><MIcon name="dots" :size="16" /></button>
-      <button v-if="user" type="button" class="ml-1 h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--mds-brand-100)] text-[12px] font-semibold text-[var(--mds-brand-700)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]" :title="user.name" @click="emit('user-click')"><img v-if="user.avatarUrl" :src="user.avatarUrl" :alt="user.name" class="h-full w-full object-cover" /><span v-else class="flex h-full w-full items-center justify-center">{{ userInitials }}</span></button>
+      <!-- Slot "user" cho phép app thay hẳn nút avatar mặc định bằng identity phức tạp hơn
+           (vd dropdown menu kèm tên/vai trò) mà vẫn giữ đúng vị trí NGOÀI CÙNG BÊN PHẢI theo
+           quy chuẩn header-bar.md — không được đẩy identity/notification tự chế vào slot
+           "actions" (slot đó nằm TRƯỚC Thiết lập, sẽ làm sai thứ tự cụm tiện ích). -->
+      <slot name="user">
+        <button v-if="user" type="button" class="ml-1 h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--mds-brand-100)] text-[12px] font-semibold text-[var(--mds-brand-700)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mds-brand-600)]" :title="user.name" @click="emit('user-click')"><img v-if="user.avatarUrl" :src="user.avatarUrl" :alt="user.name" class="h-full w-full object-cover" /><span v-else class="flex h-full w-full items-center justify-center">{{ userInitials }}</span></button>
+      </slot>
     </div>
   </header>
 </template>
